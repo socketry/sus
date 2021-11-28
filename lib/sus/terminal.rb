@@ -28,5 +28,9 @@ module Sus
 			
 			return terminal
 		end
+		
+		def self.buffered(io = StringIO.new)
+			Text.new(io)
+		end
 	end
 end

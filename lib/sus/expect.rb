@@ -7,41 +7,35 @@ module Sus
 		end
 		
 		def to(predicate)
-			predicate.call(@assertions.nested, @subject)
+			@assertions.nested(predicate) do |assertions|
+				predicate.call(assertions, @subject)
+			end
 			
 			return self
 		end
 		
 		def to_not(predicate)
-			predicate.call(@assertions.nested(inverted: true), @subject)
+			@assertions.nested(predicate, inverted: true) do |assertions|
+				predicate.call(assertions, @subject)
+			end
 			
 			return self
 		end
 		
 		def to_throw(...)
-			ThrowException.new(...).call(@assertions, @subject)
+			predicate = ThrowException.new(...)
+			
+			@assertions.nested(predicate) do |assertions|
+				predicate.call(assertions, @subject)
+			end
 			
 			return self
 		end
 	end
 	
-	class Truthy
-		def call(target)
-			!!target
-		end
-		
-		def print(output)
-			output << "to be truthy"
-		end
-	end
-	
-	class Falsey
-		def call(target)
-			!target
-		end
-		
-		def print(output)
-			output << "to be falsey"
+	class Base
+		def expect(subject)
+			Expect.new(@assertions, subject)
 		end
 	end
 	
@@ -62,7 +56,7 @@ module Sus
 				if exception.is_a?(@exception_class)
 					# Did it have the right message?
 					if @message
-						assertions.assert(@message === exception.message
+						assertions.assert(@message === exception.message)
 					else
 						assertions.assert(true, self)
 					end

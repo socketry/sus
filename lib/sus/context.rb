@@ -28,6 +28,20 @@ module Sus
 			@assertions = assertions
 		end
 		
+		def before
+		end
+		
+		def after
+		end
+		
+		def around
+			self.before
+			
+			return yield
+		ensure
+			self.after
+		end
+		
 		def assert(...)
 			@assertions.assert(...)
 		end

@@ -3,3 +3,6 @@
 require_relative "sus/version"
 require_relative "sus/registry"
 require_relative "sus/assertions"
+
+require_relative "sus/expect"
+require_relative "sus/be"

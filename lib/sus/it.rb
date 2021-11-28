@@ -17,7 +17,11 @@ module Sus
 		
 		def call(assertions = Assertions.new)
 			assertions.nested(self) do |assertions|
-				self.new(assertions).call
+				instance = self.new(assertions)
+				
+				instance.around do
+					instance.call
+				end
 			end
 		end
 	end

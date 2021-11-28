@@ -11,7 +11,7 @@ module Sus
 		def initialize
 			@base = Class.new(Base)
 			@base.extend(Context)
-			@base.description = self.class.name
+			@base.description = "top level"
 		end
 		
 		attr :base

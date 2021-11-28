@@ -61,20 +61,20 @@ module Sus
 			end
 		end
 		
-		def assert(condition, function = nil)
+		def assert(condition, message = nil)
 			@count += 1
 			
 			if condition
 				@passed += 1
 				
-				if @inverted && function
-					@output.print_line(indent, :passed, pass_prefix, function)
+				if @inverted && message
+					@output.print_line(indent, :passed, pass_prefix, message)
 				end
 			else
 				@failed += 1
 				
-				if !@inverted && function
-					@output.print_line(indent, :failed, fail_prefix, function)
+				if !@inverted && message
+					@output.print_line(indent, :failed, fail_prefix, message)
 				end
 			end
 		end
@@ -83,21 +83,30 @@ module Sus
 			assert(!condition)
 		end
 		
-		def nested(function, **options)
+		def fail(error)
+			@failed += 1
+			@output.print_line(indent, :failed, fail_prefix, "Unhandled exception ", :value, error.class, ": ", error.message)
+		end
+		
+		def nested(context, **options)
 			@output.print(indent)
-			function.print(@output)
+			context.print(@output)
 			@output.print_line
 			
 			assertions = self.class.new(@output, level: @level+1, **options)
 			
-			yield assertions
-			
+			return yield(assertions)
+		rescue StandardError => error
+			assertions.fail(error)
+		ensure
 			@count += assertions.count
 			
 			if assertions.passed?
 				@passed += 1
 				if @inverted
-					@output.print(indent, :failed, fail_prefix, :reset, function.description)
+					@output.print(indent, :failed, fail_prefix, :reset)
+					context.print(@output)
+					
 					if @verbose
 						@output.print(": ")
 						assertions.print(@output)
@@ -105,14 +114,18 @@ module Sus
 					
 					@output.print_line
 				elsif @verbose
-					@output.print(indent, :passed, pass_prefix, :reset, function.description, ": ")
+					@output.print(indent, :passed, pass_prefix, :reset)
+					context.print(@output)
+					@output.print(": ")
 					assertions.print(@output)
 					@output.print_line
 				end
 			else
 				@failed += 1
 				if !@inverted
-					@output.print(indent, :failed, fail_prefix, :reset, function.description)
+					@output.print(indent, :failed, fail_prefix, :reset)
+					context.print(@output)
+					
 					if @verbose
 						@output.print(": ")
 						assertions.print(@output)
@@ -120,7 +133,9 @@ module Sus
 					
 					@output.print_line
 				elsif @verbose
-					@output.print(indent, :passed, pass_prefix, :reset, function.description, ": ")
+					@output.print(indent, :passed, pass_prefix, :reset)
+					context.print(@output)
+					@output.print(": ")
 					assertions.print(@output)
 					@output.print_line
 				end

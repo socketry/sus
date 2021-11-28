@@ -16,6 +16,7 @@ module Sus
 			base.extend(Describe)
 			base.subject = subject
 			base.description = subject.inspect
+			base.define_method(:subject, ->{subject})
 			base.class_exec(&block)
 			return base
 		end
