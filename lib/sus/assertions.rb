@@ -1,5 +1,6 @@
 
 require_relative 'terminal'
+require_relative 'failure'
 
 module Sus
 	class Assertions
@@ -76,6 +77,8 @@ module Sus
 				if !@inverted && message
 					@output.print_line(indent, :failed, fail_prefix, message)
 				end
+				
+				raise 
 			end
 		end
 		

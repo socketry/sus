@@ -6,7 +6,7 @@ module Sus
 		end
 		
 		def print(output)
-			output.print("be ", :be, *@arguments)
+			output.print("be ", :be, *@arguments.join(" "))
 		end
 		
 		def call(assertions, subject)
