@@ -1,4 +1,3 @@
-
 describe Sus::It do
 	let(:buffered_assertions) {Sus::Assertions.new(Sus::Terminal.buffered)}
 	
