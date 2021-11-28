@@ -1,0 +1,19 @@
+#!/usr/bin/env ruby
+
+require_relative '../lib/sus'
+
+registry = Sus::Registry.new
+
+if ARGV.any?
+	ARGV.each do |path|
+		registry.load(path)
+	end
+else
+	Dir.glob("test/**/*.rb").each do |path|
+		registry.load(path)
+	end
+end
+
+assertions = Sus::Assertions.new
+
+registry.call
