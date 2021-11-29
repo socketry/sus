@@ -24,6 +24,16 @@ module Sus
 			@count = 0
 		end
 		
+		def add(other)
+			@count += other.count
+			
+			if other.passed?
+				@passed += 1
+			elsif other.failed?
+				@failed += 1
+			end
+		end
+		
 		def total
 			@passed + @failed
 		end
@@ -62,6 +72,10 @@ module Sus
 			end
 		end
 		
+		def failed?
+			!passed?
+		end
+		
 		def assert(condition, message = nil)
 			@count += 1
 			
@@ -77,8 +91,6 @@ module Sus
 				if !@inverted && message
 					@output.print_line(indent, :failed, fail_prefix, message)
 				end
-				
-				raise 
 			end
 		end
 		
@@ -89,6 +101,9 @@ module Sus
 		def fail(error)
 			@failed += 1
 			@output.print_line(indent, :failed, fail_prefix, "Unhandled exception ", :value, error.class, ": ", error.message)
+			error.backtrace.each do |line|
+				@output.print_line(indent, line)
+			end
 		end
 		
 		def nested(context, **options)

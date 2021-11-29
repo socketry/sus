@@ -17,7 +17,7 @@ module Sus
 		attr :base
 		
 		def load(path)
-			@base.describe(path) do
+			@base.describe(path, identity: Identity.new(path)) do
 				self.class_eval(File.read(path), path)
 			end
 		end
@@ -32,6 +32,10 @@ module Sus
 			duration = self.time - start_time
 			
 			pp assertions_per_second: (assertions.count / duration)
+		end
+		
+		def each(...)
+			@base.each(...)
 		end
 		
 		private

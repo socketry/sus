@@ -3,17 +3,58 @@
 require_relative '../lib/sus'
 
 registry = Sus::Registry.new
+jobs = Thread::Queue.new
+results = Thread::Queue.new
 
-if ARGV.any?
-	ARGV.each do |path|
-		registry.load(path)
+Result = Struct.new(:job, :assertions)
+
+loader = Thread.new do
+	if ARGV.any?
+		ARGV.each do |path|
+			registry.load(path)
+		end
+	else
+		Dir.glob("test/**/*.rb").each do |path|
+			registry.load(path)
+		end
 	end
-else
-	Dir.glob("test/**/*.rb").each do |path|
-		registry.load(path)
+	
+	registry.each do |child|
+		jobs << child
+	end
+	
+	jobs.close
+end
+
+output = Sus::Terminal.default
+
+aggregation = Thread.new do
+	assertions = Sus::Assertions.new(output)
+	
+	while result = results.pop
+		if result.assertions.failed?
+			result.assertions.output.append(assertions.output)
+		end
+		
+		assertions.add(result.assertions)
+	end
+	
+	assertions
+end
+
+workers = 8.times.map do
+	Thread.new do
+		while job = jobs.pop
+			assertions = Sus::Assertions.new(output.buffered)
+			job.call(assertions)
+			results << Result.new(job, assertions)
+		end
 	end
 end
 
-assertions = Sus::Assertions.new
+loader.join
 
-registry.call
+workers.each(&:join)
+results.close
+
+aggregation.join

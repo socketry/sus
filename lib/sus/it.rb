@@ -7,12 +7,17 @@ module Sus
 			base = Class.new(parent)
 			base.extend(It)
 			base.description = description
+			base.identity = Identity.nested(parent.identity, base.description)
 			base.define_method(:call, &block)
 			return base
 		end
 		
+		def leaf?
+			true
+		end
+		
 		def print(output)
-			output.print("it ", :it, self.description)
+			output.print("it ", :it, self.description, :reset, " ", self.identity.to_s)
 		end
 		
 		def call(assertions = Assertions.new)
@@ -28,7 +33,7 @@ module Sus
 	
 	module Context
 		def it(...)
-			@children << It.build(self, ...)
+			add It.build(self, ...)
 		end
 	end
 end

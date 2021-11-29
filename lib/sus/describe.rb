@@ -8,27 +8,28 @@ module Sus
 		attr_accessor :subject
 		
 		def self.extended(base)
-			base.children = Array.new
+			base.children = Hash.new
 		end
 		
-		def self.build(parent, subject, &block)
+		def self.build(parent, subject, identity: nil, &block)
 			base = Class.new(parent)
 			base.extend(Describe)
 			base.subject = subject
 			base.description = subject.inspect
+			base.identity = identity || Identity.nested(parent.identity, base.description)
 			base.define_method(:subject, ->{subject})
 			base.class_exec(&block)
 			return base
 		end
 		
 		def print(output)
-			output.print("describe ", :describe, self.description)
+			output.print("describe ", :describe, self.description, :reset, " ", self.identity.to_s)
 		end
 	end
 	
 	module Context
 		def describe(...)
-			@children << Describe.build(self, ...)
+			add Describe.build(self, ...)
 		end
 	end
 end

@@ -9,7 +9,7 @@ module Sus
 		attr_accessor :variables
 		
 		def self.extended(base)
-			base.children = Array.new
+			base.children = Hash.new
 		end
 		
 		def self.build(parent, subject, variables, &block)
@@ -43,7 +43,7 @@ module Sus
 	
 	module Context
 		def with(subject, **variables, &block)
-			@children << With.build(self, subject, variables, &block)
+			add With.build(self, subject, variables, &block)
 		end
 	end
 end
