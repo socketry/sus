@@ -4,16 +4,8 @@ require_relative 'failure'
 
 module Sus
 	class Assertions
-		attr :output
-		attr :level
-		attr :inverted
-		attr :verbose
-		
-		attr :passed
-		attr :failed
-		attr :count
-		
-		def initialize(output = Terminal.default, level: 0, inverted: false, verbose: false)
+		def initialize(context: nil, output: Terminal.default, level: 0, inverted: false, verbose: false)
+			@context = context
 			@output = output
 			@level = level
 			@inverted = inverted
@@ -24,28 +16,35 @@ module Sus
 			@count = 0
 		end
 		
-		def add(other)
-			@count += other.count
-			
-			if other.passed?
-				@passed += 1
-			elsif other.failed?
-				@failed += 1
-			end
-		end
+		attr :context
+		attr :output
+		attr :level
+		attr :inverted
+		attr :verbose
+		
+		attr :passed
+		attr :failed
+		attr :count
 		
 		def total
 			@passed + @failed
 		end
 		
-		def print(output)
-			output.print(:passed, @passed, " passed", :reset)
-			
-			if @failed > 0
-				output.print(" ", :failed, @failed, " failed", :reset)
+		def print(output, verbose: @verbose)
+			if verbose && @context
+				@context.print(output)
+				output.print(": ")
 			end
 			
-			output.print(" out of ", self.total, " total (", @count, " assertions)")
+			if @passed > 0
+				output.print(:passed, @passed, " passed", :reset, " ")
+			end
+			
+			if @failed > 0
+				output.print(:failed, @failed, " failed", :reset, " ")
+			end
+			
+			output.print("out of ", self.total, " total (", @count, " assertions)")
 		end
 		
 		def pass_prefix
@@ -111,50 +110,48 @@ module Sus
 			context.print(@output)
 			@output.print_line
 			
-			assertions = self.class.new(@output, level: @level+1, **options)
+			# if @context && context
+				level = @level + 1
+			# else
+				# level = @level
+			# end
 			
-			return yield(assertions)
-		rescue StandardError => error
-			assertions.fail(error)
-		ensure
+			assertions = self.class.new(context: context, output: @output, level: level, **options)
+			
+			begin
+				result = yield(assertions)
+			rescue StandardError => error
+				assertions.fail(error)
+			end
+			
+			add(assertions) if assertions
+			
+			return result
+		end
+		
+		def add(assertions)
 			@count += assertions.count
 			
 			if assertions.passed?
 				@passed += 1
 				if @inverted
 					@output.print(indent, :failed, fail_prefix, :reset)
-					context.print(@output)
-					
-					if @verbose
-						@output.print(": ")
-						assertions.print(@output)
-					end
-					
+					self.print(@output, verbose: false)
 					@output.print_line
 				elsif @verbose
 					@output.print(indent, :passed, pass_prefix, :reset)
-					context.print(@output)
-					@output.print(": ")
-					assertions.print(@output)
+					self.print(@output, verbose: false)
 					@output.print_line
 				end
 			else
 				@failed += 1
 				if !@inverted
 					@output.print(indent, :failed, fail_prefix, :reset)
-					context.print(@output)
-					
-					if @verbose
-						@output.print(": ")
-						assertions.print(@output)
-					end
-					
+					self.print(@output, verbose: false)
 					@output.print_line
 				elsif @verbose
 					@output.print(indent, :passed, pass_prefix, :reset)
-					context.print(@output)
-					@output.print(": ")
-					assertions.print(@output)
+					self.print(@output, verbose: false)
 					@output.print_line
 				end
 			end

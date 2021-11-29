@@ -29,10 +29,14 @@ module Sus
 		end
 		
 		def print(output)
-			output.print("with ", :with, self.description, :reset, " ", :variables, self.variables.inspect)
+			self.superclass.print(output)
+			output.print(
+				" with ", :with, self.description, :reset,
+				# " ", :variables, self.variables.inspect
+			)
 		end
 		
-		def call(assertions = Assertions.new)
+		def call(assertions)
 			assertions.nested(self) do |assertions|
 				self.children.each do |child|
 					child.call(assertions)

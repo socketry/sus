@@ -30,23 +30,33 @@ end
 output = Sus::Terminal.default
 
 aggregation = Thread.new do
-	assertions = Sus::Assertions.new(output)
+	assertions = Sus::Assertions.new(output: output)
+	first = true
 	
 	while result = results.pop
 		if result.assertions.failed?
+			if first
+				first = false
+			else
+				assertions.output.print_line
+			end
+			
 			result.assertions.output.append(assertions.output)
 		end
 		
 		assertions.add(result.assertions)
 	end
 	
+	assertions.output.print_line unless first
 	assertions.print(output)
 end
 
-workers = Etc.nprocessors.times.map do
+count = 1 # Etc.nprocessors
+
+workers = count.times.map do
 	Thread.new do
 		while job = jobs.pop
-			assertions = Sus::Assertions.new(output.buffered)
+			assertions = Sus::Assertions.new(output: output.buffered)
 			job.call(assertions)
 			results << Result.new(job, assertions)
 		end

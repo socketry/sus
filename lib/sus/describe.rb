@@ -23,7 +23,10 @@ module Sus
 		end
 		
 		def print(output)
-			output.print("describe ", :describe, self.description, :reset, " ", self.identity.to_s)
+			output.print(
+				"describe ", :describe, self.description, :reset,
+				# " ", self.identity.to_s
+			)
 		end
 	end
 	

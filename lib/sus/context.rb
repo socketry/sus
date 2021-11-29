@@ -28,7 +28,7 @@ module Sus
 			output.print("context ", :context, self.description)
 		end
 		
-		def call(assertions = Assertions.new)
+		def call(assertions)
 			assertions.nested(self) do |assertions|
 				self.children.each do |identity, child|
 					child.call(assertions)

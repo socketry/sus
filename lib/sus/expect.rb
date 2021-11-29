@@ -4,18 +4,27 @@ module Sus
 		def initialize(assertions, subject)
 			@assertions = assertions
 			@subject = subject
+			@inverted = false
+		end
+		
+		def not
+			self.dup.tap do |expect|
+				expect.instance_variable_set(:@inverted, !@inverted)
+			end
+		end
+		
+		def print(output)
+			output.print("expect ", :variable, @subject, :reset, " ")
+			
+			if @inverted
+				output.print(:failed, "to not", :reset)
+			else
+				output.print(:passed, "to", :reset)
+			end
 		end
 		
 		def to(predicate)
-			@assertions.nested(predicate) do |assertions|
-				predicate.call(assertions, @subject)
-			end
-			
-			return self
-		end
-		
-		def to_not(predicate)
-			@assertions.nested(predicate, inverted: true) do |assertions|
+			@assertions.nested(self, inverted: @inverted) do |assertions|
 				predicate.call(assertions, @subject)
 			end
 			
@@ -25,7 +34,7 @@ module Sus
 		def to_throw(...)
 			predicate = ThrowException.new(...)
 			
-			@assertions.nested(predicate) do |assertions|
+			@assertions.nested(self, inverted: @inverted) do |assertions|
 				predicate.call(assertions, @subject)
 			end
 			
@@ -46,22 +55,24 @@ module Sus
 		end
 		
 		def call(assertions, value)
-			begin
-				value.call
-				
-				# Didn't throw any exception, so the expectation failed:
-				assertions.assert(false, self)
-			rescue => exception
-				# Did we throw the right kind of exception?
-				if exception.is_a?(@exception_class)
-					# Did it have the right message?
-					if @message
-						assertions.assert(@message === exception.message)
+			assertions.nested(self) do |assertions|
+				begin
+					value.call
+					
+					# Didn't throw any exception, so the expectation failed:
+					assertions.assert(false, self)
+				rescue => exception
+					# Did we throw the right kind of exception?
+					if exception.is_a?(@exception_class)
+						# Did it have the right message?
+						if @message
+							assertions.assert(@message === exception.message)
+						else
+							assertions.assert(true, self)
+						end
 					else
-						assertions.assert(true, self)
+						raise
 					end
-				else
-					raise
 				end
 			end
 		end

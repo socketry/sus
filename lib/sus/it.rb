@@ -17,10 +17,11 @@ module Sus
 		end
 		
 		def print(output)
-			output.print("it ", :it, self.description, :reset, " ", self.identity.to_s)
+			self.superclass.print(output)
+			output.print(" it ", :it, self.description, :reset, " ", self.identity.to_s)
 		end
 		
-		def call(assertions = Assertions.new)
+		def call(assertions)
 			assertions.nested(self) do |assertions|
 				instance = self.new(assertions)
 				

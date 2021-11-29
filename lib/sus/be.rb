@@ -10,10 +10,20 @@ module Sus
 		end
 		
 		def call(assertions, subject)
-			assertions.assert(subject.public_send(*@arguments))
+			assertions.nested(self) do |assertions|
+				assertions.assert(subject.public_send(*@arguments))
+			end
 		end
 		
 		class << self
+			def == value
+				Be.new(:==, value)
+			end
+			
+			def != value
+				Be.new(:!=, value)
+			end
+			
 			def > value
 				Be.new(:>, value)
 			end
