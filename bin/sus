@@ -1,5 +1,6 @@
 #!/usr/bin/env ruby
 
+require 'etc'
 require_relative '../lib/sus'
 
 registry = Sus::Registry.new
@@ -39,10 +40,10 @@ aggregation = Thread.new do
 		assertions.add(result.assertions)
 	end
 	
-	assertions
+	assertions.print(output)
 end
 
-workers = 8.times.map do
+workers = Etc.nprocessors.times.map do
 	Thread.new do
 		while job = jobs.pop
 			assertions = Sus::Assertions.new(output.buffered)
