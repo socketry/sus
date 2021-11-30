@@ -15,6 +15,8 @@ module Sus
 		def self.default(io = $stderr)
 			terminal = self.for(io)
 			
+			Terminal::Bar.register(terminal)
+			
 			terminal[:context] = terminal.style(nil, nil, :bold)
 			
 			terminal[:describe] = terminal.style(:cyan, nil, :bold)

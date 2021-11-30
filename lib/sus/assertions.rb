@@ -47,18 +47,6 @@ module Sus
 			output.print("out of ", self.total, " total (", @count, " assertions)")
 		end
 		
-		def pass_prefix
-			"✓ "
-		end
-		
-		def fail_prefix
-			"✗ "
-		end
-		
-		def indent
-			"\t" * @level
-		end
-		
 		def print_line(*message)
 			@output.print_line(indent, *message)
 		end 
@@ -93,12 +81,9 @@ module Sus
 			end
 		end
 		
-		def refute(condition)
-			assert(!condition)
-		end
-		
 		def fail(error)
 			@failed += 1
+			
 			@output.print_line(indent, :failed, fail_prefix, "Unhandled exception ", :value, error.class, ": ", error.message)
 			error.backtrace.each do |line|
 				@output.print_line(indent, line)
@@ -110,11 +95,7 @@ module Sus
 			context.print(@output)
 			@output.print_line
 			
-			# if @context && context
-				level = @level + 1
-			# else
-				# level = @level
-			# end
+			level = @level + 1
 			
 			assertions = self.class.new(context: context, output: @output, level: level, **options)
 			
@@ -124,12 +105,12 @@ module Sus
 				assertions.fail(error)
 			end
 			
-			add(assertions) if assertions
+			merge(assertions) if assertions
 			
 			return result
 		end
 		
-		def add(assertions)
+		def merge(assertions)
 			@count += assertions.count
 			
 			if assertions.passed?
@@ -155,6 +136,30 @@ module Sus
 					@output.print_line
 				end
 			end
+		end
+		
+		def add(assertions)
+			@count += assertions.count
+			
+			if assertions.passed?
+				@passed += 1
+			else
+				@failed += 1
+			end
+		end
+		
+		private
+		
+		def pass_prefix
+			"✓ "
+		end
+		
+		def fail_prefix
+			"✗ "
+		end
+		
+		def indent
+			"\t" * @level
 		end
 	end
 end

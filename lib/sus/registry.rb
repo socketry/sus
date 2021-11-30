@@ -8,6 +8,9 @@ require_relative 'let'
 
 module Sus
 	class Registry
+		# Create a top level scope with self as the base instance:
+		CLASS_BINDING = TOPLEVEL_BINDING.eval('->(base){base.class_eval{binding}}')
+		
 		def initialize
 			@base = Class.new(Base)
 			@base.extend(Context)
@@ -18,20 +21,13 @@ module Sus
 		
 		def load(path)
 			@base.describe(path, identity: Identity.new(path)) do
-				self.class_eval(File.read(path), path)
+				eval(File.read(path), CLASS_BINDING.call(self), path)
 			end
 		end
 		
 		def call
-			start_time = self.time
-			
 			assertions = Assertions.new(verbose: true)
-			
 			@base.call(assertions)
-			
-			duration = self.time - start_time
-			
-			pp assertions_per_second: (assertions.count / duration)
 		end
 		
 		def each(...)

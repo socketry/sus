@@ -32,6 +32,10 @@ module Sus
 				@styles = {reset: self.reset}
 			end
 			
+			def interactive?
+				@output.tty?
+			end
+			
 			def append(output)
 				output.write(@output.string)
 			end
@@ -54,6 +58,10 @@ module Sus
 			
 			def size
 				[24, 80]
+			end
+			
+			def width
+				size.last
 			end
 			
 			def colors?
@@ -98,7 +106,11 @@ module Sus
 					when Proc
 						argument.call(self)
 					else
-						@output.write(argument)
+						if argument.respond_to?(:print)
+							argument.print(self)
+						else
+							@output.write(argument)
+						end
 					end
 				end
 			end

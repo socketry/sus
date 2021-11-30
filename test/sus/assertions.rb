@@ -37,4 +37,20 @@ describe Sus::Assertions do
 			expect(subject).to be(:failed?)
 		end
 	end
+	
+	with "aggregations" do
+		let(:child) {Sus::Assertions.new}
+		
+		it "can add assertions" do
+			child.assert(true)
+			child.assert(true)
+			
+			subject.add(child)
+			subject.add(child)
+			
+			expect(subject).to be(:passed?)
+			expect(subject.passed).to be == 2
+			expect(subject.count).to be == 4
+		end
+	end
 end

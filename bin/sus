@@ -7,6 +7,11 @@ registry = Sus::Registry.new
 jobs = Thread::Queue.new
 results = Thread::Queue.new
 
+output = Sus::Terminal.default
+guard = Thread::Mutex.new
+progress = Sus::Progress.new(output)
+count = Etc.nprocessors
+
 Result = Struct.new(:job, :assertions)
 
 loader = Thread.new do
@@ -21,19 +26,20 @@ loader = Thread.new do
 	end
 	
 	registry.each do |child|
+		guard.synchronize{progress.expand}
 		jobs << child
 	end
 	
 	jobs.close
 end
 
-output = Sus::Terminal.default
-
 aggregation = Thread.new do
-	assertions = Sus::Assertions.new(output: output)
+	assertions = Sus::Assertions.new(output: output.buffered)
 	first = true
 	
 	while result = results.pop
+		guard.synchronize{progress.increment}
+		
 		if result.assertions.failed?
 			if first
 				first = false
@@ -45,20 +51,28 @@ aggregation = Thread.new do
 		end
 		
 		assertions.add(result.assertions)
+		guard.synchronize{progress.report(count, assertions, :busy)}
 	end
 	
+	guard.synchronize{progress.clear}
+	
 	assertions.output.print_line unless first
+	assertions.output.append(output)
+	
 	assertions.print(output)
+	output.print_line
 end
 
-count = 1 # Etc.nprocessors
-
-workers = count.times.map do
+workers = count.times.map do |index|
 	Thread.new do
 		while job = jobs.pop
+			guard.synchronize{progress.report(index, job, :busy)}
+			
 			assertions = Sus::Assertions.new(output: output.buffered)
 			job.call(assertions)
 			results << Result.new(job, assertions)
+			
+			guard.synchronize{progress.report(index, "idle", :free)}
 		end
 	end
 end
