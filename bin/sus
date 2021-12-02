@@ -1,22 +1,10 @@
 #!/usr/bin/env ruby
 
-require 'etc'
 require_relative '../lib/sus'
 
-registry = Sus::Registry.new
-jobs = Thread::Queue.new
-results = Thread::Queue.new
-
-output = Sus::Terminal.default
-guard = Thread::Mutex.new
-progress = Sus::Progress.new(output)
-count = Etc.nprocessors
-
-Result = Struct.new(:job, :assertions)
-
-loader = Thread.new do
-	if ARGV.any?
-		ARGV.each do |path|
+def prepare(paths, registry)
+	if paths&.any?
+		paths.each do |path|
 			registry.load(path)
 		end
 	else
@@ -24,62 +12,11 @@ loader = Thread.new do
 			registry.load(path)
 		end
 	end
-	
-	registry.each do |child|
-		guard.synchronize{progress.expand}
-		jobs << child
-	end
-	
-	jobs.close
 end
 
-aggregation = Thread.new do
-	assertions = Sus::Assertions.new(output: output.buffered)
-	first = true
-	
-	while result = results.pop
-		guard.synchronize{progress.increment}
-		
-		if result.assertions.failed?
-			if first
-				first = false
-			else
-				assertions.output.print_line
-			end
-			
-			result.assertions.output.append(assertions.output)
-		end
-		
-		assertions.add(result.assertions)
-		guard.synchronize{progress.report(count, assertions, :busy)}
-	end
-	
-	guard.synchronize{progress.clear}
-	
-	assertions.output.print_line unless first
-	assertions.output.append(output)
-	
-	assertions.print(output)
-	output.print_line
-end
+filter = Sus::Filter.new
+output = Sus::Terminal.default
 
-workers = count.times.map do |index|
-	Thread.new do
-		while job = jobs.pop
-			guard.synchronize{progress.report(index, job, :busy)}
-			
-			assertions = Sus::Assertions.new(output: output.buffered)
-			job.call(assertions)
-			results << Result.new(job, assertions)
-			
-			guard.synchronize{progress.report(index, "idle", :free)}
-		end
-	end
-end
+prepare(ARGV, filter)
 
-loader.join
-
-workers.each(&:join)
-results.close
-
-aggregation.join
+filter.call

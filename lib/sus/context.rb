@@ -20,6 +20,10 @@ module Sus
 			@children[child.identity] = child
 		end
 		
+		def empty?
+			@children.nil? || @children.empty?
+		end
+		
 		def leaf?
 			false
 		end
@@ -29,6 +33,8 @@ module Sus
 		end
 		
 		def call(assertions)
+			return if self.empty?
+			
 			assertions.nested(self) do |assertions|
 				self.children.each do |identity, child|
 					child.call(assertions)

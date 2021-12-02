@@ -17,6 +17,7 @@ module Sus
 			base.extend(With)
 			base.subject = subject
 			base.description = subject
+			base.identity = Identity.nested(parent.identity, base.description)
 			base.variables = variables
 			
 			variables.each do |key, value|
@@ -34,14 +35,6 @@ module Sus
 				" with ", :with, self.description, :reset,
 				# " ", :variables, self.variables.inspect
 			)
-		end
-		
-		def call(assertions)
-			assertions.nested(self) do |assertions|
-				self.children.each do |child|
-					child.call(assertions)
-				end
-			end
 		end
 	end
 	

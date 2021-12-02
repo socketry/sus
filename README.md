@@ -14,6 +14,12 @@ Non-features:
 
 [![Development Status](https://github.com/ioquatix/sus/workflows/Development/badge.svg)](https://github.com/ioquatix/sus/actions?workflow=Development)
 
+## Ideas
+
+I've been thinking about how this should grow long term. I see a separation between "defining tests" and "running tests". I think this gem should be split across those responsibilities. By doing so, defining tests remains relatively static, but can be extended independently of execution model. And execution models which include parallelism, code coverage, multi-server, etc can be implemented effectively.
+
+The key point is that we need a well defined interface between defining tests and running tests. This interface is provided by the test registry, which can load test files. The test registry provides a way to enumerate all tests where each test has an identity that uniquely identifies it.
+
 ## Installation
 
 ``` shell
