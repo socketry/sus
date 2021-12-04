@@ -27,6 +27,10 @@ module Sus
 			self.key
 		end
 		
+		def inspect
+			"\#<#{self.class} #{self.to_s}>"
+		end
+		
 		def match?(other)
 			if path = other.path
 				return false unless path === @path

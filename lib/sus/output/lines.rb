@@ -2,7 +2,7 @@
 require 'io/console'
 
 module Sus
-	module Terminal
+	module Output
 		class Lines
 			def initialize(output)
 				@output = output

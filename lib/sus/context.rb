@@ -12,8 +12,16 @@ module Sus
 			base.children = Hash.new
 		end
 		
+		def to_s
+			self.description || self.name
+		end
+		
 		def inspect
-			"\#<#{self.description}>"
+			if description = self.description
+				"\#<#{self.name} #{self.description}>"
+			else
+				self.name
+			end
 		end
 		
 		def add(child)
@@ -93,5 +101,13 @@ module Sus
 		def expect(subject)
 			Expect.new(subject)
 		end
+	end
+	
+	def self.base(description = "base")
+		base = Class.new(Base)
+		base.extend(Context)
+		base.description = description
+		
+		return base
 	end
 end

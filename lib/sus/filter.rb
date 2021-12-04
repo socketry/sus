@@ -1,30 +1,29 @@
 
 module Sus
-	class Index
-		# (path):line:line:line
-		def initialize
-			@contexts = {}
-		end
-		
-		attr :contexts
-		
-		def add(parent)
-			parent.children&.each do |identity, child|
-				insert(identity, child)
-				add(child)
+	class Filter
+		class Index
+			def initialize
+				@contexts = {}
+			end
+			
+			attr :contexts
+			
+			def add(parent)
+				parent.children&.each do |identity, child|
+					insert(identity, child)
+					add(child)
+				end
+			end
+			
+			def insert(identity, context)
+				@contexts[identity.key] = context
+			end
+			
+			def [] key
+				@contexts[key]
 			end
 		end
 		
-		def insert(identity, context)
-			@contexts[identity.key] = context
-		end
-		
-		def [] key
-			@contexts[key]
-		end
-	end
-	
-	class Filter
 		def initialize(registry: Registry.new)
 			@registry = registry
 			@index = nil
@@ -41,7 +40,7 @@ module Sus
 			end
 		end
 		
-		def call(assertions = Assertions.new)
+		def call(assertions = Assertions.default)
 			if @keys.any?
 				@index = Index.new
 				@index.add(@registry)

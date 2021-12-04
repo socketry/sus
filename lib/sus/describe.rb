@@ -18,7 +18,11 @@ module Sus
 			base.description = subject.inspect
 			base.identity = identity || Identity.nested(parent.identity, base.description)
 			base.define_method(:subject, ->{subject})
-			base.class_exec(&block)
+			
+			if block_given?
+				base.class_exec(&block)
+			end
+			
 			return base
 		end
 		

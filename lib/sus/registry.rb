@@ -5,6 +5,7 @@ require_relative 'describe'
 require_relative 'with'
 
 require_relative 'it'
+require_relative 'it_behaves_like'
 require_relative 'shared'
 
 require_relative 'let'
@@ -15,10 +16,8 @@ TOPLEVEL_CLASS_EVAL = ->(klass, path){klass.class_eval(File.read(path), path)}
 module Sus
 	class Registry
 		# Create a top level scope with self as the instance:
-		def initialize
-			@base = Class.new(Base)
-			@base.extend(Context)
-			@base.description = "test registry"
+		def initialize(base = Sus.base("test registry"))
+			@base = base
 		end
 		
 		attr :base
@@ -29,9 +28,7 @@ module Sus
 			end
 		end
 		
-		def call(assertions = nil)
-			assertions ||= Assertions.new(verbose: true)
-			
+		def call(assertions = Assertions.default)
 			@base.call(assertions)
 			
 			return assertions

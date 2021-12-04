@@ -15,7 +15,7 @@ def prepare(paths, registry)
 end
 
 filter = Sus::Filter.new
-output = Sus::Terminal.default
+output = Sus::Output.default
 
 prepare(ARGV, filter)
 

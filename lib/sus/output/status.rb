@@ -21,11 +21,11 @@
 # THE SOFTWARE.
 
 module Sus
-	module Terminal
+	module Output
 		class Status
-			def self.register(terminal)
-				terminal[:free] ||= terminal.style(:blue)
-				terminal[:busy] ||= terminal.style(:orange)
+			def self.register(output)
+				output[:free] ||= output.style(:blue)
+				output[:busy] ||= output.style(:orange)
 			end
 			
 			def initialize(state = :free, context = nil)

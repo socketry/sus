@@ -24,8 +24,8 @@ require 'io/console'
 require 'stringio'
 
 module Sus
-	# Styled terminal output.
-	module Terminal
+	# Styled output output.
+	module Output
 		class Text
 			def initialize(output)
 				@output = output
@@ -43,8 +43,8 @@ module Sus
 			attr :output
 			 
 			def buffered
-				self.dup.tap do |terminal|
-					terminal.instance_variable_set(:@output, StringIO.new)
+				self.dup.tap do |output|
+					output.instance_variable_set(:@output, StringIO.new)
 				end
 			end
 			

@@ -24,7 +24,9 @@ module Sus
 				base.define_method(key, ->{value})
 			end
 			
-			base.class_exec(&block)
+			if block_given?
+				base.class_exec(&block)
+			end
 			
 			return base
 		end

@@ -21,7 +21,7 @@
 # THE SOFTWARE.
 
 module Sus
-	module Terminal
+	module Output
 		class Bar
 			BLOCK = [
 				" ",
@@ -49,8 +49,8 @@ module Sus
 				@message = message
 			end
 			
-			def self.register(terminal)
-				terminal[:progress_bar] ||= terminal.style(:blue, :white)
+			def self.register(output)
+				output[:progress_bar] ||= output.style(:blue, :white)
 			end
 			
 			MINIMUM_WIDTH = 8

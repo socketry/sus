@@ -20,9 +20,9 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
-require_relative 'terminal/bar'
-require_relative 'terminal/status'
-require_relative 'terminal/lines'
+require_relative 'output/bar'
+require_relative 'output/status'
+require_relative 'output/lines'
 
 module Sus
 	class Progress
@@ -37,8 +37,8 @@ module Sus
 			@start_time = Progress.now
 			
 			if @output.interactive?
-				@bar = Terminal::Bar.new
-				@lines = Terminal::Lines.new(@output)
+				@bar = Output::Bar.new
+				@lines = Output::Lines.new(@output)
 				@lines[0] = @bar
 			end
 			
@@ -95,7 +95,7 @@ module Sus
 		end
 		
 		def report(index, context, state)
-			@lines[index+1] = Terminal::Status.new(state, context)
+			@lines[index+1] = Output::Status.new(state, context)
 			
 			return self
 		end

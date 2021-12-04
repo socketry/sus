@@ -24,7 +24,7 @@ module Sus
 			
 			def call
 				registry = Sus::Registry.new
-				output = Sus::Terminal.default
+				output = Sus::Output.default
 
 				prepare(registry)
 

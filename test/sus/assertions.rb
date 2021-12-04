@@ -1,6 +1,6 @@
 describe Sus::Assertions do
 	let(:inverted) {false}
-	let(:subject) {Sus::Assertions.new(output: Sus::Terminal.buffered, inverted: inverted)}
+	let(:subject) {Sus::Assertions.new(output: Sus::Output.buffered, inverted: inverted)}
 	
 	it "defaults to passing" do
 		expect(subject).to be(:passed?)

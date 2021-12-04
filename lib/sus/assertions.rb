@@ -1,10 +1,13 @@
 
-require_relative 'terminal'
-require_relative 'failure'
+require_relative 'output'
 
 module Sus
 	class Assertions
-		def initialize(context: nil, output: Terminal.default, level: 0, inverted: false, verbose: false)
+		def self.default(**options)
+			self.new(**options, verbose: true)
+		end
+		
+		def initialize(context: nil, output: Output.default, level: 0, inverted: false, verbose: false)
 			@context = context
 			@output = output
 			@level = level
@@ -36,15 +39,19 @@ module Sus
 				output.print(": ")
 			end
 			
-			if @passed > 0
-				output.print(:passed, @passed, " passed", :reset, " ")
+			if @count.zero?
+				output.print("0 assertions")
+			else
+				if @passed > 0
+					output.print(:passed, @passed, " passed", :reset, " ")
+				end
+				
+				if @failed > 0
+					output.print(:failed, @failed, " failed", :reset, " ")
+				end
+				
+				output.print("out of ", self.total, " total (", @count, " assertions)")
 			end
-			
-			if @failed > 0
-				output.print(:failed, @failed, " failed", :reset, " ")
-			end
-			
-			output.print("out of ", self.total, " total (", @count, " assertions)")
 		end
 		
 		def print_line(*message)

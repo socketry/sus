@@ -1,5 +1,5 @@
 describe Sus::It do
-	let(:buffered_assertions) {Sus::Assertions.new(output: Sus::Terminal.buffered)}
+	let(:buffered_assertions) {Sus::Assertions.new(output: Sus::Output.buffered)}
 	
 	with "hooks" do
 		attr_accessor :before_hook_invoked

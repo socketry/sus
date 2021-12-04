@@ -25,8 +25,8 @@ require 'io/console'
 require_relative 'text'
 
 module Sus
-	# Styled terminal output.
-	module Terminal
+	# Styled output output.
+	module Output
 		class XTerm < Text
 			COLORS = {
 				black: 0,

@@ -32,7 +32,7 @@ module Sus
 				jobs = Thread::Queue.new
 				results = Thread::Queue.new
 
-				output = Sus::Terminal.default
+				output = Sus::Output.default
 				guard = Thread::Mutex.new
 				progress = Sus::Progress.new(output)
 				count = @options[:count]
