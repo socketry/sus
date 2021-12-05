@@ -21,6 +21,4 @@ Gem::Specification.new do |spec|
 	spec.executables = ["sus"]
 	
 	spec.required_ruby_version = ">= 3.0.0"
-	
-	spec.add_dependency "samovar", "~> 2.0"
 end
