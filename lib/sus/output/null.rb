@@ -21,94 +21,31 @@
 # THE SOFTWARE.
 
 require 'io/console'
-require_relative 'buffered'
+require 'stringio'
 
 module Sus
-	# Styled io io.
+	# Styled output output.
 	module Output
-		class Text
-			def initialize(io)
-				@io = io
-				@styles = {reset: self.reset}
-				
-				@indent = String.new
-				@styles[:indent] = @indent
+		class Null
+			def initialize
 			end
-			
-			INDENTATION = "\t"
-			
+
 			def indent
-				@indent << INDENTATION
 			end
 			
 			def outdent
-				@indent.slice!(INDENTATION)
 			end
-			
+
 			def indented
-				self.indent
 				yield
-			ensure
-				self.outdent
 			end
 			
-			def interactive?
-				@io.tty?
-			end
-			
-			attr :io
-			
-			def [] key
-				@styles[key]
-			end
-			
-			def []= key, value
-				@styles[key] = value
-			end
-			
-			def size
-				[24, 80]
-			end
-			
-			def width
-				size.last
-			end
-			
-			def colors?
-				false
-			end
-			
-			def style(foreground, background = nil, *attributes)
-			end
-			
-			def reset
-			end
-			
-			# Print out the given arguments.
-			# When the argument is a symbol, look up the style and inject it into the io stream.
-			# When the argument is a proc/lambda, call it with self as the argument.
-			# When the argument is anything else, write it directly to the io.
 			def write(*arguments)
-				arguments.each do |argument|
-					case argument
-					when Symbol
-						@io.write(self[argument])
-					when Proc
-						argument.call(self)
-					else
-						if argument.respond_to?(:print)
-							argument.print(self)
-						else
-							@io.write(argument)
-						end
-					end
-				end
+				# Do nothing.
 			end
 			
-			# Print out the arguments as per {#print}, followed by the reset sequence and a newline.
 			def puts(*arguments)
-				print(*arguments)
-				@io.puts(self.reset)
+				# Do nothing.
 			end
 		end
 	end

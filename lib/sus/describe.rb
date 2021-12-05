@@ -27,7 +27,7 @@ module Sus
 		end
 		
 		def print(output)
-			output.print(
+			output.write(
 				"describe ", :describe, self.description, :reset,
 				# " ", self.identity.to_s
 			)

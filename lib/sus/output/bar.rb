@@ -81,14 +81,14 @@ module Sus
 				end
 				
 				if message
-					output.print(message)
+					output.write(message)
 				end
 				
-				output.print(
+				output.write(
 					:progress_bar, draw(value, width), :reset,
 				)
 				
-				output.print_line
+				output.puts
 			end
 			
 			private

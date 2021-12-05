@@ -5,8 +5,10 @@ require_relative 'describe'
 require_relative 'with'
 
 require_relative 'it'
-require_relative 'it_behaves_like'
+
 require_relative 'shared'
+require_relative 'it_behaves_like'
+require_relative 'include_context'
 
 require_relative 'let'
 

@@ -22,7 +22,7 @@ module Sus
 		
 		def print(output)
 			self.superclass.print(output)
-			output.print(" it behaves like ", :describe, self.description, :reset)
+			output.write(" it behaves like ", :describe, self.description, :reset)
 		end
 	end
 	

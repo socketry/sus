@@ -10,8 +10,8 @@ describe Sus::Assertions do
 	it "can assert something true" do
 		subject.assert(true)
 		
-		expect(subject.passed).to be == 1
-		expect(subject.failed).to be == 0
+		expect(subject.passed.size).to be == 1
+		expect(subject.failed.size).to be == 0
 		expect(subject.count).to be == 1
 		
 		expect(subject).to be(:passed?)
@@ -21,8 +21,8 @@ describe Sus::Assertions do
 	it "can assert something false" do
 		subject.assert(false)
 		
-		expect(subject.passed).to be == 0
-		expect(subject.failed).to be == 1
+		expect(subject.passed.size).to be == 0
+		expect(subject.failed.size).to be == 1
 		expect(subject.count).to be == 1
 		
 		expect(subject).not.to be(:passed?)
@@ -49,8 +49,8 @@ describe Sus::Assertions do
 			subject.add(child)
 			
 			expect(subject).to be(:passed?)
-			expect(subject.passed).to be == 2
-			expect(subject.count).to be == 4
+			expect(subject.passed.size).to be == 4
+			expect(subject.count).to be == 4+1
 		end
 	end
 end

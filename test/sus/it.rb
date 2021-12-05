@@ -36,7 +36,7 @@ describe Sus::It do
 		it "counts assertions" do
 			assert(true)
 			expect(@assertions.count).to be == 1
-			expect(@assertions.passed).to be == 2
+			expect(@assertions.passed.size).to be == 2
 		end
 	end
 end

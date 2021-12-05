@@ -22,11 +22,11 @@ module Sus
 		
 		def print(output)
 			self.superclass.print(output)
-			output.print(" it ", :it, self.description, :reset, " ", self.identity.to_s)
+			output.write(" it ", :it, self.description, :reset, " ", self.identity.to_s)
 		end
 		
 		def call(assertions)
-			assertions.nested(self) do |assertions|
+			assertions.nested(self, isolated: true) do |assertions|
 				instance = self.new(assertions)
 				
 				instance.around do

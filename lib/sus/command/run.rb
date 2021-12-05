@@ -59,7 +59,7 @@ module Sus
 							if first
 								first = false
 							else
-								assertions.output.print_line
+								assertions.output.puts
 							end
 							
 							result.assertions.output.append(assertions.output)
@@ -71,11 +71,11 @@ module Sus
 					
 					guard.synchronize{progress.clear}
 					
-					assertions.output.print_line unless first
+					assertions.output.puts unless first
 					assertions.output.append(output)
 					
 					assertions.print(output)
-					output.print_line
+					output.puts
 				end
 
 				workers = count.times.map do |index|

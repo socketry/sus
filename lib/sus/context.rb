@@ -18,7 +18,7 @@ module Sus
 		
 		def inspect
 			if description = self.description
-				"\#<#{self.name} #{self.description}>"
+				"\#<#{self.name || "Context"} #{self.description}>"
 			else
 				self.name
 			end
@@ -37,7 +37,7 @@ module Sus
 		end
 		
 		def print(output)
-			output.print("context ", :context, self.description)
+			output.write("context ", :context, self.description)
 		end
 		
 		def call(assertions)

@@ -11,4 +11,4 @@ group :maintenance, optional: true do
 	gem "utopia-project"
 end
 
-gem "covered", path: "../"
+gem "debug"

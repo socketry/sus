@@ -21,28 +21,40 @@
 # THE SOFTWARE.
 
 require 'io/console'
-require_relative 'buffered'
+require 'stringio'
 
 module Sus
-	# Styled io io.
+	# Styled output output.
 	module Output
-		class Text
-			def initialize(io)
-				@io = io
-				@styles = {reset: self.reset}
-				
-				@indent = String.new
-				@styles[:indent] = @indent
+		class Buffered
+			def initialize(output)
+				@output = output
+				@buffer = Array.new
 			end
 			
-			INDENTATION = "\t"
+			attr :output
+			attr :buffer
+			
+			def append(output)
+				@buffer.each do |operation|
+					output.public_send(*operation)
+				end
+			end
+			
+			def string
+				io = StringIO.new
+				append(Text.new(io))
+				return io.string
+			end
 			
 			def indent
-				@indent << INDENTATION
+				@buffer << [:indent]
+				@output.indent
 			end
 			
 			def outdent
-				@indent.slice!(INDENTATION)
+				@buffer << [:outdent]
+				@output.outdent
 			end
 			
 			def indented
@@ -52,63 +64,14 @@ module Sus
 				self.outdent
 			end
 			
-			def interactive?
-				@io.tty?
-			end
-			
-			attr :io
-			
-			def [] key
-				@styles[key]
-			end
-			
-			def []= key, value
-				@styles[key] = value
-			end
-			
-			def size
-				[24, 80]
-			end
-			
-			def width
-				size.last
-			end
-			
-			def colors?
-				false
-			end
-			
-			def style(foreground, background = nil, *attributes)
-			end
-			
-			def reset
-			end
-			
-			# Print out the given arguments.
-			# When the argument is a symbol, look up the style and inject it into the io stream.
-			# When the argument is a proc/lambda, call it with self as the argument.
-			# When the argument is anything else, write it directly to the io.
 			def write(*arguments)
-				arguments.each do |argument|
-					case argument
-					when Symbol
-						@io.write(self[argument])
-					when Proc
-						argument.call(self)
-					else
-						if argument.respond_to?(:print)
-							argument.print(self)
-						else
-							@io.write(argument)
-						end
-					end
-				end
+				@output.write(*arguments)
+				@buffer << [:write, *arguments]
 			end
 			
-			# Print out the arguments as per {#print}, followed by the reset sequence and a newline.
 			def puts(*arguments)
-				print(*arguments)
-				@io.puts(self.reset)
+				@output.puts(*arguments)
+				@buffer << [:puts, *arguments]
 			end
 		end
 	end

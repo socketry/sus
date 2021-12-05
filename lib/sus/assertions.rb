@@ -7,15 +7,14 @@ module Sus
 			self.new(**options, verbose: true)
 		end
 		
-		def initialize(context: nil, output: Output.default, level: 0, inverted: false, verbose: false)
+		def initialize(context: nil, output: Output.default, inverted: false, verbose: false)
 			@context = context
 			@output = output
-			@level = level
 			@inverted = inverted
 			@verbose = verbose
 			
-			@passed = 0
-			@failed = 0
+			@passed = Array.new
+			@failed = Array.new
 			@count = 0
 		end
 		
@@ -25,44 +24,55 @@ module Sus
 		attr :inverted
 		attr :verbose
 		
+		# How many nested assertions passed.
 		attr :passed
+		
+		# How many nested assertions failed.
 		attr :failed
+		
+		# The total number of assertions performed:
 		attr :count
 		
+		def inspect
+			"\#<#{self.class} #{@passed.size} passed #{@failed.size} failed>"
+		end
+		
 		def total
-			@passed + @failed
+			@passed.size + @failed.size
 		end
 		
 		def print(output, verbose: @verbose)
+			self
+			
 			if verbose && @context
 				@context.print(output)
-				output.print(": ")
+				output.write(": ")
 			end
 			
 			if @count.zero?
-				output.print("0 assertions")
+				output.write("0 assertions")
 			else
-				if @passed > 0
-					output.print(:passed, @passed, " passed", :reset, " ")
+				if @passed.any?
+					output.write(:passed, @passed.size, " passed", :reset, " ")
 				end
 				
-				if @failed > 0
-					output.print(:failed, @failed, " failed", :reset, " ")
+				if @failed.any?
+					output.write(:failed, @failed.size, " failed", :reset, " ")
 				end
 				
-				output.print("out of ", self.total, " total (", @count, " assertions)")
+				output.write("out of ", self.total, " total (", @count, " assertions)")
 			end
 		end
 		
-		def print_line(*message)
-			@output.print_line(indent, *message)
-		end 
+		def puts(*message)
+			@output.puts(:indent, *message)
+		end
 		
 		def passed?
 			unless @inverted
-				@failed.zero?
+				@failed.empty?
 			else
-				@passed.zero? && @failed > 0
+				@passed.empty? && @failed.any?
 			end
 		end
 		
@@ -74,45 +84,61 @@ module Sus
 			@count += 1
 			
 			if condition
-				@passed += 1
+				@passed << self
 				
 				if @inverted && message
-					@output.print_line(indent, :passed, pass_prefix, message)
+					@output.puts(:indent, :passed, pass_prefix, message)
 				end
 			else
-				@failed += 1
+				@failed << self
 				
 				if !@inverted && message
-					@output.print_line(indent, :failed, fail_prefix, message)
+					@output.puts(:indent, :failed, fail_prefix, message)
 				end
+				
+				# require 'debug'
+				# binding.debugger(up_level: 0)
 			end
 		end
 		
 		def fail(error)
-			@failed += 1
+			@failed << self
 			
-			@output.print_line(indent, :failed, fail_prefix, "Unhandled exception ", :value, error.class, ": ", error.message)
+			@output.puts(:indent, :failed, fail_prefix, "Unhandled exception ", :value, error.class, ": ", error.message)
 			error.backtrace.each do |line|
-				@output.print_line(indent, line)
+				@output.puts(:indent, line)
 			end
 		end
 		
-		def nested(context, **options)
-			@output.print(indent)
-			context.print(@output)
-			@output.print_line
+		def nested(context, isolated: false, **options)
+			result = nil
+			output = @output
 			
-			level = @level + 1
+			if isolated
+				output = Output::Buffered.new(output)
+			end
 			
-			assertions = self.class.new(context: context, output: @output, level: level, **options)
+			output.write(:indent)
+			context.print(output)
+			output.puts
+			
+			assertions = self.class.new(context: context, output: output, **options)
 			
 			begin
-				result = yield(assertions)
+				output.indented do
+					result = yield(assertions)
+				end
 			rescue StandardError => error
 				assertions.fail(error)
 			end
 			
-			merge(assertions) if assertions
+			if assertions
+				if isolated
+					merge(assertions)
+				else
+					add(assertions)
+				end
+			end
 			
 			return result
 		end
@@ -121,26 +147,26 @@ module Sus
 			@count += assertions.count
 			
 			if assertions.passed?
-				@passed += 1
+				@passed << assertions
 				if @inverted
-					@output.print(indent, :failed, fail_prefix, :reset)
+					@output.write(:indent, :failed, fail_prefix, :reset)
 					self.print(@output, verbose: false)
-					@output.print_line
+					@output.puts
 				elsif @verbose
-					@output.print(indent, :passed, pass_prefix, :reset)
+					@output.write(:indent, :passed, pass_prefix, :reset)
 					self.print(@output, verbose: false)
-					@output.print_line
+					@output.puts
 				end
 			else
-				@failed += 1
+				@failed << assertions
 				if !@inverted
-					@output.print(indent, :failed, fail_prefix, :reset)
+					@output.write(:indent, :failed, fail_prefix, :reset)
 					self.print(@output, verbose: false)
-					@output.print_line
+					@output.puts
 				elsif @verbose
-					@output.print(indent, :passed, pass_prefix, :reset)
+					@output.write(:indent, :passed, pass_prefix, :reset)
 					self.print(@output, verbose: false)
-					@output.print_line
+					@output.puts
 				end
 			end
 		end
@@ -148,10 +174,17 @@ module Sus
 		def add(assertions)
 			@count += assertions.count
 			
-			if assertions.passed?
-				@passed += 1
+			unless assertions.inverted
+				@passed.concat(assertions.passed)
+				@failed.concat(assertions.failed)
 			else
-				@failed += 1
+				@passed.concat(assertions.failed)
+				@failed.concat(assertions.passed)
+			end
+			
+			if @verbose
+				self.print(@output, verbose: false)
+				@output.puts
 			end
 		end
 		
@@ -163,10 +196,6 @@ module Sus
 		
 		def fail_prefix
 			"✗ "
-		end
-		
-		def indent
-			"\t" * @level
 		end
 	end
 end

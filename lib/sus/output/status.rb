@@ -55,13 +55,13 @@ module Sus
 			def print(output)
 				message = @message
 				
-				output.print(
+				output.write(
 					@state, self.indicator, " "
 				)
 				
-				output.print(@context)
+				output.write(@context)
 				
-				output.print_line
+				output.puts
 			end
 		end
 	end

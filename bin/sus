@@ -19,4 +19,12 @@ output = Sus::Output.default
 
 prepare(ARGV, filter)
 
-filter.call
+assertions = filter.call
+
+if assertions.failed.any?
+	output.puts
+	
+	assertions.failed.each do |failure|
+		failure.output.append(output)
+	end
+end

@@ -14,12 +14,12 @@ module Sus
 		end
 		
 		def print(output)
-			output.print("expect ", :variable, @subject, :reset, " ")
+			output.write("expect ", :variable, @subject.inspect, :reset, " ")
 			
 			if @inverted
-				output.print(:failed, "to not", :reset)
+				output.write(:failed, "to not", :reset)
 			else
-				output.print(:passed, "to", :reset)
+				output.write(:passed, "to", :reset)
 			end
 		end
 		

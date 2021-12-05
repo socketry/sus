@@ -3,6 +3,8 @@ require_relative 'output/bar'
 require_relative 'output/text'
 require_relative 'output/xterm'
 
+require_relative 'output/null'
+
 module Sus
 	module Output
 		def self.for(io)
@@ -32,8 +34,8 @@ module Sus
 			return output
 		end
 		
-		def self.buffered(io = StringIO.new)
-			Text.new(io)
+		def self.buffered
+			Buffered.new(Null.new)
 		end
 	end
 end

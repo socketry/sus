@@ -28,7 +28,7 @@ module Sus
 				
 				registry.each do |child|
 					child.print(output)
-					output.print_line
+					output.puts
 				end
 			end
 		end
