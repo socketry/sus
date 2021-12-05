@@ -16,10 +16,14 @@ end
 
 filter = Sus::Filter.new
 output = Sus::Output.default
+assertions = Sus::Assertions.default(output: Sus::Output::Null.new)
 
 prepare(ARGV, filter)
 
-assertions = filter.call
+filter.call(assertions)
+
+assertions.print(output)
+output.puts
 
 if assertions.failed.any?
 	output.puts

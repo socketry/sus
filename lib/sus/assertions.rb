@@ -7,8 +7,8 @@ module Sus
 			self.new(**options, verbose: true)
 		end
 		
-		def initialize(context: nil, output: Output.default, inverted: false, verbose: false)
-			@context = context
+		def initialize(target: nil, output: Output.default, inverted: false, verbose: false)
+			@target = target
 			@output = output
 			@inverted = inverted
 			@verbose = verbose
@@ -18,7 +18,7 @@ module Sus
 			@count = 0
 		end
 		
-		attr :context
+		attr :target
 		attr :output
 		attr :level
 		attr :inverted
@@ -44,8 +44,8 @@ module Sus
 		def print(output, verbose: @verbose)
 			self
 			
-			if verbose && @context
-				@context.print(output)
+			if verbose && @target
+				@target.print(output)
 				output.write(": ")
 			end
 			
@@ -69,35 +69,30 @@ module Sus
 		end
 		
 		def passed?
-			unless @inverted
-				@failed.empty?
-			else
-				@passed.empty? && @failed.any?
-			end
+			@failed.empty?
 		end
 		
 		def failed?
-			!passed?
+			@failed.any?
 		end
 		
 		def assert(condition, message = nil)
 			@count += 1
 			
+			if @inverted
+				condition = !condition
+			end
+			
 			if condition
 				@passed << self
 				
-				if @inverted && message
-					@output.puts(:indent, :passed, pass_prefix, message)
+				if @verbose
+					@output.puts(:indent, :passed, pass_prefix, message || "assertion")
 				end
 			else
 				@failed << self
 				
-				if !@inverted && message
-					@output.puts(:indent, :failed, fail_prefix, message)
-				end
-				
-				# require 'debug'
-				# binding.debugger(up_level: 0)
+				@output.puts(:indent, :failed, fail_prefix, message || "assertion")
 			end
 		end
 		
@@ -110,19 +105,25 @@ module Sus
 			end
 		end
 		
-		def nested(context, isolated: false, **options)
+		def nested(target, isolated: false, inverted: false, **options)
 			result = nil
 			output = @output
+			
+			if inverted
+				inverted = !@inverted
+			else
+				inverted = @inverted
+			end
 			
 			if isolated
 				output = Output::Buffered.new(output)
 			end
 			
 			output.write(:indent)
-			context.print(output)
+			target.print(output)
 			output.puts
 			
-			assertions = self.class.new(context: context, output: output, **options)
+			assertions = self.class.new(target: target, output: output, inverted: inverted, **options)
 			
 			begin
 				output.indented do
@@ -148,39 +149,25 @@ module Sus
 			
 			if assertions.passed?
 				@passed << assertions
-				if @inverted
-					@output.write(:indent, :failed, fail_prefix, :reset)
-					self.print(@output, verbose: false)
-					@output.puts
-				elsif @verbose
+
+				if @verbose
 					@output.write(:indent, :passed, pass_prefix, :reset)
 					self.print(@output, verbose: false)
 					@output.puts
 				end
 			else
 				@failed << assertions
-				if !@inverted
-					@output.write(:indent, :failed, fail_prefix, :reset)
-					self.print(@output, verbose: false)
-					@output.puts
-				elsif @verbose
-					@output.write(:indent, :passed, pass_prefix, :reset)
-					self.print(@output, verbose: false)
-					@output.puts
-				end
+
+				@output.write(:indent, :failed, fail_prefix, :reset)
+				self.print(@output, verbose: false)
+				@output.puts
 			end
 		end
 		
 		def add(assertions)
 			@count += assertions.count
-			
-			unless assertions.inverted
-				@passed.concat(assertions.passed)
-				@failed.concat(assertions.failed)
-			else
-				@passed.concat(assertions.failed)
-				@failed.concat(assertions.passed)
-			end
+			@passed.concat(assertions.passed)
+			@failed.concat(assertions.failed)
 			
 			if @verbose
 				self.print(@output, verbose: false)

@@ -11,7 +11,7 @@ module Sus
 		
 		def call(assertions, subject)
 			assertions.nested(self) do |assertions|
-				assertions.assert(subject.public_send(*@arguments))
+				assertions.assert(subject.public_send(*@arguments), self)
 			end
 		end
 		

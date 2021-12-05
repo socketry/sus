@@ -50,7 +50,7 @@ describe Sus::Assertions do
 			
 			expect(subject).to be(:passed?)
 			expect(subject.passed.size).to be == 4
-			expect(subject.count).to be == 4+1
+			expect(subject.count).to be == 4
 		end
 	end
 end

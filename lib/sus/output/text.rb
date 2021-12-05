@@ -107,7 +107,7 @@ module Sus
 			
 			# Print out the arguments as per {#print}, followed by the reset sequence and a newline.
 			def puts(*arguments)
-				print(*arguments)
+				write(*arguments)
 				@io.puts(self.reset)
 			end
 		end
