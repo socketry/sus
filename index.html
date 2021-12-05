@@ -42,7 +42,10 @@
 <li>Backwards compatibility.</li>
 </ul>
 <p><a href="https://github.com/ioquatix/sus/actions?workflow=Development"><img src="https://github.com/ioquatix/sus/workflows/Development/badge.svg" alt="Development Status"/></a></p>
-<section id="installation"><h2>Installation</h2>
+<section id="ideas"><h2>Ideas</h2>
+<p>I've been thinking about how this should grow long term. I see a separation between &quot;defining tests&quot; and &quot;running tests&quot;. I think this gem should be split across those responsibilities. By doing so, defining tests remains relatively static, but can be extended independently of execution model. And execution models which include parallelism, code coverage, multi-server, etc can be implemented effectively.</p>
+<p>The key point is that we need a well defined interface between defining tests and running tests. This interface is provided by the test registry, which can load test files. The test registry provides a way to enumerate all tests where each test has an identity that uniquely identifies it.</p>
+</section><section id="installation"><h2>Installation</h2>
 <pre><code class="language-shell">bundle add sus
 </code></pre>
 </section><section id="usage"><h2>Usage</h2>
