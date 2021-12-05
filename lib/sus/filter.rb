@@ -40,6 +40,21 @@ module Sus
 			end
 		end
 		
+		def each(&block)
+			if @keys.any?
+				@index = Index.new
+				@index.add(@registry)
+				
+				@keys.each do |key|
+					if target = @index[key]
+						yield target
+					end
+				end
+			else
+				@registry.each(&block)
+			end
+		end
+		
 		def call(assertions = Assertions.default)
 			if @keys.any?
 				@index = Index.new

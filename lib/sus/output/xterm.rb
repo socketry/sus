@@ -57,7 +57,7 @@ module Sus
 			end
 			
 			def size
-				@output.winsize
+				@io.winsize
 			end
 			
 			def style(foreground, background = nil, *attributes)

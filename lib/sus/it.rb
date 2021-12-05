@@ -26,6 +26,7 @@ module Sus
 		end
 		
 		def call(assertions)
+			sleep rand
 			assertions.nested(self, isolated: true) do |assertions|
 				instance = self.new(assertions)
 				

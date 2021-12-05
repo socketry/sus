@@ -7,6 +7,7 @@ module Sus
 			def initialize(output)
 				@output = output
 				@lines = []
+				
 				@current_count = 0
 			end
 			
