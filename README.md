@@ -20,6 +20,12 @@ I've been thinking about how this should grow long term. I see a separation betw
 
 The key point is that we need a well defined interface between defining tests and running tests. This interface is provided by the test registry, which can load test files. The test registry provides a way to enumerate all tests where each test has an identity that uniquely identifies it.
 
+### Sequential vs Parallel
+
+`sus` has both sequential and multi-threaded (`sus-parallel`) execution models for tests. Parallel execution is potentially much faster. This is an experimental feature.
+
+![Sequential vs Parallel](https://user-images.githubusercontent.com/30030/144770080-092cf07b-b121-4754-96e0-8ff1d8ea0695.mov)
+
 ## Installation
 
 ``` shell
