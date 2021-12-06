@@ -45,6 +45,9 @@
 <section id="ideas"><h2>Ideas</h2>
 <p>I've been thinking about how this should grow long term. I see a separation between &quot;defining tests&quot; and &quot;running tests&quot;. I think this gem should be split across those responsibilities. By doing so, defining tests remains relatively static, but can be extended independently of execution model. And execution models which include parallelism, code coverage, multi-server, etc can be implemented effectively.</p>
 <p>The key point is that we need a well defined interface between defining tests and running tests. This interface is provided by the test registry, which can load test files. The test registry provides a way to enumerate all tests where each test has an identity that uniquely identifies it.</p>
+</section><section id="sequential-vs-parallel"><h3>Sequential vs Parallel</h3>
+<p><code>sus</code> has both sequential and multi-threaded (<code>sus-parallel</code>) execution models for tests. Parallel execution is potentially much faster. This is an experimental feature.</p>
+<p><img src="https://user-images.githubusercontent.com/30030/144770080-092cf07b-b121-4754-96e0-8ff1d8ea0695.mov" alt="Sequential vs Parallel"/></p>
 </section><section id="installation"><h2>Installation</h2>
 <pre><code class="language-shell">bundle add sus
 </code></pre>
