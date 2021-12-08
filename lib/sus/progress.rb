@@ -78,8 +78,8 @@ module Sus
 		def increment(amount = 1)
 			@current += amount
 			
-			@bar.update(@current, @total, self.to_s)
-			@lines.redraw(0)
+			@bar&.update(@current, @total, self.to_s)
+			@lines&.redraw(0)
 			
 			return self
 		end
@@ -88,20 +88,20 @@ module Sus
 		def expand(amount = 1)
 			@total += amount
 			
-			@bar.update(@current, @total, self.to_s)
-			@lines.redraw(0)
+			@bar&.update(@current, @total, self.to_s)
+			@lines&.redraw(0)
 			
 			return self
 		end
 		
 		def report(index, context, state)
-			@lines[index+1] = Output::Status.new(state, context)
+			@lines&.[]=(index+1, Output::Status.new(state, context))
 			
 			return self
 		end
 		
 		def clear
-			@lines.clear
+			@lines&.clear
 		end
 		
 		def to_s
