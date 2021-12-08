@@ -18,24 +18,6 @@ module Sus
 			end
 		end
 		
-		class << self
-			def < duration
-				new(Be < duration)
-			end
-			
-			def <= duration
-				new(Be <= duration)
-			end
-			
-			def > duration
-				new(Be > duration)
-			end
-			
-			def >= duration
-				new(Be >= duration)
-			end
-		end
-		
 		private
 		
 		def measure(subject)
@@ -52,12 +34,8 @@ module Sus
 	end
 	
 	class Base
-		def have_duration(*arguments)
-			if arguments.any?
-				HaveDuration.new(be_within(*arguments))
-			else
-				HaveDuration
-			end
+		def have_duration(...)
+			HaveDuration.new(...)
 		end
 	end
 end
