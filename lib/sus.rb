@@ -6,5 +6,9 @@ require_relative 'sus/assertions'
 
 require_relative 'sus/expect'
 require_relative 'sus/be'
+require_relative 'sus/be_within'
+
+require_relative 'sus/raise_exception'
+require_relative 'sus/have_duration'
 
 require_relative 'sus/filter'

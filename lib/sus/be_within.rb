@@ -1,0 +1,53 @@
+
+module Sus
+	class BeWithin
+		class Bounded
+			def initialize(range)
+				@range = range
+			end
+			
+			def print(output)
+				output.write("be within ", :variable, @range)
+			end
+			
+			def call(assertions, subject)
+				assertions.nested(self) do |assertions|
+					assertions.assert(@range.include?(subject), self)
+				end
+			end
+		end
+		
+		def initialize(tolerance)
+			@tolerance = tolerance
+		end
+		
+		def of(value)
+			Bounded.new(Range.new(value - @tolerance, value + @tolerance))
+		end
+		
+		def percent_of(value)
+			of(value * Rational(@tolerance, 100))
+		end
+		
+		def print(output)
+			output.write("be within ", :variable, @tolerance)
+		end
+		
+		def call(assertions, subject)
+			assertions.nested(self) do |assertions|
+				assertions.assert(subject < @tolerance, self)
+			end
+		end
+	end
+	
+	class Base
+		def be_within(value)
+			case value
+			when Range
+				BeWithin::Bounded.new(value)
+			else
+				BeWithin.new(value)
+			end
+		end
+	end
+end

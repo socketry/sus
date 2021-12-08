@@ -40,4 +40,4 @@ jobs:
     
     - name: Run tests
       timeout-minutes: 5
-      run: ${{matrix.env}} bundle exec bin/sus
+      run: ${{matrix.env}} bundle exec bin/sus-parallel
