@@ -12,7 +12,7 @@ module Sus
 			
 			def call(assertions, subject)
 				assertions.nested(self) do |assertions|
-					assertions.assert(@range.include?(subject), self)
+					assertions.assert(@range.include?(subject), subject)
 				end
 			end
 		end
