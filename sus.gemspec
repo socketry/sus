@@ -18,7 +18,7 @@ Gem::Specification.new do |spec|
 	
 	spec.files = Dir.glob('{bin,lib}/**/*', File::FNM_DOTMATCH, base: __dir__)
 	
-	spec.executables = ["sus"]
+	spec.executables = ["sus", "sus-parallel"]
 	
 	spec.required_ruby_version = ">= 3.0.0"
 end
