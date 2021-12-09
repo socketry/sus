@@ -56,7 +56,8 @@ module Sus
 			unless @key
 				key = Array.new
 				
-				append_unique_key(key)
+				# For a specific leaf node, the last part is not unique, i.e. it must be identified explicitly.
+				append_unique_key(key, @unique == true ? false : @unique)
 				
 				@key = key.join(':')
 			end
@@ -66,18 +67,18 @@ module Sus
 		
 		protected
 		
-		def append_unique_key(key)
+		def append_unique_key(key, unique = @unique)
 			if @parent
 				@parent.append_unique_key(key)
 			else
 				key << @path
 			end
 			
-			if @unique == true
+			if unique == true
 				# No key is needed because this identity is unique.
 			else
-				if @unique
-					key << @unique
+				if unique
+					key << unique
 				elsif @line
 					key << @line
 				end

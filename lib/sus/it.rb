@@ -7,7 +7,7 @@ module Sus
 			base = Class.new(parent)
 			base.extend(It)
 			base.description = description
-			base.identity = Identity.nested(parent.identity, base.description, unique: false)
+			base.identity = Identity.nested(parent.identity, base.description)
 			
 			if block_given?
 				base.define_method(:call, &block)

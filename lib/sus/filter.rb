@@ -18,7 +18,7 @@ module Sus
 			def insert(identity, context)
 				key = identity.key
 				
-				if @contexts[key]
+				if existing_context = @contexts[key]
 					raise KeyError, "Assigning context to existing key: #{key.inspect}!"
 				else
 					@contexts[key] = context
