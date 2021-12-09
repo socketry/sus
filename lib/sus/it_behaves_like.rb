@@ -11,11 +11,11 @@ module Sus
 			base.children = Hash.new
 		end
 		
-		def self.build(parent, shared)
+		def self.build(parent, shared, unique: false)
 			base = Class.new(parent)
 			base.extend(ItBehavesLike)
 			base.description = shared.name
-			base.identity = Identity.nested(parent.identity, base.description, unique: false)
+			base.identity = Identity.nested(parent.identity, base.description, unique: unique)
 			base.class_exec(&shared.block)
 			return base
 		end
@@ -27,8 +27,8 @@ module Sus
 	end
 	
 	module Context
-		def it_behaves_like(shared)
-			add ItBehavesLike.build(self, shared)
+		def it_behaves_like(shared, **options)
+			add ItBehavesLike.build(self, shared, **options)
 		end
 	end
 end

@@ -12,12 +12,12 @@ module Sus
 			base.children = Hash.new
 		end
 		
-		def self.build(parent, subject, variables, &block)
+		def self.build(parent, subject, variables, unique: true, &block)
 			base = Class.new(parent)
 			base.extend(With)
 			base.subject = subject
 			base.description = subject
-			base.identity = Identity.nested(parent.identity, base.description)
+			base.identity = Identity.nested(parent.identity, base.description, unique: unique)
 			base.variables = variables
 			
 			variables.each do |key, value|

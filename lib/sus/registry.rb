@@ -1,6 +1,7 @@
 
 require_relative 'base'
 
+require_relative 'file'
 require_relative 'describe'
 require_relative 'with'
 
@@ -12,9 +13,6 @@ require_relative 'include_context'
 
 require_relative 'let'
 
-# This has to be done at the top level. It allows us to define constants within the given class while still retaining top-level constant resolution.
-TOPLEVEL_CLASS_EVAL = ->(klass, path){klass.class_eval(File.read(path), path)}
-
 module Sus
 	class Registry
 		# Create a top level scope with self as the instance:
@@ -25,9 +23,7 @@ module Sus
 		attr :base
 		
 		def load(path)
-			@base.describe(path, identity: Identity.new(path)) do
-				TOPLEVEL_CLASS_EVAL.call(self, path)
-			end
+			@base.file(path)
 		end
 		
 		def call(assertions = Assertions.default)

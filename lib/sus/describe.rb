@@ -11,12 +11,12 @@ module Sus
 			base.children = Hash.new
 		end
 		
-		def self.build(parent, subject, identity: nil, &block)
+		def self.build(parent, subject, unique: true, &block)
 			base = Class.new(parent)
 			base.extend(Describe)
 			base.subject = subject
-			base.description = subject.inspect
-			base.identity = identity || Identity.nested(parent.identity, base.description)
+			base.description = subject.to_s
+			base.identity = Identity.nested(parent.identity, base.description, unique: unique)
 			base.define_method(:subject, ->{subject})
 			
 			if block_given?
@@ -35,8 +35,8 @@ module Sus
 	end
 	
 	module Context
-		def describe(...)
-			add Describe.build(self, ...)
+		def describe(subject, **options, &block)
+			add Describe.build(self, subject, **options, &block)
 		end
 	end
 end

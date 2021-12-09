@@ -7,6 +7,7 @@ module Sus
 			self.new(location.path, name, location.lineno, parent, **options)
 		end
 		
+		# @parameter unique [Boolean | Symbol] Whether this identity is unique or needs a unique key/line number suffix.
 		def initialize(path, name = nil, line = nil, parent = nil, unique: true)
 			@path = path
 			@name = name
@@ -55,7 +56,7 @@ module Sus
 			unless @key
 				key = Array.new
 				
-				append_unique_key(key, false)
+				append_unique_key(key)
 				
 				@key = key.join(':')
 			end
@@ -65,15 +66,21 @@ module Sus
 		
 		protected
 		
-		def append_unique_key(key, unique = @unique)
+		def append_unique_key(key)
 			if @parent
 				@parent.append_unique_key(key)
 			else
 				key << @path
 			end
 			
-			if @line
-				key << @line unless unique
+			if @unique == true
+				# No key is needed because this identity is unique.
+			else
+				if @unique
+					key << @unique
+				elsif @line
+					key << @line
+				end
 			end
 		end
 	end

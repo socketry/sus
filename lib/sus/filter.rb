@@ -16,7 +16,13 @@ module Sus
 			end
 			
 			def insert(identity, context)
-				@contexts[identity.key] = context
+				key = identity.key
+				
+				if @contexts[key]
+					raise KeyError, "Assigning context to existing key: #{key.inspect}!"
+				else
+					@contexts[key] = context
+				end
 			end
 			
 			def [] key
