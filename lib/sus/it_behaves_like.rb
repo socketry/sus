@@ -7,13 +7,10 @@ module Sus
 		
 		attr_accessor :shared
 		
-		def self.extended(base)
-			base.children = Hash.new
-		end
-		
 		def self.build(parent, shared, unique: false)
 			base = Class.new(parent)
-			base.extend(ItBehavesLike)
+			base.singleton_class.prepend(ItBehavesLike)
+			base.children = Hash.new
 			base.description = shared.name
 			base.identity = Identity.nested(parent.identity, base.description, unique: unique)
 			base.class_exec(&shared.block)

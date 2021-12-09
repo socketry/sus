@@ -8,13 +8,10 @@ module Sus
 		attr_accessor :subject
 		attr_accessor :variables
 		
-		def self.extended(base)
-			base.children = Hash.new
-		end
-		
 		def self.build(parent, subject, variables, unique: true, &block)
 			base = Class.new(parent)
-			base.extend(With)
+			base.singleton_class.prepend(With)
+			base.children = Hash.new
 			base.subject = subject
 			base.description = subject
 			base.identity = Identity.nested(parent.identity, base.description, unique: unique)
