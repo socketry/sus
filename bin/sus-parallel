@@ -85,4 +85,6 @@ if assertions.failed.any?
 	assertions.failed.each do |failure|
 		failure.output.append(output)
 	end
+	
+	exit(1)
 end
