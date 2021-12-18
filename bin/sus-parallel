@@ -3,6 +3,10 @@
 require_relative '../lib/sus'
 require_relative '../lib/sus/progress'
 
+if File.exist?("config/test.rb")
+	load("config/test.rb")
+end
+
 require 'etc'
 
 def prepare(paths, registry)

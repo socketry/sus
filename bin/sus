@@ -2,6 +2,10 @@
 
 require_relative '../lib/sus'
 
+if File.exist?("config/test.rb")
+	load("config/test.rb")
+end
+
 def prepare(paths, registry)
 	if paths&.any?
 		paths.each do |path|
