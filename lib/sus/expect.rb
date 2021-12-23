@@ -34,7 +34,11 @@ module Sus
 	
 	class Base
 		def expect(subject = nil, &block)
-			Expect.new(@assertions, subject || block)
+			if block_given?
+				Expect.new(@assertions, block)
+			else
+				Expect.new(@assertions, subject)
+			end
 		end
 	end
 end
