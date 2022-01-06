@@ -15,21 +15,23 @@ jobs:
           - macos
         
         ruby:
+          - "2.7"
           - "3.0"
+          - "3.1"
         
         experimental: [false]
         env: [""]
         
-        # include:
-        #   - os: ubuntu
-        #     ruby: truffleruby
-        #     experimental: true
-        #   - os: ubuntu
-        #     ruby: jruby
-        #     experimental: true
-        #   - os: ubuntu
-        #     ruby: head
-        #     experimental: true
+        include:
+          - os: ubuntu
+            ruby: truffleruby
+            experimental: true
+          - os: ubuntu
+            ruby: jruby
+            experimental: true
+          - os: ubuntu
+            ruby: head
+            experimental: true
     
     steps:
     - uses: actions/checkout@v2
