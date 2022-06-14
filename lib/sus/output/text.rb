@@ -35,6 +35,8 @@ module Sus
 				@styles[:indent] = @indent
 			end
 			
+			attr :io
+			
 			INDENTATION = "\t"
 			
 			def indent

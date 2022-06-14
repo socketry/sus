@@ -1,39 +1,23 @@
 #!/usr/bin/env ruby
 
-require_relative '../lib/sus'
-require_relative '../lib/sus/progress'
-
-if File.exist?("config/test.rb")
-	load("config/test.rb")
-end
-
-require 'etc'
-
-def prepare(paths, registry)
-	if paths&.any?
-		paths.each do |path|
-			registry.load(path)
-		end
-	else
-		Dir.glob("test/**/*.rb").each do |path|
-			registry.load(path)
-		end
-	end
-end
+require_relative '../lib/sus/config'
+config = Sus::Config.load
 
 Result = Struct.new(:job, :assertions)
 
-filter = Sus::Filter.new
-output = Sus::Output.default
-
+require_relative '../lib/sus'
+require_relative '../lib/sus/progress'
 jobs = Thread::Queue.new
 results = Thread::Queue.new
 guard = Thread::Mutex.new
-progress = Sus::Progress.new(output)
+progress = Sus::Progress.new(config.output)
+
+require 'etc'
 count = Etc.nprocessors
 
 loader = Thread.new do
-	prepare(ARGV, filter)
+	filter = Sus::Filter.new
+	config.prepare(filter)
 	
 	filter.each do |child|
 		guard.synchronize{progress.expand}
@@ -43,9 +27,10 @@ loader = Thread.new do
 	jobs.close
 end
 
+top = Sus::Assertions.new(output: Sus::Output::Null.new)
+config.before_tests(top)
+
 aggregation = Thread.new do
-	top = Sus::Assertions.new(output: Sus::Output::Null.new)
-	
 	while result = results.pop
 		guard.synchronize{progress.increment}
 		
@@ -79,16 +64,8 @@ workers.each(&:join)
 results.close
 
 assertions = aggregation.value
-
-assertions.print(output)
-output.puts
+config.after_tests(assertions)
 
 if assertions.failed.any?
-	output.puts
-	
-	assertions.failed.each do |failure|
-		failure.output.append(output)
-	end
-	
 	exit(1)
 end

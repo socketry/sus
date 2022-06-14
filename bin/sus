@@ -1,40 +1,18 @@
 #!/usr/bin/env ruby
 
+require_relative '../lib/sus/config'
+config = Sus::Config.load
+
 require_relative '../lib/sus'
-
-if File.exist?("config/test.rb")
-	load("config/test.rb")
-end
-
-def prepare(paths, registry)
-	if paths&.any?
-		paths.each do |path|
-			registry.load(path)
-		end
-	else
-		Dir.glob("test/**/*.rb").each do |path|
-			registry.load(path)
-		end
-	end
-end
-
 filter = Sus::Filter.new
-output = Sus::Output.default
 assertions = Sus::Assertions.default(output: Sus::Output::Null.new)
 
-prepare(ARGV, filter)
+config.prepare(filter)
 
+config.before_tests(assertions)
 filter.call(assertions)
-
-assertions.print(output)
-output.puts
+config.after_tests(assertions)
 
 if assertions.failed.any?
-	output.puts
-	
-	assertions.failed.each do |failure|
-		failure.output.append(output)
-	end
-	
 	exit(1)
 end
