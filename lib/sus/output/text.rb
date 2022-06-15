@@ -19,6 +19,8 @@ module Sus
 				@styles[:indent] = @indent
 			end
 			
+			attr :styles
+			
 			def buffered
 				Buffered.new(self)
 			end
