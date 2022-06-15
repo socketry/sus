@@ -9,8 +9,8 @@ describe Sus::Output::Status do
 	end
 	
 	it "has registered output formats" do
-		expect(output.styles).to be_include(:free)
-		expect(output.styles).to be_include(:busy)
+		expect(output.styles).to be(:include?, :free)
+		expect(output.styles).to be(:include?, :busy)
 	end
 	
 	let(:status) {subject.new}
