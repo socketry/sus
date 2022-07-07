@@ -12,17 +12,12 @@ module Sus
 					
 					# Didn't throw any exception, so the expectation failed:
 					assertions.assert(false, self)
-				rescue => exception
-					# Did we throw the right kind of exception?
-					if exception.is_a?(@exception_class)
-						# Did it have the right message?
-						if @message
-							assertions.assert(@message === exception.message)
-						else
-							assertions.assert(true, self)
-						end
+				rescue @exception_class => exception
+					# Did it have the right message?
+					if @message
+						assertions.assert(@message === exception.message)
 					else
-						raise
+						assertions.assert(true, self)
 					end
 				end
 			end
