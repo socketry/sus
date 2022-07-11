@@ -28,7 +28,7 @@ module Sus
 			
 			@target.singleton_class.prepend(@interceptor)
 		end
-		
+
 		def clear
 			@interceptor.instance_methods.each do |method_name|
 				@interceptor.remove_method(method_name)
@@ -48,7 +48,7 @@ module Sus
 			
 			return self
 		end
-
+		
 		def before(method, &hook)
 			execution_context = Thread.current
 
@@ -65,66 +65,55 @@ module Sus
 
 			@interceptor.define_method(method) do |*arguments, **options, &block|
 				result = super(*arguments, **options, &block)
-				result = hook.call(result, *arguments, **options, &block) if execution_context == Thread.current
+				hook.call(result, *arguments, **options, &block) if execution_context == Thread.current
 				return result
 			end
 
 			return self
 		end
-
-		module Interface
-			def initialize(assertions)
-				super
-	
-				@mocks = nil
-			end
-			
-			def after
-				super
-	
-				@mocks&.each(&:clear)
-			end
-
-			# def mock_constant(target, &block)
-			# 	target = target.dup
-			# 	validate_mock!(target)
-
-			# 	if block_given?
-			# 		yield Mock.new(target)
-			# 	end
-				
-			# 	return target
-			# end
-
-			def mock(target)
-				validate_mock!(target)
-
-				mock = Mock.new(target)
-				
-				if block_given?
-					yield mock
-				end
-
-				(@mocks ||= Array.new) << mock
-				
-				return mock
-			end
-
-			private
-
-			MockTargetError = Class.new(StandardError)
-
-			def validate_mock!(target)
-				if target.frozen?
-					raise MockTargetError, "Cannot mock frozen object #{target.inspect}!"
-				end
-
-				# if target.is_a?(Module) && target.name
-				# 	raise MockTargetError, "Cannot mock global module/class #{target.inspect}!"
-				# end
-			end
-		end	
 	end
 
-	Base.prepend(Mock::Interface)
+	module Mocks
+		def after
+			super
+
+			@mocks&.each(&:clear)
+		end
+
+		def mock(target)
+			validate_mock!(target)
+
+			mock = self.mocks[target]
+
+			if block_given?
+				yield mock
+			end
+
+			return mock
+		end
+
+		private
+
+		MockTargetError = Class.new(StandardError)
+
+		def validate_mock!(target)
+			if target.frozen?
+				raise MockTargetError, "Cannot mock frozen object #{target.inspect}!"
+			end
+		end
+
+		def mocks
+			@mocks ||= Hash.new{|h,k| h[k] = Mock.new(k)}.compare_by_identity
+		end
+	end	
+
+	class Base
+		def mock(target, &block)
+			# Pull in the extra functionality:
+			self.singleton_class.prepend(Mocks)
+
+			# Redirect the method to the new functionality:
+			self.mock(target, &block)
+		end
+	end
 end

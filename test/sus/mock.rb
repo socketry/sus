@@ -49,14 +49,12 @@ describe Sus::Mock do
 		mock(interface) do |mock|
 			mock.after(:implementation) do |result|
 				count += 1
-				result
 			end
 		end
 
 		expect(interface.implementation).to be(:kind_of?, RealImplementation)
 		expect(count).to be == 1
 	end
-	
 
 	with "mocked class method" do
 		def before
