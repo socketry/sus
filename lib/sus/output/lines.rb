@@ -76,6 +76,7 @@ module Sus
 				offset = @current_count - index
 				
 				@output.write("\e[#{offset}F\e[K")
+				
 				soft_wrap do
 					line.print(@output)
 				end

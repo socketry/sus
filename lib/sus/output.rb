@@ -4,6 +4,7 @@ require_relative 'output/text'
 require_relative 'output/xterm'
 
 require_relative 'output/null'
+require_relative 'output/progress'
 
 module Sus
 	module Output

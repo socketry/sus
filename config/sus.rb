@@ -6,12 +6,16 @@ def initialize(root, paths)
 	super
 	
 	@covered = Covered::Config.load
-	@covered&.enable
+	if @covered.record?
+		@covered.enable
+	end
 end
 
 def after_tests(assertions)
 	super(assertions)
 	
-	@covered&.disable
-	@covered&.call(self.output.io)
+	if @covered.record?
+		@covered.disable
+		@covered.call(self.output.io)
+	end
 end

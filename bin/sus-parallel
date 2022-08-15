@@ -6,11 +6,11 @@ config = Sus::Config.load
 Result = Struct.new(:job, :assertions)
 
 require_relative '../lib/sus'
-require_relative '../lib/sus/progress'
+require_relative '../lib/sus/output'
 jobs = Thread::Queue.new
 results = Thread::Queue.new
 guard = Thread::Mutex.new
-progress = Sus::Progress.new(config.output)
+progress = Sus::Output::Progress.new(config.output)
 
 require 'etc'
 count = Etc.nprocessors

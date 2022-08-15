@@ -2,3 +2,4 @@
 /pkg/
 /gems.locked
 /.covered.db
+/external

@@ -72,14 +72,30 @@ module Sus
 		end
 		
 		def before_tests(assertions)
+			@start_time = self.now
 		end
 		
 		def after_tests(assertions)
+			@end_time = self.now
+			
 			output = self.output
 			
 			assertions.print(output)
+
+			print_finished_statistics(assertions)
+			print_failed_assertions(assertions)
+		end
+		
+		private
+		
+		def print_finished_statistics(assertions)
+			duration = @end_time - @start_time
+			rate = assertions.count / duration
 			output.puts
-			
+			output.puts "🏁 Finished in #{duration.round(3)} seconds (#{rate.round(3)} assertions per second)."
+		end
+		
+		def print_failed_assertions(assertions)
 			if assertions.failed.any?
 				output.puts
 				
@@ -87,6 +103,10 @@ module Sus
 					output.append(failure.output)
 				end
 			end
+		end
+		
+		def now
+			::Process.clock_gettime(Process::CLOCK_MONOTONIC)
 		end
 	end
 end
