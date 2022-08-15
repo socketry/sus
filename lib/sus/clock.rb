@@ -2,8 +2,8 @@ module Sus
 	class Clock
 		include Comparable
 		
-		def initialize
-			@duration = 0.0
+		def initialize(duration = 0.0)
+			@duration = duration
 		end
 		
 		attr :duration
@@ -17,9 +17,9 @@ module Sus
 		end
 		
 		def to_s
-			if @duration < 1.0e-06
+			if @duration < 0.001
 				"#{(@duration * 1_000_000).round(1)}µs"
-			elsif @duration < 1.0e-03
+			elsif @duration < 1.0
 				"#{(@duration * 1_000).round(1)}ms"
 			else
 				"#{@duration.round(1)}s"
