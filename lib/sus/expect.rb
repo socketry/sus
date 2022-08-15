@@ -1,11 +1,14 @@
 
 module Sus
 	class Expect
-		def initialize(assertions, subject)
+		def initialize(assertions, subject, inverted: false)
 			@assertions = assertions
 			@subject = subject
-			@inverted = false
+			@inverted = inverted
 		end
+
+		attr :subject
+		attr :inverted
 		
 		def not
 			self.dup.tap do |expect|
@@ -17,9 +20,9 @@ module Sus
 			output.write("expect ", :variable, @subject.inspect, :reset, " ")
 			
 			if @inverted
-				output.write(:failed, "to not", :reset)
+				output.write("to not", :reset)
 			else
-				output.write(:passed, "to", :reset)
+				output.write("to", :reset)
 			end
 		end
 		
@@ -30,14 +33,18 @@ module Sus
 			
 			return self
 		end
+
+		def and(predicate)
+			return to(predicate)
+		end
 	end
 	
 	class Base
-		def expect(subject = nil, &block)
+		def expect(subject = nil, **options, &block)
 			if block_given?
-				Expect.new(@assertions, block)
+				Expect.new(@assertions, block, **options)
 			else
-				Expect.new(@assertions, subject)
+				Expect.new(@assertions, subject, **options)
 			end
 		end
 	end

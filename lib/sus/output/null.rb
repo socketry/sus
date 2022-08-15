@@ -29,6 +29,9 @@ module Sus
 		class Null
 			def initialize
 			end
+			
+			def append(buffer)
+			end
 
 			def indent
 			end

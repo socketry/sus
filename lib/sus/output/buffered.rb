@@ -27,34 +27,32 @@ module Sus
 	# Styled output output.
 	module Output
 		class Buffered
-			def initialize(output)
-				@output = output
-				@buffer = Array.new
+			def initialize
+				@output = Array.new
 			end
 			
 			attr :output
-			attr :buffer
 			
-			def append(output)
-				@buffer.each do |operation|
-					output.public_send(*operation)
-				end
+			def each(&block)
+				@output.each(&block)
+			end
+			
+			def append(buffer)
+				@output.concat(buffer.output)
 			end
 			
 			def string
 				io = StringIO.new
-				append(Text.new(io))
+				Text.new(io).append(@output)
 				return io.string
 			end
 			
 			def indent
-				@buffer << [:indent]
-				@output.indent
+				@output << [:indent]
 			end
 			
 			def outdent
-				@buffer << [:outdent]
-				@output.outdent
+				@output << [:outdent]
 			end
 			
 			def indented
@@ -65,13 +63,11 @@ module Sus
 			end
 			
 			def write(*arguments)
-				@output.write(*arguments)
-				@buffer << [:write, *arguments]
+				@output << [:write, *arguments]
 			end
 			
 			def puts(*arguments)
-				@output.puts(*arguments)
-				@buffer << [:puts, *arguments]
+				@output << [:puts, *arguments]
 			end
 		end
 	end

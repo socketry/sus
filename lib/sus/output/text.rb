@@ -35,6 +35,12 @@ module Sus
 				@styles[:indent] = @indent
 			end
 			
+			def append(buffer)
+				buffer.each do |operation|
+					self.public_send(*operation)
+				end
+			end
+			
 			attr :io
 			
 			INDENTATION = "\t"

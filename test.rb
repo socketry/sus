@@ -1,43 +1,68 @@
 #!/usr/bin/env ruby
 
-class Base
-	def self.print
+class Thing
+	def bar
+		"foo"
 	end
 end
 
-module Foo
-	attr_accessor :foo
+class Mock1
+	def initialize(target)
+		@target = target
+		@interceptor = Module.new
+		
+		@target.singleton_class.prepend(@interceptor)
+	end
 	
-	def print
-		self.superclass.print
-		puts "Foo: #{self.name} #{foo}"
+	def clear
+		@interceptor.instance_methods.each do |method_name|
+			@interceptor.remove_method(method_name)
+		end
 	end
-end
-
-module Bar
-	attr_accessor :bar
 	
-	def print
-		self.superclass.print
-		puts "Bar: #{self.name} #{bar}"
+	def intercept(method, &block)
+		@interceptor.define_method(method, &block)
 	end
 end
 
-C1 = Class.new(Base)
-# C1.extend(Foo)
-C1.singleton_class.prepend(Foo)
-C1.foo = 10
+class Mock2
+	def initialize(target)
+		@target = target
+		@methods = []
+	end
+	
+	def clear
+		@methods.each do |method_name|
+			@target.singleton_class.remove_method(method_name)
+		end
+	end
+	
+	def intercept(method, &block)
+		@target.singleton_class.define_method(method, &block)
+	end
+end
 
-C2 = Class.new(C1)
-# C2.extend(Bar)
-C2.singleton_class.prepend(Bar)
-C2.bar = 20
+require 'benchmark'
 
-C3 = Class.new(C2)
-# C3.extend(Foo)
-C3.singleton_class.prepend(Foo)
-C3.foo = 30
+n = 100
+Benchmark.bm do |x|
+	x.report do
+		n.times do
+			thing = Thing.new
+			mock = Mock1.new(thing)
+			mock.intercept(:bar) {"foo"+super()}
+			thing.bar
+			mock.clear
+		end
+	end
 
-C3.print
-
-binding.irb
+	x.report do
+		n.times do
+			thing = Thing.new
+			mock = Mock2.new(thing)
+			mock.intercept(:bar) {"foo"+super()}
+			thing.bar
+			mock.clear
+		end
+	end
+end

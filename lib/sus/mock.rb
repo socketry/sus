@@ -20,6 +20,8 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 
+require_relative 'expect'
+
 module Sus
 	class Mock
 		def initialize(target)
@@ -28,7 +30,13 @@ module Sus
 			
 			@target.singleton_class.prepend(@interceptor)
 		end
-
+		
+		attr :target
+		
+		def print(output)
+			output.write("mock ", :context, @target.inspect)
+		end
+		
 		def clear
 			@interceptor.instance_methods.each do |method_name|
 				@interceptor.remove_method(method_name)
@@ -76,10 +84,10 @@ module Sus
 	module Mocks
 		def after
 			super
-
-			@mocks&.each(&:clear)
+			
+			@mocks&.each_value(&:clear)
 		end
-
+		
 		def mock(target)
 			validate_mock!(target)
 
@@ -91,9 +99,9 @@ module Sus
 
 			return mock
 		end
-
+		
 		private
-
+		
 		MockTargetError = Class.new(StandardError)
 
 		def validate_mock!(target)
@@ -105,7 +113,7 @@ module Sus
 		def mocks
 			@mocks ||= Hash.new{|h,k| h[k] = Mock.new(k)}.compare_by_identity
 		end
-	end	
+	end
 
 	class Base
 		def mock(target, &block)

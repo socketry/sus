@@ -35,7 +35,7 @@ module Sus
 		end
 		
 		def self.buffered
-			Buffered.new(Null.new)
+			Buffered.new
 		end
 	end
 end

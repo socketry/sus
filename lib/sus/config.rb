@@ -84,7 +84,7 @@ module Sus
 				output.puts
 				
 				assertions.failed.each do |failure|
-					failure.output.append(output)
+					output.append(failure.output)
 				end
 			end
 		end

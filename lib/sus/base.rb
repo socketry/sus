@@ -28,10 +28,6 @@ module Sus
 		def refute(...)
 			@assertions.refute(...)
 		end
-		
-		def expect(subject)
-			Expect.new(subject)
-		end
 	end
 	
 	def self.base(description = "base")

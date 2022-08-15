@@ -1,3 +1,5 @@
+require 'sus/mock'
+
 class RealImplementation
 	def call
 		"Real Implementation"
@@ -11,7 +13,7 @@ class FakeImplementation
 end
 
 class Interface
-	def implementation
+	def implementation(*arguments)
 		RealImplementation.new
 	end
 end
