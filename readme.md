@@ -12,7 +12,7 @@ Non-features:
   - Flexibility at the expense of performance.
   - Backwards compatibility.
 
-[![Development Status](https://github.com/ioquatix/sus/workflows/Development/badge.svg)](https://github.com/ioquatix/sus/actions?workflow=Development)
+[![Development Status](https://github.com/ioquatix/sus/workflows/Test/badge.svg)](https://github.com/ioquatix/sus/actions?workflow=Test)
 
 ## Ideas
 
