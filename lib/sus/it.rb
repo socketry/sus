@@ -26,7 +26,7 @@ module Sus
 		end
 		
 		def call(assertions)
-			assertions.nested(self, isolated: true) do |assertions|
+			assertions.nested(self, isolated: true, measure: true) do |assertions|
 				instance = self.new(assertions)
 				
 				instance.around do

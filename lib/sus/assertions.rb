@@ -1,5 +1,6 @@
 
 require_relative 'output'
+require_relative 'clock'
 
 module Sus
 	class Assertions
@@ -7,12 +8,18 @@ module Sus
 			self.new(**options, verbose: true)
 		end
 		
-		def initialize(target: nil, output: Output.buffered, inverted: false, isolated: false, verbose: false)
+		def initialize(target: nil, output: Output.buffered, inverted: false, isolated: false, measure: false, verbose: false)
 			@target = target
 			@output = output
 			@inverted = inverted
 			@isolated = isolated
 			@verbose = verbose
+			
+			if measure
+				@clock = Clock.new
+			else
+				@clock = nil
+			end
 			
 			@passed = Array.new
 			@failed = Array.new
@@ -27,6 +34,8 @@ module Sus
 		attr :inverted
 		attr :isolated
 		attr :verbose
+		
+		attr :clock
 		
 		# Nested assertions that have passed.
 		attr :passed
@@ -154,9 +163,12 @@ module Sus
 			assertions = self.class.new(target: target, output: output, isolated: isolated, inverted: inverted, **options)
 			
 			begin
+				@clock&.start!
 				result = yield(assertions)
 			rescue StandardError => error
 				assertions.fail(error)
+			ensure
+				@clock&.stop!
 			end
 			
 			self.add(assertions)
