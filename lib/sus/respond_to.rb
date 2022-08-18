@@ -69,11 +69,14 @@ module Sus
 		
 		def call(assertions, subject)
 			assertions.nested(self) do |assertions|
-				assertions.assert(subject.respond_to?(@method), self)
+				condition = subject.respond_to?(@method)
+				assertions.assert(condition, self)
 				
-				parameters = subject.method(@method).parameters
-				@parameters.call(assertions, parameters) if @parameters
-				@options.call(assertions, parameters) if @options
+				if condition and (@parameters or @options)
+					parameters = subject.method(@method).parameters
+					@parameters.call(assertions, parameters) if @parameters
+					@options.call(assertions, parameters) if @options
+				end
 			end
 		end
 	end

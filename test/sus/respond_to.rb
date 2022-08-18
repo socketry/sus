@@ -17,4 +17,8 @@ describe Sus::RespondTo do
 	it "fails to respond to a method with missing options" do
 		expect(interface).not.to respond_to(:method_with_options).with_options(:z)
 	end
+	
+	it "fails to respond to non-existant method" do
+		expect(interface).not.to respond_to(:non_existant_method)
+	end
 end
