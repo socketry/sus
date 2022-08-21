@@ -50,6 +50,21 @@ module Sus
 			@root = root
 			@paths = paths
 			@clock = Clock.new
+			
+			self.setup_load_paths
+		end
+		
+		def add_load_path(path)
+			path = File.expand_path(path, @root)
+			
+			if File.directory?(path)
+				$LOAD_PATH.unshift(path)
+			end
+		end
+		
+		def setup_load_paths
+			add_load_path("lib")
+			add_load_path("fixtures")
 		end
 		
 		def output

@@ -29,6 +29,10 @@ module Sus
 			
 			output[:variable] = output.style(:blue, nil, :bold)
 			
+			output[:path] = output.style(:yellow)
+			output[:line] = output.style(:yellow)
+			output[:identity] = output.style(:yellow)
+			
 			output[:passed] = output.style(:green, nil, :bold)
 			output[:failed] = output.style(:red, nil, :bold)
 			

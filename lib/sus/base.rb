@@ -30,7 +30,7 @@ module Sus
 		end
 	end
 	
-	def self.base(description = "base")
+	def self.base(description = nil)
 		base = Class.new(Base)
 		base.extend(Context)
 		base.description = description

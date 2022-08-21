@@ -2,13 +2,17 @@
 require_relative 'output'
 require_relative 'clock'
 
+require_relative 'output/backtrace'
+
 module Sus
 	class Assertions
 		def self.default(**options)
 			self.new(**options, verbose: true)
 		end
 		
-		def initialize(target: nil, output: Output.buffered, inverted: false, isolated: false, measure: false, verbose: false)
+		def initialize(identity: nil, target: nil, output: Output.buffered, inverted: false, isolated: false, measure: false, verbose: false)
+			# In theory, the target could carry the identity of the assertion group, but it's not really necessary, so we just handle it explicitly and pass it into any nested assertions.
+			@identity = identity
 			@target = target
 			@output = output
 			@inverted = inverted
@@ -50,7 +54,7 @@ module Sus
 		attr :count
 		
 		def inspect
-			"\#<#{self.class} #{self.object_id} #{@passed.size} passed #{@failed.size} failed #{@deferred.size} deferred>"
+			"\#<#{self.class} #{@passed.size} passed #{@failed.size} failed #{@deferred.size} deferred>"
 		end
 		
 		def total
@@ -58,8 +62,6 @@ module Sus
 		end
 		
 		def print(output, verbose: @verbose)
-			self
-			
 			if verbose && @target
 				@target.print(output)
 				output.write(": ")
@@ -107,21 +109,23 @@ module Sus
 		end
 		
 		def assert(condition, message = nil)
-			# sleep 0.5
-			
 			@count += 1
 			
 			if condition
 				@passed << self
 				
-				@output.indented do
-					@output.puts(:indent, :passed, pass_prefix, message || "assertion")
+				if @inverted || @verbose
+					@output.indented do
+						@output.puts(:indent, :passed, pass_prefix, message || "assertion", Output::Backtrace.first(@identity))
+					end
 				end
 			else
 				@failed << self
 				
-				@output.indented do
-					@output.puts(:indent, :failed, fail_prefix, message || "assertion")
+				if !@inverted || @verbose
+					@output.indented do
+						@output.puts(:indent, :failed, fail_prefix, message || "assertion", Output::Backtrace.first(@identity))
+					end
 				end
 			end
 		end
@@ -146,13 +150,20 @@ module Sus
 		def fail(error)
 			@failed << self
 			
-			@output.puts(:indent, :failed, fail_prefix, "Unhandled exception ", :value, error.class, ": ", error.message)
-			error.backtrace.each do |line|
-				@output.puts(:indent, line)
+			@output.indented do
+				lines = error.message.split(/\r?\n/)
+				
+				@output.puts(:indent, :failed, fail_prefix, "Unhandled exception ", :value, error.class, ":", :reset, " ", lines.shift)
+				
+				lines.each do |line|
+					@output.puts(:indent, "| ", line)
+				end
+					
+				@output.puts(Output::Backtrace.for(error, @identity))
 			end
 		end
 		
-		def nested(target, isolated: false, inverted: false, **options)
+		def nested(target, identity: @identity, isolated: false, inverted: false, **options)
 			result = nil
 			output = Output::Buffered.new
 			
@@ -160,15 +171,17 @@ module Sus
 			target.print(output)
 			output.puts
 			
-			assertions = self.class.new(target: target, output: output, isolated: isolated, inverted: inverted, **options)
+			assertions = self.class.new(identity: identity, target: target, output: output, isolated: isolated, inverted: inverted, verbose: @verbose, **options)
 			
 			begin
 				@clock&.start!
+				# output.indent
 				result = yield(assertions)
 			rescue StandardError => error
 				assertions.fail(error)
 			ensure
 				@clock&.stop!
+				# output.outdent
 			end
 			
 			self.add(assertions)
@@ -216,17 +229,17 @@ module Sus
 			if assertions.passed?
 				@passed << assertions
 
-				if @verbose
-					@output.write(:indent, :passed, pass_prefix, :reset)
-					self.print(@output, verbose: false)
-					@output.puts
-				end
+				# if @verbose
+				# 	@output.write(:indent, :passed, pass_prefix, :reset)
+				# 	self.print(@output, verbose: false)
+				# 	@output.puts
+				# end
 			else
 				@failed << assertions
 
-				@output.write(:indent, :failed, fail_prefix, :reset)
-				self.print(@output, verbose: false)
-				@output.puts
+				# @output.write(:indent, :failed, fail_prefix, :reset)
+				# self.print(@output, verbose: false)
+				# @output.puts
 			end
 		end
 		
@@ -236,10 +249,10 @@ module Sus
 			@failed.concat(assertions.failed)
 			@deferred.concat(assertions.deferred)
 			
-			if @verbose
-				self.print(@output, verbose: false)
-				@output.puts
-			end
+			# if @verbose
+			# 	self.print(@output, verbose: false)
+			# 	@output.puts
+			# end
 		end
 				
 		def pass_prefix

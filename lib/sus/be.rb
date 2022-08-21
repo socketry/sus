@@ -6,7 +6,9 @@ module Sus
 		end
 		
 		def print(output)
-			output.write("be ", :be, *@arguments.join(" "))
+			operation, *arguments = *@arguments
+			
+			output.write("be ", :be, operation.to_s, :reset, " ", :variable, arguments.map(&:inspect).join, :reset)
 		end
 		
 		def call(assertions, subject)
@@ -55,6 +57,10 @@ module Sus
 			else
 				Be
 			end
+		end
+		
+		def be_a(klass)
+			Be.new(:is_a?, klass)
 		end
 	end
 end

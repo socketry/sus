@@ -24,6 +24,10 @@ module Sus
 			
 			return base
 		end
+		
+		def print(output)
+			output.write("file ", :path, self.identity)
+		end
 	end
 	
 	module Context

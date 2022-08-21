@@ -27,8 +27,13 @@ module Sus
 	# Styled output output.
 	module Output
 		class Buffered
-			def initialize
+			def initialize(tee = nil)
 				@output = Array.new
+				@tee = tee
+			end
+			
+			def buffered
+				self.class.new(@tee)
 			end
 			
 			attr :output
@@ -39,6 +44,7 @@ module Sus
 			
 			def append(buffer)
 				@output.concat(buffer.output)
+				@tee&.append(buffer)
 			end
 			
 			def string
@@ -49,10 +55,12 @@ module Sus
 			
 			def indent
 				@output << [:indent]
+				@tee&.indent
 			end
 			
 			def outdent
 				@output << [:outdent]
+				@tee&.outdent
 			end
 			
 			def indented
@@ -64,10 +72,12 @@ module Sus
 			
 			def write(*arguments)
 				@output << [:write, *arguments]
+				@tee&.write(*arguments)
 			end
 			
 			def puts(*arguments)
 				@output << [:puts, *arguments]
+				@tee&.puts(*arguments)
 			end
 		end
 	end

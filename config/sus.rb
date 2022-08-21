@@ -1,11 +1,9 @@
-$LOAD_PATH.unshift File.expand_path("../lib", __dir__)
-
 require 'covered/config'
 
 def initialize(root, paths)
 	super
 	
-	@covered = Covered::Config.load
+	@covered = Covered::Config.load(root: root)
 	if @covered.record?
 		@covered.enable
 	end

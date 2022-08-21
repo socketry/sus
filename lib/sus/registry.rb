@@ -16,11 +16,15 @@ require_relative 'let'
 module Sus
 	class Registry
 		# Create a top level scope with self as the instance:
-		def initialize(base = Sus.base("test registry"))
+		def initialize(base = Sus.base(self))
 			@base = base
 		end
 		
 		attr :base
+		
+		def print(output)
+			output.write "Test Registry"
+		end
 		
 		def load(path)
 			@base.file(path)

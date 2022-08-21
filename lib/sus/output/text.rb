@@ -29,10 +29,15 @@ module Sus
 		class Text
 			def initialize(io)
 				@io = io
+				
 				@styles = {reset: self.reset}
 				
 				@indent = String.new
 				@styles[:indent] = @indent
+			end
+			
+			def buffered
+				Buffered.new(self)
 			end
 			
 			def append(buffer)

@@ -5,7 +5,18 @@ config = Sus::Config.load
 
 require_relative '../lib/sus'
 filter = Sus::Filter.new
-assertions = Sus::Assertions.default(output: Sus::Output::Null.new)
+
+$VERBOSE = true
+
+if $VERBOSE
+	output = config.output
+	verbose = true
+else
+	output = Sus::Output::Null.new
+	verbose = false
+end
+
+assertions = Sus::Assertions.default(output: output, verbose: verbose)
 
 config.prepare(filter)
 

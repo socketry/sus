@@ -46,4 +46,10 @@ describe Sus::Be do
 			expect(Object).to be === String
 		end
 	end
+	
+	with Array do
+		it "can compare equality"	do
+			expect([1, 2, 3]).to be == [1, 2, 4]
+		end
+	end
 end
