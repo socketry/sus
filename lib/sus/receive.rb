@@ -9,7 +9,7 @@ module Sus
 			@base = base
 			@method = method
 			
-			@times = Once.new
+			@times = Times.new
 			@arguments = nil
 			@options = nil
 			@block = nil
@@ -35,6 +35,18 @@ module Sus
 			return self
 		end
 
+		def once
+			@times = Times.new(Be.new(:==, 1))
+		end
+		
+		def twice
+			@times = Times.new(Be.new(:==, 2))
+		end
+		
+		def with_call_count(predicate)
+			@times = Times.new(predicate)
+		end
+		
 		def and_return(*returning)
 			if returning.size == 1
 				@returning = returning.first
@@ -72,8 +84,10 @@ module Sus
 					end
 				end
 
-				assertions.defer do
-					@times.call(assertions, called)
+				if @times
+					assertions.defer do
+						@times.call(assertions, called)
+					end
 				end
 			end
 		end
@@ -126,14 +140,20 @@ module Sus
 			end
 		end
 
-		class Once
+		class Times
+			ONCE = Be.new(:==, 1)
+			
+			def initialize(condition = ONCE)
+				@condition = condition
+			end
+				
 			def print(output)
-				output.write("once")
+				output.write("with call count ", @condition)
 			end
 
 			def call(assertions, subject)
 				assertions.nested(self) do |assertions|
-					Expect.new(assertions, subject).to(Be == 1)
+					Expect.new(assertions, subject).to(@condition)
 				end
 			end
 		end
