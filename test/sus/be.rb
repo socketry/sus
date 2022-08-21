@@ -49,7 +49,7 @@ describe Sus::Be do
 	
 	with Array do
 		it "can compare equality"	do
-			expect([1, 2, 3]).to be == [1, 2, 4]
+			expect([1, 2, 3]).to be == [1, 2, 3]
 		end
 	end
 end
