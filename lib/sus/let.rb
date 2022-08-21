@@ -4,13 +4,13 @@ require_relative 'context'
 module Sus
 	module Context
 		def let(name, &block)
-			ivar = :"@#{name}"
+			instance_variable = :"@#{name}"
 			
 			self.define_method(name) do
-				if value = self.instance_variable_get(ivar)
-					return value
+				if self.instance_variable_defined?(instance_variable)
+					return self.instance_variable_get(instance_variable)
 				else
-					self.instance_variable_set(ivar, self.instance_exec(&block))
+					self.instance_variable_set(instance_variable, self.instance_exec(&block))
 				end
 			end
 		end

@@ -1,4 +1,3 @@
-
 module Sus
 	class Filter
 		class Index
@@ -30,7 +29,7 @@ module Sus
 			end
 		end
 		
-		def initialize(registry: Registry.new)
+		def initialize(registry = Registry.new)
 			@registry = registry
 			@index = nil
 			@keys = Array.new

@@ -16,10 +16,9 @@ require 'etc'
 count = Etc.nprocessors
 
 loader = Thread.new do
-	filter = Sus::Filter.new
-	config.prepare(filter)
+	registry = config.registry
 	
-	filter.each do |child|
+	registry.each do |child|
 		guard.synchronize{progress.expand}
 		jobs << child
 	end

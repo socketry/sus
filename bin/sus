@@ -4,11 +4,9 @@ require_relative '../lib/sus/config'
 config = Sus::Config.load
 
 require_relative '../lib/sus'
-filter = Sus::Filter.new
+registry = config.registry
 
-$VERBOSE = true
-
-if $VERBOSE
+if config.verbose?
 	output = config.output
 	verbose = true
 else
@@ -18,10 +16,8 @@ end
 
 assertions = Sus::Assertions.default(output: output, verbose: verbose)
 
-config.prepare(filter)
-
 config.before_tests(assertions)
-filter.call(assertions)
+registry.call(assertions)
 config.after_tests(assertions)
 
 if assertions.failed.any?

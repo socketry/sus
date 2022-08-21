@@ -1,5 +1,3 @@
-require 'sus/mock'
-
 class RealImplementation
 	def call
 		"Real Implementation"

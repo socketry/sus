@@ -1,9 +1,9 @@
 require 'covered/config'
 
-def initialize(root, paths)
+def initialize(...)
 	super
 	
-	@covered = Covered::Config.load(root: root)
+	@covered = Covered::Config.load(root: self.root)
 	if @covered.record?
 		@covered.enable
 	end

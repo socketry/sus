@@ -21,6 +21,8 @@
 # THE SOFTWARE.
 
 require_relative 'clock'
+require_relative 'registry'
+require_relative 'loader'
 
 module Sus
 	class Config
@@ -34,7 +36,7 @@ module Sus
 			end
 		end
 		
-		def self.load(root: Dir.pwd, argv: ARGV)
+		def self.load(root: Dir.pwd, arguments: ARGV)
 			derived = Class.new(self)
 			
 			if path = self.path(root)
@@ -43,28 +45,30 @@ module Sus
 				derived.prepend(config)
 			end
 			
-			return derived.new(root, argv)
+			options = {
+				verbose: !!arguments.delete('--verbose')
+			}
+			
+			return derived.new(root, arguments, **options)
 		end
 		
-		def initialize(root, paths)
+		def initialize(root, paths, verbose: false)
 			@root = root
 			@paths = paths
+			@verbose = verbose
+			
 			@clock = Clock.new
-			
-			self.setup_load_paths
 		end
 		
-		def add_load_path(path)
-			path = File.expand_path(path, @root)
-			
-			if File.directory?(path)
-				$LOAD_PATH.unshift(path)
-			end
+		attr :root
+		attr :paths
+		
+		def verbose?
+			@verbose
 		end
 		
-		def setup_load_paths
-			add_load_path("lib")
-			add_load_path("fixtures")
+		def partial?
+			@paths.any?
 		end
 		
 		def output
@@ -77,8 +81,26 @@ module Sus
 			return Dir.glob(DEFAULT_TEST_PATTERN, base: @root)
 		end
 		
-		def prepare(registry)
+		def registry
+			@registry ||= self.load_registry
+		end
+		
+		def base
+			Sus.base
+		end
+		
+		def setup_base(base)
+			base.extend(Loader)
+			base.define_singleton_method(:require_root) {self.root}
+		end
+		
+		def load_registry
+			registry = Sus::Registry.new
+			
+			self.setup_base(registry.base)
+			
 			if @paths&.any?
+				registry = Sus::Filter.new(registry)
 				@paths.each do |path|
 					registry.load(path)
 				end
@@ -87,6 +109,8 @@ module Sus
 					registry.load(path)
 				end
 			end
+			
+			return registry
 		end
 		
 		def before_tests(assertions)
@@ -96,6 +120,12 @@ module Sus
 		def after_tests(assertions)
 			@clock.stop!
 			
+			self.print_summary(assertions)
+		end
+		
+		protected
+		
+		def print_summary(assertions)
 			output = self.output
 			
 			assertions.print(output)
@@ -109,12 +139,6 @@ module Sus
 						
 			print_slow_tests(assertions)
 			print_failed_assertions(assertions)
-		end
-		
-		protected
-		
-		def partial?
-			@paths.any?
 		end
 		
 		def print_finished_statistics(assertions)
