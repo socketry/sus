@@ -91,7 +91,9 @@ module Sus
 		
 		def setup_base(base)
 			base.extend(Loader)
-			base.define_singleton_method(:require_root) {self.root}
+			
+			require_root = self.root
+			base.define_singleton_method(:require_root) {require_root}
 		end
 		
 		def load_registry
