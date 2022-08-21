@@ -10,57 +10,58 @@ end
 
 describe Sus::Assertions do
 	let(:inverted) {false}
-	let(:subject) {Sus::Assertions.new(output: Sus::Output.buffered, inverted: inverted)}
+	
+	let(:assertions) {Sus::Assertions.new(output: Sus::Output.buffered, inverted: inverted)}
 	
 	it "defaults to passing" do
-		expect(subject).to be(:passed?)
-		expect(subject).not.to be(:failed?)
+		expect(assertions).to be(:passed?)
+		expect(assertions).not.to be(:failed?)
 	end
 	
 	it "can assert something true" do
-		subject.assert(true)
+		assertions.assert(true)
 		
-		expect(subject.passed.size).to be == 1
-		expect(subject.failed.size).to be == 0
-		expect(subject.count).to be == 1
+		expect(assertions.passed.size).to be == 1
+		expect(assertions.failed.size).to be == 0
+		expect(assertions.count).to be == 1
 		
-		expect(subject).to be(:passed?)
-		expect(subject).not.to be(:failed?)
+		expect(assertions).to be(:passed?)
+		expect(assertions).not.to be(:failed?)
 	end
 	
 	it "can assert something false" do
-		subject.assert(false)
+		assertions.assert(false)
 		
-		expect(subject.passed.size).to be == 0
-		expect(subject.failed.size).to be == 1
-		expect(subject.count).to be == 1
+		expect(assertions.passed.size).to be == 0
+		expect(assertions.failed.size).to be == 1
+		expect(assertions.count).to be == 1
 		
-		expect(subject).not.to be(:passed?)
-		expect(subject).to be(:failed?)
+		expect(assertions).not.to be(:passed?)
+		expect(assertions).to be(:failed?)
 	end
 	
 	# Inverted assertions mean that we are passing if at least one assertion fails!
 	with "inverted assertions", inverted: true do
 		it "can assert something true" do
-			subject.assert(true)
+			assertions.assert(true)
 			
-			expect(subject).not.to be(:passed?)
-			expect(subject).to be(:failed?)
+			expect(assertions).not.to be(:passed?)
+			expect(assertions).to be(:failed?)
 		end
 		
 		it "can assert something false" do
-			subject.assert(false)
+			assertions.assert(false)
 			
-			expect(subject).to be(:passed?)
-			expect(subject).not.to be(:failed?)
+			expect(assertions).to be(:passed?)
+			expect(assertions).not.to be(:failed?)
 		end
 		
 		it "can assert something true and false" do
-			subject.assert(true)
-			subject.assert(false)
+			assertions.assert(true)
+			assertions.assert(false)
 			
-			expect(subject).to be(:passed?)
-			expect(subject).not.to be(:failed?)
+			expect(assertions).to be(:passed?)
+			expect(assertions).not.to be(:failed?)
 		end
 	end
 	
@@ -71,31 +72,31 @@ describe Sus::Assertions do
 			child.assert(true)
 			child.assert(true)
 			
-			subject.add(child)
-			subject.add(child)
+			assertions.add(child)
+			assertions.add(child)
 			
-			expect(subject).to be(:passed?)
-			expect(subject.passed.size).to be == 4
-			expect(subject.count).to be == 4
+			expect(assertions).to be(:passed?)
+			expect(assertions.passed.size).to be == 4
+			expect(assertions.count).to be == 4
 		end
 	end
 	
 	with 'deferred assertions' do
 		it "can defer an assertion" do
-			subject.defer do
-				subject.assert(true)
+			assertions.defer do
+				assertions.assert(true)
 			end
 			
-			expect(subject.count).to be == 0
-			subject.resolve!
-			expect(subject.count).to be == 1
+			expect(assertions.count).to be == 0
+			assertions.resolve!
+			expect(assertions.count).to be == 1
 			
-			expect(subject).to be(:passed?)
-			expect(subject).not.to be(:failed?)
+			expect(assertions).to be(:passed?)
+			expect(assertions).not.to be(:failed?)
 		end
 		
 		it "can defer a nested assertion" do
-			subject.nested(Nested.new('outer'), isolated: true) do |assertions|
+			assertions.nested(Nested.new('outer'), isolated: true) do |assertions|
 				assertions.nested(Nested.new('inner')) do |assertions|
 					assertions.defer do
 						assertions.assert(true)
@@ -109,11 +110,11 @@ describe Sus::Assertions do
 				expect(assertions.count).to be == 0
 			end
 			
-			expect(subject.deferred?).to be == false
-			expect(subject.count).to be == 1
+			expect(assertions.deferred?).to be == false
+			expect(assertions.count).to be == 1
 			
-			expect(subject).to be(:passed?)
-			expect(subject).not.to be(:failed?)
+			expect(assertions).to be(:passed?)
+			expect(assertions).not.to be(:failed?)
 		end
 	end
 end
