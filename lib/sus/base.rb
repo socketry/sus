@@ -1,6 +1,5 @@
 
 require_relative 'context'
-require_relative 'loader'
 
 module Sus
 	# The base test case class. We need to be careful about what local state is stored.

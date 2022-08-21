@@ -22,7 +22,6 @@
 
 require_relative 'clock'
 require_relative 'registry'
-require_relative 'loader'
 
 module Sus
 	class Config
@@ -58,6 +57,21 @@ module Sus
 			@verbose = verbose
 			
 			@clock = Clock.new
+			
+			self.add_default_load_paths
+		end
+		
+		def add_load_path(path)
+			path = ::File.expand_path(path, @root)
+			
+			if ::File.directory?(path)
+				$LOAD_PATH.unshift(path)
+			end
+		end
+		
+		def add_default_load_paths
+			add_load_path('lib')
+			add_load_path('fixtures')
 		end
 		
 		attr :root
@@ -85,21 +99,8 @@ module Sus
 			@registry ||= self.load_registry
 		end
 		
-		def base
-			Sus.base
-		end
-		
-		def setup_base(base)
-			base.extend(Loader)
-			
-			require_root = self.root
-			base.define_singleton_method(:require_root) {require_root}
-		end
-		
 		def load_registry
 			registry = Sus::Registry.new
-			
-			self.setup_base(registry.base)
 			
 			if @paths&.any?
 				registry = Sus::Filter.new(registry)
