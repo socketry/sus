@@ -57,7 +57,7 @@ module Sus
 			def print(output)
 				if @limit == 1
 					filter.each do |frame|
-						output.puts " ", :path, frame.path, :line, ":", frame.lineno
+						output.write " ", :path, frame.path, :line, ":", frame.lineno
 					end
 				else
 					output.puts
