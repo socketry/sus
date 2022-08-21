@@ -64,7 +64,7 @@ module Sus
 		end
 		
 		def print(output)
-			output.write("respond to ", :variable, @method.to_s)
+			output.write("respond to ", :variable, @method.to_s, :reset)
 		end
 		
 		def call(assertions, subject)

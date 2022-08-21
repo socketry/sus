@@ -115,17 +115,13 @@ module Sus
 				@passed << self
 				
 				if @inverted || @verbose
-					@output.indented do
-						@output.puts(:indent, :passed, pass_prefix, message || "assertion", Output::Backtrace.first(@identity))
-					end
+					@output.puts(:indent, :passed, pass_prefix, message || "assertion", Output::Backtrace.first(@identity))
 				end
 			else
 				@failed << self
 				
 				if !@inverted || @verbose
-					@output.indented do
-						@output.puts(:indent, :failed, fail_prefix, message || "assertion", Output::Backtrace.first(@identity))
-					end
+					@output.puts(:indent, :failed, fail_prefix, message || "assertion", Output::Backtrace.first(@identity))
 				end
 			end
 		end
@@ -142,46 +138,51 @@ module Sus
 		
 		# This resolves all deferred assertions in order.
 		def resolve!
-			while block = @deferred.shift
-				block.call(self)
+			@output.indented do
+				while block = @deferred.shift
+					block.call(self)
+				end
 			end
 		end
 		
 		def fail(error)
 			@failed << self
 			
-			@output.indented do
-				lines = error.message.split(/\r?\n/)
-				
-				@output.puts(:indent, :failed, fail_prefix, "Unhandled exception ", :value, error.class, ":", :reset, " ", lines.shift)
-				
-				lines.each do |line|
-					@output.puts(:indent, "| ", line)
-				end
-					
-				@output.puts(Output::Backtrace.for(error, @identity))
+			lines = error.message.split(/\r?\n/)
+			
+			@output.puts(:indent, :error, fail_prefix, "Unhandled exception ", :value, error.class, ":", :reset, " ", lines.shift)
+			
+			lines.each do |line|
+				@output.puts(:indent, "| ", line)
 			end
+				
+			@output.write(Output::Backtrace.for(error, @identity))
 		end
 		
 		def nested(target, identity: @identity, isolated: false, inverted: false, **options)
 			result = nil
-			output = Output::Buffered.new
 			
-			output.write(:indent)
-			target.print(output)
-			output.puts
+			# Isolated assertions need to have buffered output so they can be replayed if they fail:
+			if isolated
+				output = @output.buffered
+			else
+				output = @output
+			end
+			
+			output.puts(:indent, target)
 			
 			assertions = self.class.new(identity: identity, target: target, output: output, isolated: isolated, inverted: inverted, verbose: @verbose, **options)
 			
-			begin
-				@clock&.start!
-				# output.indent
-				result = yield(assertions)
-			rescue StandardError => error
-				assertions.fail(error)
-			ensure
-				@clock&.stop!
-				# output.outdent
+			@clock&.start!
+
+			output.indented do
+				begin
+					result = yield(assertions)
+				rescue StandardError => error
+					assertions.fail(error)
+				ensure
+					@clock&.stop!
+				end
 			end
 			
 			self.add(assertions)
@@ -191,13 +192,15 @@ module Sus
 		
 		def add(assertions)
 			# If the assertions should be an isolated group, make sure any deferred assertions are resolved:
-			if assertions.isolated
+			if assertions.isolated and assertions.deferred?
 				assertions.resolve!
 			end
 			
 			if assertions.deferred?
 				self.defer do
+					output.puts(:indent, assertions.target)
 					assertions.resolve!
+					
 					self.add!(assertions)
 				end
 			else
@@ -216,10 +219,6 @@ module Sus
 			else
 				# Otherwise, we append all child assertions into the parent assertions:
 				append!(assertions)
-			end
-			
-			@output.indented do
-				@output.append(assertions.output)
 			end
 		end
 		
@@ -250,6 +249,7 @@ module Sus
 			@deferred.concat(assertions.deferred)
 			
 			# if @verbose
+			# 	@output.write(:indent)
 			# 	self.print(@output, verbose: false)
 			# 	@output.puts
 			# end

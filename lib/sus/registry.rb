@@ -23,7 +23,7 @@ module Sus
 		attr :base
 		
 		def print(output)
-			output.write "Test Registry"
+			output.write("Test Registry")
 		end
 		
 		def load(path)

@@ -28,38 +28,53 @@ module Sus
 	module Output
 		class Buffered
 			def initialize(tee = nil)
-				@output = Array.new
+				@chunks = Array.new
 				@tee = tee
 			end
 			
+			attr :chunks
+			attr :tee
+			
+			def inspect
+				if @tee
+					"\#<#{self.class.name} #{@chunks.size} chunks -> #{@tee.class}>"
+				else
+					"\#<#{self.class.name} #{@chunks.size} chunks>"
+				end
+			end
+			
 			def buffered
-				self.class.new(@tee)
+				self.class.new(self)
 			end
 			
 			attr :output
 			
 			def each(&block)
-				@output.each(&block)
+				@chunks.each(&block)
 			end
 			
 			def append(buffer)
-				@output.concat(buffer.output)
+				@chunks.concat(buffer.output)
 				@tee&.append(buffer)
 			end
 			
 			def string
 				io = StringIO.new
-				Text.new(io).append(@output)
+				Text.new(io).append(@chunks)
 				return io.string
 			end
 			
+			INDENT = [:indent].freeze
+			
 			def indent
-				@output << [:indent]
+				@chunks << INDENT
 				@tee&.indent
 			end
 			
+			OUTDENT = [:outdent].freeze
+			
 			def outdent
-				@output << [:outdent]
+				@chunks << OUTDENT
 				@tee&.outdent
 			end
 			
@@ -71,12 +86,12 @@ module Sus
 			end
 			
 			def write(*arguments)
-				@output << [:write, *arguments]
+				@chunks << [:write, *arguments]
 				@tee&.write(*arguments)
 			end
 			
 			def puts(*arguments)
-				@output << [:puts, *arguments]
+				@chunks << [:puts, *arguments]
 				@tee&.puts(*arguments)
 			end
 		end

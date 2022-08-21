@@ -23,7 +23,7 @@ module Sus
 			
 			output[:context] = output.style(nil, nil, :bold)
 			
-			output[:describe] = output.style(:cyan, nil, :bold)
+			output[:describe] = output.style(:cyan)
 			output[:it] = output.style(:cyan)
 			output[:with] = output.style(:cyan)
 			
@@ -33,8 +33,9 @@ module Sus
 			output[:line] = output.style(:yellow)
 			output[:identity] = output.style(:yellow)
 			
-			output[:passed] = output.style(:green, nil, :bold)
-			output[:failed] = output.style(:red, nil, :bold)
+			output[:passed] = output.style(:green)
+			output[:failed] = output.style(:red)
+			output[:error] = output.style(:red)
 			
 			return output
 		end

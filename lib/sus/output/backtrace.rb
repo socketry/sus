@@ -60,8 +60,6 @@ module Sus
 						output.write " ", :path, frame.path, :line, ":", frame.lineno
 					end
 				else
-					output.puts
-					
 					output.indented do
 						filter.each do |frame|
 							output.puts :indent, :path, frame.path, :line, ":", frame.lineno, :reset, " ", frame.label
