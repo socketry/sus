@@ -25,6 +25,7 @@ module Sus
 		# Print out a backtrace relevant to the given test identity if provided.
 		class Backtrace
 			def self.first(identity = nil)
+				# This implementation could be a little more efficient.
 				self.new(caller_locations(1), identity&.path, 1)
 			end
 			

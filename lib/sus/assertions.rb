@@ -7,7 +7,7 @@ require_relative 'output/backtrace'
 module Sus
 	class Assertions
 		def self.default(**options)
-			self.new(**options, verbose: true)
+			self.new(**options)
 		end
 		
 		def initialize(identity: nil, target: nil, output: Output.buffered, inverted: false, isolated: false, measure: false, verbose: false)
