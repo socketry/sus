@@ -7,7 +7,7 @@ module Sus
 			end
 			
 			def print(output)
-				output.write("be within ", :variable, @range)
+				output.write("be within ", :variable, @range, :reset)
 			end
 			
 			def call(assertions, subject)
@@ -30,7 +30,7 @@ module Sus
 		end
 		
 		def print(output)
-			output.write("be within ", :variable, @tolerance)
+			output.write("be within ", :variable, @tolerance, :reset)
 		end
 		
 		def call(assertions, subject)
