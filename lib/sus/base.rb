@@ -1,9 +1,12 @@
 
 require_relative 'context'
+require_relative 'fixtures'
 
 module Sus
 	# The base test case class. We need to be careful about what local state is stored.
 	class Base
+		include Fixtures
+		
 		def initialize(assertions)
 			@__assertions__ = assertions
 		end
