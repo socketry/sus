@@ -1,5 +1,8 @@
 # frozen_string_literal: true
 
+# Released under the MIT License.
+# Copyright, 2021-2022, by Samuel Williams.
+
 require_relative 'sus/version'
 require_relative 'sus/config'
 require_relative 'sus/registry'

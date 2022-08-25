@@ -32,7 +32,7 @@ jobs:
     
     - name: Run tests
       timeout-minutes: 5
-      run: bundle exec rspec
+      run: bundle exec bake test
 
     - uses: actions/upload-artifact@v2
       with:

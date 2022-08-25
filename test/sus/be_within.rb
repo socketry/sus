@@ -1,3 +1,8 @@
+# frozen_string_literal: true
+
+# Released under the MIT License.
+# Copyright, 2021-2022, by Samuel Williams.
+
 describe Sus::BeWithin do
 	it "can expect number to be within a tolerance" do
 		expect(0).to be_within(10)

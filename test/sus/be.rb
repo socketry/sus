@@ -1,3 +1,8 @@
+# frozen_string_literal: true
+
+# Released under the MIT License.
+# Copyright, 2021-2022, by Samuel Williams.
+
 describe Sus::Be do
 	with "true" do
 		it "can expect equality" do
