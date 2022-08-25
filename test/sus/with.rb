@@ -12,7 +12,7 @@ describe Sus::With do
 		it 'can print context name' do
 			buffer = Sus::Output.buffered
 			context.print(buffer)
-			expect(buffer.string).to be == "describe Sus::With with nested contexts it can print context name test/sus/with.rb:7 with a test variable"
+			expect(buffer.string).to be == "describe Sus::With with nested contexts it can print context name test/sus/with.rb:12 with a test variable"
 		end
 	end
 end

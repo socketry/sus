@@ -51,5 +51,9 @@ module Sus
 				Expect.new(@__assertions__, subject, **options)
 			end
 		end
+		
+		def is_expected
+			expect(subject)
+		end
 	end
 end

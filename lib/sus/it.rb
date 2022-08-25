@@ -7,7 +7,7 @@ require_relative 'context'
 
 module Sus
 	module It
-		def self.build(parent, description, &block)
+		def self.build(parent, description = nil, &block)
 			base = Class.new(parent)
 			base.extend(It)
 			base.description = description
@@ -26,7 +26,12 @@ module Sus
 		
 		def print(output)
 			self.superclass.print(output)
-			output.write(" it ", :it, self.description, :reset, " ", :identity, self.identity.to_s, :reset)
+			
+			if description = self.description
+				output.write(" it ", :it, description, :reset, " ", :identity, self.identity.to_s, :reset)
+			else
+				output.write(" and ", :identity, self.identity.to_s, :reset)
+			end
 		end
 		
 		def call(assertions)

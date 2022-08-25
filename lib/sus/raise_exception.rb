@@ -8,6 +8,12 @@ module Sus
 		def initialize(exception_class = nil, message: nil)
 			@exception_class = exception_class
 			@message = message
+			@predicate = nil
+		end
+		
+		def and(predicate)
+			@predicate = predicate
+			return self
 		end
 		
 		def call(assertions, subject)
@@ -16,14 +22,16 @@ module Sus
 					subject.call
 					
 					# Didn't throw any exception, so the expectation failed:
-					assertions.assert(false, self)
+					assertions.assert(false, "raised")
 				rescue @exception_class => exception
 					# Did it have the right message?
 					if @message
-						assertions.assert(@message === exception.message)
+						assertions.assert(@message === exception.message, "raised with message")
 					else
-						assertions.assert(true, self)
+						assertions.assert(true, "raised")
 					end
+					
+					@predicate&.call(assertions, exception)
 				end
 			end
 		end
@@ -37,6 +45,10 @@ module Sus
 			
 			if @message
 				output.write(" with message ", :variable, @message, :reset)
+			end
+			
+			if @predicate
+				output.write(" and ", @predicate)
 			end
 		end
 	end
