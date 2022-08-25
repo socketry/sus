@@ -66,5 +66,9 @@ module Sus
 		def be_a(klass)
 			Be.new(:is_a?, klass)
 		end
+		
+		def be_nil
+			Be.new(:nil?)
+		end
 	end
 end
