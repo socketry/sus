@@ -10,7 +10,7 @@ gemspec
 gem "covered", "~> 0.16"
 
 group :maintenance, optional: true do
-	gem "bake-modernize", path: "../bake-modernize"
+	gem "bake-modernize"
 	gem "bake-gem"
 	
 	gem "utopia-project"
