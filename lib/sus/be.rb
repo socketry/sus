@@ -52,6 +52,8 @@ module Sus
 				Be.new(:===, value)
 			end
 		end
+		
+		NIL = Be.new(:nil?)
 	end
 	
 	class Base
@@ -68,7 +70,7 @@ module Sus
 		end
 		
 		def be_nil
-			Be.new(:nil?)
+			Be::NIL
 		end
 	end
 end

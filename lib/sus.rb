@@ -17,6 +17,6 @@ require_relative 'sus/receive'
 
 require_relative 'sus/raise_exception'
 require_relative 'sus/have_duration'
-require_relative 'sus/have_attributes'
+require_relative 'sus/have'
 
 require_relative 'sus/filter'
