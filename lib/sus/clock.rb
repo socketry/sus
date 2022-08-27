@@ -7,6 +7,10 @@ module Sus
 	class Clock
 		include Comparable
 		
+		def self.start!
+			self.new.tap(&:start!)
+		end
+		
 		def initialize(duration = 0.0)
 			@duration = duration
 		end
@@ -40,6 +44,8 @@ module Sus
 				@duration += Process.clock_gettime(Process::CLOCK_MONOTONIC) - @start_time
 				@start_time = nil
 			end
+			
+			return @duration
 		end
 	end
 end
