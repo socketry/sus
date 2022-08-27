@@ -40,6 +40,7 @@ module Sus
 			output[:passed] = output.style(:green)
 			output[:failed] = output.style(:red)
 			output[:error] = output.style(:red)
+			# output[:inform] = output.style(nil, nil, :bold)
 			
 			return output
 		end

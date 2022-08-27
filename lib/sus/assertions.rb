@@ -130,6 +130,10 @@ module Sus
 			end
 		end
 		
+		def inform(message)
+			@output.puts(:indent, :inform, inform_prefix, message)
+		end
+		
 		# Add deferred assertions.
 		def defer(&block)
 			@deferred << block
@@ -265,6 +269,10 @@ module Sus
 		
 		def fail_prefix
 			"✗ "
+		end
+		
+		def inform_prefix
+			"ℹ "
 		end
 	end
 end

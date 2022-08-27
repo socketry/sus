@@ -45,6 +45,14 @@ describe Sus::Assertions do
 		expect(assertions).to be(:failed?)
 	end
 	
+	it "can add informational output" do
+		assertions.inform("Hello world")
+		
+		expect(assertions.output).to have_attributes(
+			string: be =~ /Hello world/
+		)
+	end
+	
 	# Inverted assertions mean that we are passing if at least one assertion fails!
 	with "inverted assertions", inverted: true do
 		it "can assert something true" do

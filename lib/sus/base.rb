@@ -34,8 +34,8 @@ module Sus
 			@__assertions__.assert(...)
 		end
 		
-		def refute(...)
-			@__assertions__.refute(...)
+		def inform(...)
+			@__assertions__.inform(...)
 		end
 	end
 	
