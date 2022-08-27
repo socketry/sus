@@ -15,23 +15,33 @@ module Sus
 			@duration = duration
 		end
 		
-		attr :duration
+		def duration
+			if @start_time
+				now = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+				@duration += now - @start_time
+				@start_time = now
+			end
+			
+			return @duration
+		end
 		
 		def <=>(other)
-			@duration <=> other.to_f
+			duration <=> other.to_f
 		end
 		
 		def to_f
-			@duration
+			duration
 		end
 		
 		def to_s
-			if @duration < 0.001
-				"#{(@duration * 1_000_000).round(1)}µs"
-			elsif @duration < 1.0
-				"#{(@duration * 1_000).round(1)}ms"
+			duration = self.duration
+			
+			if duration < 0.001
+				"#{(duration * 1_000_000).round(1)}µs"
+			elsif duration < 1.0
+				"#{(duration * 1_000).round(1)}ms"
 			else
-				"#{@duration.round(1)}s"
+				"#{duration.round(1)}s"
 			end
 		end
 		
@@ -41,11 +51,12 @@ module Sus
 		
 		def stop!
 			if @start_time
-				@duration += Process.clock_gettime(Process::CLOCK_MONOTONIC) - @start_time
+				now = Process.clock_gettime(Process::CLOCK_MONOTONIC)
+				@duration += now - @start_time
 				@start_time = nil
 			end
 			
-			return @duration
+			return duration
 		end
 	end
 end
