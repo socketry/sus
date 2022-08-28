@@ -24,7 +24,7 @@ module Sus
 			@verbose = verbose
 			
 			if measure
-				@clock = Clock.new
+				@clock = Clock.start!
 			else
 				@clock = nil
 			end
@@ -181,44 +181,23 @@ module Sus
 			
 			assertions = self.class.new(identity: identity, target: target, output: output, isolated: isolated, inverted: inverted, verbose: @verbose, **options)
 			
-			@clock&.start!
-
 			output.indented do
 				begin
 					result = yield(assertions)
 				rescue StandardError => error
 					assertions.fail(error)
-				ensure
-					@clock&.stop!
 				end
 			end
 			
-			self.add(assertions)
+			# Some assertions are deferred until the end of the test, e.g. expecting a method to be called. This scope is managed by the {add} method. If there are no deferred assertions, then we can add the child assertions right away. Otherwise, we append the child assertions to our own list of deferred assertions. When an assertions instance is marked as `isolated`, it will force all deferred assertions to be resolved. It's also at this time, we should conclude measuring the duration of the test.
+			assertions.resolve_into(self)
 			
 			return result
 		end
 		
+		# Add the child assertions which were nested to this instance.
 		def add(assertions)
-			# If the assertions should be an isolated group, make sure any deferred assertions are resolved:
-			if assertions.isolated and assertions.deferred?
-				assertions.resolve!
-			end
-			
-			if assertions.deferred?
-				self.defer do
-					output.puts(:indent, assertions.target)
-					assertions.resolve!
-					
-					self.add!(assertions)
-				end
-			else
-				self.add!(assertions)
-			end
-		end
-		
-		private
-		
-		def add!(assertions)
+			# All child assertions should be resolved by this point:
 			raise "Nested assertions must be fully resolved!" if assertions.deferred?
 			
 			if assertions.isolated or assertions.inverted
@@ -229,6 +208,29 @@ module Sus
 				append!(assertions)
 			end
 		end
+		
+		def resolve_into(parent)
+			# If the assertions should be an isolated group, make sure any deferred assertions are resolved:
+			if @isolated and self.deferred?
+				self.resolve!
+			end
+			
+			# Check if the child assertions are deferred, and if so, add them to our own list of deferred assertions:
+			if self.deferred?
+				parent.defer do
+					output.puts(:indent, @target)
+					self.resolve!
+					
+					@clock&.stop!
+					parent.add(self)
+				end
+			else
+				@clock&.stop!
+				parent.add(self)
+			end
+		end
+		
+		private
 		
 		def merge!(assertions)
 			@count += assertions.count
