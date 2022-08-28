@@ -1,5 +1,8 @@
 #!/usr/bin/env ruby
 
+# require 'stackprof'
+# StackProf.start(mode: :wall, interval: 10)
+
 require_relative '../lib/sus/config'
 config = Sus::Config.load
 
@@ -19,6 +22,11 @@ assertions = Sus::Assertions.default(output: output, verbose: verbose)
 config.before_tests(assertions)
 registry.call(assertions)
 config.after_tests(assertions)
+
+# StackProf.stop
+# StackProf.results('sus.stackprof')
+#
+# $ stackprof sus.stackprof --text --limit 10
 
 if assertions.failed.any?
 	exit(1)
