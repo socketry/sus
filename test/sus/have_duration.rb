@@ -9,6 +9,6 @@ describe Sus::HaveDuration do
 	end
 	
 	it "can have a duration within a given range" do
-		expect{sleep 0.01}.to have_duration(be_within(0.01..0.03))
+		expect{sleep 0.01}.to have_duration(be_within(0.01..0.1))
 	end
 end
