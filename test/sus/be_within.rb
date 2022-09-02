@@ -14,6 +14,10 @@ describe Sus::BeWithin do
 		expect(15).not.to be_within(10)
 	end
 	
+	it "can be within negative value" do
+		expect(10).to be_within(-10).of(15)
+	end
+	
 	with Range do
 		it "can expect number to be within a range" do
 			expect(5).to be_within(2..7)

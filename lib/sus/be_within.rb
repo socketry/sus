@@ -26,7 +26,9 @@ module Sus
 		end
 		
 		def of(value)
-			Bounded.new(Range.new(value - @tolerance, value + @tolerance))
+			tolerance = @tolerance.abs
+			
+			return Bounded.new(Range.new(value - tolerance, value + tolerance))
 		end
 		
 		def percent_of(value)
