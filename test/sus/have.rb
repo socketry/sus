@@ -23,4 +23,19 @@ describe Sus::Have do
 			:name, "age"
 		)}
 	end
+	
+	describe Array do
+		let(:array) {[1, 2, 3]}
+		
+		it "can contain a value" do
+			expect(array).to have_value(be == 1)
+			expect(array).to have_value(be == 2)
+			expect(array).to have_value(be == 3)
+		end
+		
+		it "doesn't contain a value" do
+			expect(array).not.to have_value(be == 4)
+			expect(array).not.to have_value(be < 1)
+		end
+	end
 end

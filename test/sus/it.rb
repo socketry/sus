@@ -47,5 +47,5 @@ describe Sus::It do
 	
 	describe ->{raise "Boom"} do
 		it {is_expected.to raise_exception(RuntimeError, message: "Boom")}
-	end	
+	end
 end

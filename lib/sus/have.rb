@@ -3,37 +3,11 @@
 # Released under the MIT License.
 # Copyright, 2022, by Samuel Williams.
 
+require_relative 'have/all'
+require_relative 'have/any'
+
 module Sus
 	module Have
-		class Composite
-			def initialize(predicates)
-				@predicates = predicates
-			end
-			
-			def print(output)
-				first = true
-				output.write("have {")
-				@predicates.each do |predicate|
-					if first
-						first = false
-					else
-						output.write(", ")
-					end
-					
-					output.write(predicate)
-				end
-				output.write("}")
-			end
-			
-			def call(assertions, subject)
-				assertions.nested(self) do |assertions|
-					@predicates.each do |predicate|
-						predicate.call(assertions, subject)
-					end
-				end
-			end
-		end
-		
 		class Key
 			def initialize(name, predicate = nil)
 				@name = name
@@ -69,11 +43,29 @@ module Sus
 				end
 			end
 		end
+		
+		class Value
+			def initialize(predicate)
+				@predicate = predicate
+			end
+			
+			def print(output)
+				output.write("value ", @predicate, :reset)
+			end
+			
+			def call(assertions, subject)
+				subject.each_with_index do |value, index|
+					assertions.nested("[#{index}] = #{value.inspect}") do |assertions|
+						@predicate&.call(assertions, value)
+					end
+				end
+			end
+		end
 	end
 	
 	class Base
 		def have(*predicates)
-			Have::Composite.new(predicates)
+			Have::All.new(predicates)
 		end
 		
 		def have_keys(*keys)
@@ -89,7 +81,7 @@ module Sus
 				end
 			end
 			
-			Have::Composite.new(predicates)
+			Have::All.new(predicates)
 		end
 		
 		def have_attributes(**attributes)
@@ -97,7 +89,15 @@ module Sus
 				Have::Attribute.new(key, value)
 			end
 			
-			Have::Composite.new(predicates)
+			Have::All.new(predicates)
+		end
+		
+		def have_any(*predicates)
+			Have::Any.new(predicates)
+		end
+		
+		def have_value(predicate)
+			Have::Any.new([Have::Value.new(predicate)])
 		end
 	end
 end
