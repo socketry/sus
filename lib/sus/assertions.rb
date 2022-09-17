@@ -14,12 +14,15 @@ module Sus
 			self.new(**options)
 		end
 		
-		def initialize(identity: nil, target: nil, output: Output.buffered, inverted: false, isolated: false, measure: false, verbose: false)
+		# @parameter orientation [Boolean] Whether the assertions are positive or negative in general.
+		# @parameter inverted [Boolean] Whether the assertions are inverted with respect to the parent.
+		def initialize(identity: nil, target: nil, output: Output.buffered, inverted: false, orientation: true, isolated: false, measure: false, verbose: false)
 			# In theory, the target could carry the identity of the assertion group, but it's not really necessary, so we just handle it explicitly and pass it into any nested assertions.
 			@identity = identity
 			@target = target
 			@output = output
 			@inverted = inverted
+			@orientation = orientation
 			@isolated = isolated
 			@verbose = verbose
 			
@@ -39,7 +42,13 @@ module Sus
 		attr :target
 		attr :output
 		attr :level
+		
+		# Whether this aset of assertions is inverted
 		attr :inverted
+		
+		# The absolute orientation of this set of assertions:
+		attr :orientation
+		
 		attr :isolated
 		attr :verbose
 		
@@ -118,14 +127,14 @@ module Sus
 			if condition
 				@passed << self
 				
-				if @inverted || @verbose
-					@output.puts(:indent, :passed, pass_prefix, message || "assertion", Output::Backtrace.first(@identity))
+				if !@orientation || @verbose
+					@output.puts(:indent, *pass_prefix, message || "assertion", Output::Backtrace.first(@identity))
 				end
 			else
 				@failed << self
 				
-				if !@inverted || @verbose
-					@output.puts(:indent, :failed, fail_prefix, message || "assertion", Output::Backtrace.first(@identity))
+				if @orientation || @verbose
+					@output.puts(:indent, *fail_prefix, message || "assertion", Output::Backtrace.first(@identity))
 				end
 			end
 		end
@@ -158,7 +167,7 @@ module Sus
 			
 			lines = error.message.split(/\r?\n/)
 			
-			@output.puts(:indent, :error, fail_prefix, "Unhandled exception ", :value, error.class, ":", :reset, " ", lines.shift)
+			@output.puts(:indent, *fail_prefix, "Unhandled exception ", :value, error.class, ":", :reset, " ", lines.shift)
 			
 			lines.each do |line|
 				@output.puts(:indent, "| ", line)
@@ -177,9 +186,16 @@ module Sus
 				output = @output
 			end
 			
+			# Inverting a nested assertions causes the orientation to flip:
+			if inverted
+				orientation = !@orientation
+			else
+				orientation = @orientation
+			end
+			
 			output.puts(:indent, target)
 			
-			assertions = self.class.new(identity: identity, target: target, output: output, isolated: isolated, inverted: inverted, verbose: @verbose, **options)
+			assertions = self.class.new(identity: identity, target: target, output: output, isolated: isolated, inverted: inverted, orientation: orientation, verbose: @verbose, **options)
 			
 			output.indented do
 				begin
@@ -264,13 +280,24 @@ module Sus
 			# 	@output.puts
 			# end
 		end
-				
+		
+		PASSED_PREFIX = [:passed, "✓ "].freeze
+		FAILED_PREFIX = [:failed, "✗ "].freeze
+		
 		def pass_prefix
-			"✓ "
+			if @orientation
+				PASSED_PREFIX
+			else
+				FAILED_PREFIX
+			end
 		end
 		
 		def fail_prefix
-			"✗ "
+			if @orientation
+				FAILED_PREFIX
+			else
+				PASSED_PREFIX
+			end
 		end
 		
 		def inform_prefix
