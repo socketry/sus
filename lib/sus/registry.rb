@@ -19,21 +19,33 @@ require_relative 'let'
 
 module Sus
 	class Registry
+		GLOB_MATCHER = "**/*.rb"
+
 		# Create a top level scope with self as the instance:
 		def initialize(base = Sus.base(self))
 			@base = base
 		end
-		
+
 		attr :base
-		
+
 		def print(output)
 			output.write("Test Registry")
 		end
-		
+
 		def load(path)
-			@base.file(path)
+			if Pathname.new(path).directory?
+				load_directory(path)
+			else
+				@base.file(path)
+			end
 		end
-		
+
+		def load_directory(path)
+			Dir.glob("#{path}/#{GLOB_MATCHER}").each do |file_path|
+				load(file_path)
+			end
+		end
+
 		def call(assertions = Assertions.default)
 			@base.call(assertions)
 			
@@ -43,7 +55,7 @@ module Sus
 		def each(...)
 			@base.each(...)
 		end
-		
+
 		def children
 			@base.children
 		end
