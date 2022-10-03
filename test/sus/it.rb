@@ -44,8 +44,4 @@ describe Sus::It do
 			expect(@__assertions__.passed.size).to be == 2
 		end
 	end
-	
-	describe ->{raise "Boom"} do
-		it {is_expected.to raise_exception(RuntimeError, message: be == "Boom")}
-	end
 end

@@ -6,22 +6,32 @@
 User = Struct.new(:name, :age)
 
 describe Sus::Have do
-	describe User.new("Sus", 20) do
-		it {is_expected.to have_attributes(
-			name: be == "Sus",
-			age: be >= 20
-		)}
+	describe User do
+		let(:user) {subject.new("Sus", 20)}
+		
+		it "has name and age" do
+			expect(user).to have_attributes(
+				name: be == "Sus",
+				age: be >= 20
+			)
+		end
 	end
 	
-	describe({:name => "Sus", 'age' => 20}) do
-		it {is_expected.to have_keys(
-			:name => be == "Sus",
-			"age" => be >= 20
-		)}
+	describe Hash do
+		let(:hash) {subject[:name => "Sus", "age" => 20]}
 		
-		it {is_expected.to have_keys(
-			:name, "age"
-		)}
+		it 'has keys with values' do
+			expect(hash).to have_keys(
+				:name => be == "Sus",
+				"age" => be >= 20
+			)
+		end
+		
+		it 'has keys' do 
+			expect(hash).to have_keys(
+				:name, "age"
+			)
+		end
 	end
 	
 	describe Array do
