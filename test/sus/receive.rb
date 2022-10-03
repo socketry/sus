@@ -32,13 +32,13 @@ describe Sus::Receive do
 	end
 
 	it "can validate arguments" do
-		expect(interface).to receive(:implementation).with_arguments(:foo, :bar)
+		expect(interface).to receive(:implementation).with(:foo, :bar)
 
 		interface.implementation(:foo, :bar)
 	end
 	
 	it "can validate arguments" do
-		expect(interface).not.to receive(:implementation).with_arguments(:foo, :bar)
+		expect(interface).not.to receive(:implementation).with(:foo, :bar)
 
 		interface.implementation(:foo, :bar2)
 	end

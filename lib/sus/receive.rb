@@ -24,21 +24,27 @@ module Sus
 			output.write("receive ", :variable, @method.to_s, :reset, " ")
 		end
 		
-		def with_arguments(*arguments)
-			@arguments = WithArguments.new(arguments)
+		def with_arguments(predicate)
+			@arguments = WithArguments.new(predicate)
 			return self
 		end
-
-		def with_options(*options)
-			@options = WithOptions.new(options)
+		
+		def with_options(predicate)
+			@options = WithOptions.new(predicate)
 			return self
 		end
-
-		def with_block
-			@block = WithBlock.new
+		
+		def with_block(predicate = Be.new(:!=, nil))
+			@block = WithBlock.new(predicate)
 			return self
 		end
-
+		
+		def with(*arguments, **options)
+			with_arguments(Be.new(:==, arguments)) if arguments.any?
+			with_options(Be.new(:==, options)) if options.any?
+			return self
+		end
+		
 		def once
 			@times = Times.new(Be.new(:==, 1))
 		end
@@ -101,44 +107,49 @@ module Sus
 		end
 		
 		class WithArguments
-			def initialize(arguments)
-				@arguments = arguments
+			def initialize(predicate)
+				@predicate = predicate
 			end
 			
 			def print(output)
-				output.write("with arguments ", :variable, @arguments.inspect)
+				output.write("with arguments ", @predicate)
 			end
 			
 			def call(assertions, subject)
 				assertions.nested(self) do |assertions|
-					Expect.new(assertions, subject).to(Be == @arguments)
+					@predicate.call(assertions, subject)
 				end
 			end
 		end
 
 		class WithOptions
-			def initialize(options)
-				@options = options
+			def initialize(predicate)
+				@predicate = predicate
 			end
 			
 			def print(output)
-				output.write("with options ", :variable, @options.inspect)
+				output.write("with options ", @predicate)
 			end
 			
 			def call(assertions, subject)
 				assertions.nested(self) do |assertions|
-					Expect.new(assertions, subject).to(Be.new(:include?, @options))
+					@predicate.call(assertions, subject)
 				end
 			end
 		end
 		
 		class WithBlock
+			def initialize(predicate)
+				@predicate = predicate
+			end
+			
 			def print(output)
-				output.write("with block")
+				output.write("with block", @predicate)
 			end
 
 			def call(assertions, subject)
 				assertions.nested(self) do |assertions|
+					
 					Expect.new(assertions, subject).not.to(Be == nil)
 				end
 			end
