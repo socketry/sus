@@ -26,7 +26,7 @@ module Sus
 				rescue @exception_class => exception
 					# Did it have the right message?
 					if @message
-						assertions.assert(@message === exception.message, "raised with message")
+						@message.call(assertions, exception.message)
 					else
 						assertions.assert(true, "raised")
 					end

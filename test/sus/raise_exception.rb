@@ -16,7 +16,7 @@ describe Sus::RaiseException do
 	it "can raise an exception with a matching message" do
 		expect do
 			raise "Boom"
-		end.to raise_exception(RuntimeError, message: /Boom/)
+		end.to raise_exception(RuntimeError, message: be =~ /Boom/)
 	end
 	
 	it "can not raise an exception" do
@@ -28,7 +28,7 @@ describe Sus::RaiseException do
 		it "can raise an exception with matching attributes" do
 			expect do
 				raise AgeError.new(20)
-			end.to raise_exception(AgeError, message: /Too old/).and(have_attributes(age: be >= 20))
+			end.to raise_exception(AgeError, message: be =~ /Too old/).and(have_attributes(age: be >= 20))
 		end
 	end
 end

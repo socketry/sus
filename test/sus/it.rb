@@ -46,6 +46,6 @@ describe Sus::It do
 	end
 	
 	describe ->{raise "Boom"} do
-		it {is_expected.to raise_exception(RuntimeError, message: "Boom")}
+		it {is_expected.to raise_exception(RuntimeError, message: be == "Boom")}
 	end
 end
