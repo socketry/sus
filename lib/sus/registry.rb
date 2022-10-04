@@ -23,14 +23,19 @@ module Sus
 		DIRECTORY_GLOB = "**/*.rb"
 		
 		# Create a top level scope with self as the instance:
-		def initialize(base = Sus.base(self))
-			@base = base
+		def initialize(**options)
+			@base = Sus.base(self, **options)
+			@loaded = {}
 		end
-		
+
 		attr :base
 		
 		def print(output)
 			output.write("Test Registry")
+		end
+		
+		def to_s
+			@base.identity.to_s
 		end
 		
 		def load(path)
@@ -42,7 +47,7 @@ module Sus
 		end
 		
 		private def load_file(path)
-			@base.file(path)
+			@loaded[path] ||= @base.file(path)
 		end
 		
 		private def load_directory(path)

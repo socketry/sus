@@ -30,14 +30,12 @@ module Sus
 				self.class.new(self)
 			end
 			
-			attr :output
-			
 			def each(&block)
 				@chunks.each(&block)
 			end
 			
 			def append(buffer)
-				@chunks.concat(buffer.output)
+				@chunks.concat(buffer.chunks)
 				@tee&.append(buffer)
 			end
 			

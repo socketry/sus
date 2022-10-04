@@ -1,0 +1,86 @@
+#!/usr/bin/env ruby
+
+require 'json'
+
+require_relative '../lib/sus/config'
+config = Sus::Config.load
+
+require_relative '../lib/sus'
+
+verbose = false
+guard = Thread::Mutex.new
+
+require 'etc'
+count = Etc.nprocessors
+
+$stdout.sync = true
+
+while line = $stdin.gets
+	message = JSON.parse(line)
+	
+	if tests = message['run']
+		jobs = Thread::Queue.new
+		results = Thread::Queue.new
+		
+		top = Sus::Assertions.new(measure: true)
+		config.before_tests(top)
+		
+		aggregate = Thread.new do
+			while result = results.pop
+				top.add(result.assertions)
+			end
+		end
+		
+		loader = Thread.new do
+			registry = config.load_registry(tests)
+			
+			registry.each do |child|
+				jobs << child
+			end
+			
+			jobs.close
+		end
+		
+		workers = count.times.map do |index|
+			Thread.new do
+				while job = jobs.pop
+					guard.synchronize do
+						puts JSON.generate({started: job.identity})
+					end
+					
+					assertions = Sus::Assertions.new(measure: true)
+					job.call(assertions)
+					
+					guard.synchronize do
+						if assertions.passed?
+							puts JSON.generate({passed: job.identity, duration: assertions.clock.ms})
+						else
+							puts JSON.generate({failed: job.identity, message: assertions.output.string, duration: assertions.clock.ms})
+						end
+					end
+				end
+			end
+		end
+		
+		loader.join
+		workers.each(&:join)
+		results.close
+		
+		aggregate.join
+		config.after_tests(top)
+		
+		workers.each(&:join)
+		
+		if config.respond_to?(:covered)
+			if covered = config.covered and covered.record?
+				covered.policy.each do |coverage|
+					puts JSON.generate({coverage: coverage.path, counts: coverage.counts})
+				end
+			end
+		end
+		
+		puts JSON.generate({finished: true, message: top.output.string, duration: top.clock.ms})
+	else
+		$stderr.puts "Unknown message: #{message}"
+	end
+end

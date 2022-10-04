@@ -10,9 +10,10 @@ module Sus
 			@subject = subject
 			@inverted = inverted
 		end
-
+		
 		attr :subject
 		attr :inverted
+		attr :assertions
 		
 		def not
 			self.dup.tap do |expect|
