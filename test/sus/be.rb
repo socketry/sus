@@ -12,17 +12,41 @@ describe Sus::Be do
 		it "can expect inequality" do
 			expect(true).to be != false
 		end
+		
+		it "can be truthy" do
+			expect(true).to be_truthy
+		end
+		
+		it "can't be falsey" do
+			expect(true).not.to be_falsey
+		end
 	end
 	
 	with "false" do
 		it "can expect equality" do
 			expect(false).to be == false
 		end
+		
+		it "can be falsey" do
+			expect(false).to be_falsey
+		end
+		
+		it "can't be truthy" do
+			expect(false).not.to be_truthy
+		end
 	end
 	
 	with "nil" do
 		it "can expect equality" do
 			expect(nil).to be == nil
+		end
+		
+		it "can be falsey" do
+			expect(nil).to be_falsey
+		end
+		
+		it "can't be truthy" do
+			expect(nil).not.to be_truthy
 		end
 	end
 	
@@ -53,7 +77,7 @@ describe Sus::Be do
 	end
 	
 	with Array do
-		it "can compare equality"	do
+		it "can compare equality" do
 			expect([1, 2, 3]).to be == [1, 2, 3]
 		end
 	end

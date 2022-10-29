@@ -72,5 +72,9 @@ module Sus
 		def be_nil
 			Be::NIL
 		end
+		
+		def be_equal(other)
+			Be.new(:equal?, other)
+		end
 	end
 end
