@@ -10,6 +10,7 @@ require_relative 'sus/assertions'
 
 require_relative 'sus/expect'
 require_relative 'sus/be'
+require_relative 'sus/be_truthy'
 require_relative 'sus/be_within'
 
 require_relative 'sus/mock'
