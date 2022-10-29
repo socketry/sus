@@ -35,19 +35,33 @@ module Sus
 		end
 		
 		def call(assertions)
-			assertions.nested(self, identity: self.identity, isolated: true, measure: true) do |assertions|
-				instance = self.new(assertions)
-				
-				instance.around do
-					instance.call
+			reason = catch(:skip) do
+				return assertions.nested(self, identity: self.identity, isolated: true, measure: true) do |assertions|
+					instance = self.new(assertions)
+					
+					instance.around do
+						instance.call
+					end
 				end
 			end
+			
+			if reason
+				assertions.skip(reason)
+			end
+			
+			return nil
 		end
 	end
 	
 	module Context
 		def it(...)
 			add It.build(self, ...)
+		end
+	end
+	
+	class Base
+		def skip(reason)
+			throw :skip, reason
 		end
 	end
 end

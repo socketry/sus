@@ -37,6 +37,18 @@ describe Sus::It do
 		end
 	end
 	
+	with "skip" do
+		it "can skip tests" do
+			context = Sus::It.build(self.class, "test") do
+				throw :skip, "skipped test"
+			end
+			
+			context.call(assertions)
+			
+			expect(assertions.output.string).to be =~ /skipped test/
+		end
+	end
+	
 	with "__assertions__" do
 		it "counts assertions" do
 			assert(true)

@@ -139,6 +139,10 @@ module Sus
 			end
 		end
 		
+		def skip(reason)
+			@output.puts(:indent, :skip, skip_prefix, reason)
+		end
+		
 		def inform(message)
 			@output.puts(:indent, :inform, inform_prefix, message)
 		end
@@ -302,6 +306,10 @@ module Sus
 		
 		def inform_prefix
 			"ℹ "
+		end
+		
+		def skip_prefix
+			"⚠ "
 		end
 	end
 end
