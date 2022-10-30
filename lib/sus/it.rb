@@ -35,19 +35,21 @@ module Sus
 		end
 		
 		def call(assertions)
-			reason = catch(:skip) do
-				return assertions.nested(self, identity: self.identity, isolated: true, measure: true) do |assertions|
-					instance = self.new(assertions)
-					
-					instance.around do
-						instance.call
-					end
+			assertions.nested(self, identity: self.identity, isolated: true, measure: true) do |assertions|
+				instance = self.new(assertions)
+				
+				instance.around do
+					handle_skip(instance, assertions)
 				end
 			end
-			
-			if reason
-				assertions.skip(reason)
+		end
+		
+		def handle_skip(instance, assertions)
+			reason = catch(:skip) do
+				return instance.call
 			end
+			
+			assertions.skip(reason)
 			
 			return nil
 		end
