@@ -45,7 +45,7 @@ module Sus
 		end
 		
 		private def load_directory(path)
-			::Dir.glob(DIRECTORY_GLOB, base: path, &self.method(:load_file))
+			::Dir.glob(::File.join(path, DIRECTORY_GLOB), &self.method(:load_file))
 		end
 		
 		def call(assertions = Assertions.default)
