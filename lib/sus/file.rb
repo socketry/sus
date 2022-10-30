@@ -11,7 +11,7 @@ Sus::TOPLEVEL_CLASS_EVAL = ->(klass, path){klass.class_eval(::File.read(path), p
 module Sus
 	module File
 		extend Context
-				
+		
 		def self.extended(base)
 			base.children = Hash.new
 		end

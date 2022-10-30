@@ -19,6 +19,8 @@ require_relative 'let'
 
 module Sus
 	class Registry
+		DIRECTORY_GLOB = "**/*.rb"
+		
 		# Create a top level scope with self as the instance:
 		def initialize(base = Sus.base(self))
 			@base = base
@@ -31,7 +33,19 @@ module Sus
 		end
 		
 		def load(path)
+			if ::File.directory?(path)
+				load_directory(path)
+			else
+				load_file(path)
+			end
+		end
+		
+		private def load_file(path)
 			@base.file(path)
+		end
+		
+		private def load_directory(path)
+			::Dir.glob(::File.join(path, DIRECTORY_GLOB), &self.method(:load_file))
 		end
 		
 		def call(assertions = Assertions.default)
