@@ -47,14 +47,17 @@ module Sus
 		
 		def once
 			@times = Times.new(Be.new(:==, 1))
+			return self
 		end
 		
 		def twice
 			@times = Times.new(Be.new(:==, 2))
+			return self
 		end
 		
 		def with_call_count(predicate)
 			@times = Times.new(predicate)
+			return self
 		end
 		
 		def and_return(*returning)
