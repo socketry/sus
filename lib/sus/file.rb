@@ -11,27 +11,27 @@ Sus::TOPLEVEL_CLASS_EVAL = ->(klass, path){klass.class_eval(::File.read(path), p
 module Sus
 	module File
 		extend Context
-
+		
 		def self.extended(base)
 			base.children = Hash.new
 		end
-
+		
 		def self.build(parent, path)
 			base = Class.new(parent)
 			base.extend(File)
 			base.description = path
 			base.identity = Identity.new(path)
-
+			
 			TOPLEVEL_CLASS_EVAL.call(base, path)
-
+			
 			return base
 		end
-
+		
 		def print(output)
 			output.write("file ", :path, self.identity)
 		end
 	end
-
+	
 	module Context
 		def file(path)
 			add File.build(self, path)
