@@ -33,15 +33,19 @@ module Sus
 		end
 		
 		def load(path)
-			if File.directory?(path)
+			if ::File.directory?(path)
 				load_directory(path)
 			else
-				@base.file(path)
+				load_file(path)
 			end
 		end
 		
-		def load_directory(path)
-			Dir.glob(DIRECTORY_GLOB, base: path, &self.method(:load))
+		private def load_file(path)
+			@base.file(path)
+		end
+		
+		private def load_directory(path)
+			::Dir.glob(DIRECTORY_GLOB, base: path, &self.method(:load_file))
 		end
 		
 		def call(assertions = Assertions.default)
