@@ -17,7 +17,7 @@ describe Sus::Registry do
 	it "can load a directory" do
 		registry.load(registry_directory)
 		
-		found_files = subject.base.children.keys.map(&:key)
+		found_files = registry.base.children.keys.map(&:key)
 		
 		expect(found_files).to have_value(be =~ /directory_test_file\.rb/)
 		expect(found_files).to have_value(be =~ /nested_directory_test_file\.rb/)
