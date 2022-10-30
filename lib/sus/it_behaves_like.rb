@@ -11,12 +11,18 @@ module Sus
 		
 		attr_accessor :shared
 		
-		def self.build(parent, shared, unique: false)
+		def self.build(parent, shared, unique: false, &block)
 			base = Class.new(parent)
 			base.singleton_class.prepend(ItBehavesLike)
 			base.children = Hash.new
 			base.description = shared.name
 			base.identity = Identity.nested(parent.identity, base.description, unique: unique)
+
+			# User provided block is evaluated first, so that it can provide default behaviour for the shared context:
+			if block_given?
+				base.class_exec(&block)
+			end
+
 			base.class_exec(&shared.block)
 			return base
 		end
@@ -28,8 +34,8 @@ module Sus
 	end
 	
 	module Context
-		def it_behaves_like(shared, **options)
-			add ItBehavesLike.build(self, shared, **options)
+		def it_behaves_like(shared, **options, &block)
+			add ItBehavesLike.build(self, shared, **options, &block)
 		end
 	end
 end
