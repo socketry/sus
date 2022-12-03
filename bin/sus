@@ -28,6 +28,6 @@ config.after_tests(assertions)
 #
 # $ stackprof sus.stackprof --text --limit 10
 
-if assertions.failed.any?
+unless assertions.passed?
 	exit(1)
 end
