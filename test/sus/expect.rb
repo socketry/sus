@@ -11,4 +11,14 @@ describe Sus::Expect do
 			expect(target).to be == {}
 		end
 	end
+	
+	with "exceptions" do
+		let(:assertions) {Sus::Assertions.new}
+		let(:expectation) {Sus::Expect.new(assertions, Object.new)}
+		
+		it "is expected to propagate errors" do
+			expectation.not.to be(:no_such_method?)
+			expect(assertions).to be(:errored?)
+		end
+	end
 end

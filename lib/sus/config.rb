@@ -116,13 +116,13 @@ module Sus
 			
 			assertions.print(output)
 			output.puts
-
+			
 			print_finished_statistics(assertions)
-
+			
 			if !partial? and assertions.passed?
 				print_test_feedback(assertions)
 			end
-						
+			
 			print_slow_tests(assertions)
 			print_failed_assertions(assertions)
 		end
@@ -193,14 +193,22 @@ module Sus
 			end
 		end
 		
-		def print_failed_assertions(assertions)
-			if assertions.failed.any?
+		def print_assertions(title, assertions)
+			if assertions.any?
 				output.puts
+				output.puts title
 				
-				assertions.failed.each do |failure|
-					output.append(failure.output)
+				assertions.each do |assertion|
+					assertions.each do |failure|
+						output.append(failure.output)
+					end
 				end
 			end
+		end
+		
+		def print_failed_assertions(assertions)
+			print_assertions("🤔 Failed assertions:", assertions.failed)
+			print_assertions("🔥 Errored assertions:", assertions.errored)
 		end
 	end
 end

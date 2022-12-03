@@ -39,8 +39,9 @@ module Sus
 			
 			output[:passed] = output.style(:green)
 			output[:failed] = output.style(:red)
-			output[:error] = output.style(:red)
-			output[:skip] = output.style(:blue)
+			output[:deferred] = output.style(:yellow)
+			output[:skipped] = output.style(:blue)
+			output[:errored] = output.style(:red)
 			# output[:inform] = output.style(nil, nil, :bold)
 			
 			return output

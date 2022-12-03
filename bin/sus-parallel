@@ -65,6 +65,6 @@ results.close
 assertions = aggregation.value
 config.after_tests(assertions)
 
-if assertions.failed.any?
+unless assertions.passed?
 	exit(1)
 end

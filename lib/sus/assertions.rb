@@ -35,6 +35,8 @@ module Sus
 			@passed = Array.new
 			@failed = Array.new
 			@deferred = Array.new
+			@skipped = Array.new
+			@errored = Array.new
 			
 			@count = 0
 		end
@@ -63,15 +65,18 @@ module Sus
 		# Nested assertions have been deferred.
 		attr :deferred
 		
+		attr :skipped
+		attr :errored
+		
 		# The total number of assertions performed:
 		attr :count
 		
 		def inspect
-			"\#<#{self.class} #{@passed.size} passed #{@failed.size} failed #{@deferred.size} deferred>"
+			"\#<#{self.class} #{@passed.size} passed #{@failed.size} failed #{@deferred.size} deferred #{@skipped.size} skipped #{@errored.size} errored>"
 		end
 		
 		def total
-			@passed.size + @failed.size
+			@passed.size + @failed.size + @deferred.size + @skipped.size + @errored.size
 		end
 		
 		def print(output, verbose: @verbose)
@@ -95,6 +100,14 @@ module Sus
 					output.write(:deferred, @deferred.size, " deferred", :reset, " ")
 				end
 				
+				if @skipped.any?
+					output.write(:skipped, @skipped.size, " skipped", :reset, " ")
+				end
+				
+				if @errored.any?
+					output.write(:errored, @errored.size, " errored", :reset, " ")
+				end
+				
 				output.write("out of ", self.total, " total (", @count, " assertions)")
 			end
 		end
@@ -104,21 +117,25 @@ module Sus
 		end
 		
 		def empty?
-			@passed.empty? and @failed.empty?
+			@passed.empty? and @failed.empty? and @deferred.empty? and @skipped.empty? and @errored.empty?
 		end
 		
 		def passed?
 			if @inverted
 				# Inverted assertions:
-				self.failed.any?
+				@failed.any? and @errored.empty?
 			else
 				# Normal assertions:
-				self.failed.empty?
+				@failed.empty? and @errored.empty?
 			end
 		end
 		
 		def failed?
 			!self.passed?
+		end
+		
+		def errored?
+			@errored.any?
 		end
 		
 		def assert(condition, message = nil)
@@ -140,7 +157,8 @@ module Sus
 		end
 		
 		def skip(reason)
-			@output.puts(:indent, :skip, skip_prefix, reason)
+			@output.puts(:indent, :skipped, skip_prefix, reason)
+			@skipped << self
 		end
 		
 		def inform(message)
@@ -166,15 +184,15 @@ module Sus
 			end
 		end
 		
-		def fail(error)
-			@failed << self
+		def error!(error)
+			@errored << self
 			
 			lines = error.message.split(/\r?\n/)
 			
-			@output.puts(:indent, *fail_prefix, "Unhandled exception ", :value, error.class, ":", :reset, " ", lines.shift)
+			@output.puts(:indent, *error_prefix, error.class, ": ", lines.shift)
 			
 			lines.each do |line|
-				@output.puts(:indent, "| ", line)
+				@output.puts(:indent, line)
 			end
 				
 			@output.write(Output::Backtrace.for(error, @identity))
@@ -205,7 +223,7 @@ module Sus
 				begin
 					result = yield(assertions)
 				rescue StandardError => error
-					assertions.fail(error)
+					assertions.error!(error)
 				end
 			end
 			
@@ -255,7 +273,9 @@ module Sus
 		def merge!(assertions)
 			@count += assertions.count
 			
-			if assertions.passed?
+			if assertions.errored?
+				@errored << assertions
+			elsif assertions.passed?
 				@passed << assertions
 
 				# if @verbose
@@ -277,6 +297,8 @@ module Sus
 			@passed.concat(assertions.passed)
 			@failed.concat(assertions.failed)
 			@deferred.concat(assertions.deferred)
+			@skipped.concat(assertions.skipped)
+			@errored.concat(assertions.errored)
 			
 			# if @verbose
 			# 	@output.write(:indent)
@@ -309,7 +331,11 @@ module Sus
 		end
 		
 		def skip_prefix
-			"⚠ "
+			"⏸ "
+		end
+		
+		def error_prefix
+			[:errored, "⚠ "]
 		end
 	end
 end
