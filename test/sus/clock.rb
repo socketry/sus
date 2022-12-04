@@ -39,11 +39,13 @@ describe Sus::Clock do
 	with '.start!' do
 		let(:clock) {Sus::Clock.start!}
 		it 'can start instance of clock' do
+			clock
 			sleep(0.005)
 			expect(clock.stop!).to be > 0.0
 		end
 		
 		it 'can accumulate duration' do
+			clock
 			sleep(0.005)
 			expect(clock.duration).to be > 0.0
 		end
