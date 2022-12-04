@@ -27,5 +27,5 @@ Gem::Specification.new do |spec|
 	
 	spec.add_development_dependency "bake-test", "~> 0.1"
 	spec.add_development_dependency "bake-test-external", "~> 0.1"
-	spec.add_development_dependency "covered", "~> 0.16.6"
+	spec.add_development_dependency "covered", "~> 0.18"
 end
