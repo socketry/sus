@@ -9,6 +9,15 @@ Context = Sus::Shared("context") do
 		
 		expect(instance.children).not.to be(:empty?)
 	end
+	
+	it "does not include unnecessary variables" do
+		expect(binding.local_variables).to be(:include?, :__klass__)
+		expect(binding.local_variables).to be(:include?, :__path__)
+		
+		binding.local_variables.each do |variable_name|
+			expect(variable_name.to_s).to be(:start_with?, '_')
+		end
+	end
 end
 
 describe Sus::Describe do
