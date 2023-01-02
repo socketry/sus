@@ -2,6 +2,7 @@
 
 # Released under the MIT License.
 # Copyright, 2021-2022, by Samuel Williams.
+# Copyright, 2022, by Brad Schrag.
 
 describe Sus::Registry do
 	let(:registry) {subject.new}

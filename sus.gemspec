@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
 	spec.version = Sus::VERSION
 	
 	spec.summary = "A fast and scalable test runner."
-	spec.authors = ["Samuel Williams"]
+	spec.authors = ["Samuel Williams", "Brad Schrag"]
 	spec.license = "MIT"
 	
 	spec.cert_chain  = ['release.cert']
