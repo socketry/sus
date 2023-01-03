@@ -11,7 +11,7 @@ module Sus
 		
 		attr_accessor :shared
 		
-		def self.build(parent, shared, unique: false, &block)
+		def self.build(parent, shared, arguments = nil, unique: false, &block)
 			base = Class.new(parent)
 			base.singleton_class.prepend(ItBehavesLike)
 			base.children = Hash.new
@@ -20,10 +20,10 @@ module Sus
 
 			# User provided block is evaluated first, so that it can provide default behaviour for the shared context:
 			if block_given?
-				base.class_exec(&block)
+				base.class_exec(*arguments, &block)
 			end
 
-			base.class_exec(&shared.block)
+			base.class_exec(*arguments, &shared.block)
 			return base
 		end
 		
@@ -34,8 +34,8 @@ module Sus
 	end
 	
 	module Context
-		def it_behaves_like(shared, **options, &block)
-			add ItBehavesLike.build(self, shared, **options, &block)
+		def it_behaves_like(shared, *arguments, **options, &block)
+			add ItBehavesLike.build(self, shared, arguments, **options, &block)
 		end
 	end
 end
