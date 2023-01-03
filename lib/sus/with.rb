@@ -21,6 +21,8 @@ module Sus
 			base.identity = Identity.nested(parent.identity, base.description, unique: unique)
 			base.variables = variables
 			
+			base.define_method(:description, ->{subject})
+			
 			variables.each do |key, value|
 				base.define_method(key, ->{value})
 			end
