@@ -33,9 +33,39 @@ module Sus
 		end
 	end
 	
+	class FileLoadError
+		def self.build(parent, path, error)
+			self.new(Identity.new(path), path, error)
+		end
+		
+		def initialize(identity, path, error)
+			@identity = identity
+			@path = path
+			@error = error
+		end
+		
+		def leaf?
+			true
+		end
+		
+		def print(output)
+			output.write("file ", :path, @identity)
+		end
+		
+		def call(assertions)
+			assertions.nested(self, identity: @identity, isolated: true) do |assertions|
+				assertions.error!(@error)
+			end
+		end
+	end
+	
+	private_constant :FileLoadError
+	
 	module Context
 		def file(path)
 			add File.build(self, path)
+		rescue StandardError, SyntaxError => error
+			add FileLoadError.build(self, path, error)
 		end
 	end
 end
