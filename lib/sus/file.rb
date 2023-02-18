@@ -44,6 +44,8 @@ module Sus
 			@error = error
 		end
 		
+		attr :identity
+		
 		def leaf?
 			true
 		end
@@ -64,7 +66,7 @@ module Sus
 	module Context
 		def file(path)
 			add File.build(self, path)
-		rescue StandardError, SyntaxError => error
+		rescue StandardError, LoadError, SyntaxError => error
 			add FileLoadError.build(self, path, error)
 		end
 	end
