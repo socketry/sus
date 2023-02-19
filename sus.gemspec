@@ -21,7 +21,7 @@ Gem::Specification.new do |spec|
 	
 	spec.files = Dir.glob(['{bin,lib}/**/*', '*.md'], File::FNM_DOTMATCH, base: __dir__)
 	
-	spec.executables = ["sus", "sus-parallel"]
+	spec.executables = ["sus", "sus-parallel", "sus-tree", "sus-host"]
 	
 	spec.required_ruby_version = ">= 2.7.0"
 	
