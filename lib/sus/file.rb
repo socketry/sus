@@ -50,6 +50,12 @@ module Sus
 			true
 		end
 		
+		EMPTY = Array.new.freeze
+		
+		def children
+			EMPTY
+		end
+		
 		def print(output)
 			output.write("file ", :path, @identity)
 		end
