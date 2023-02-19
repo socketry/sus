@@ -15,7 +15,12 @@ count = Etc.nprocessors
 
 $stdout.sync = true
 
-while line = $stdin.gets
+input = $stdin.dup
+$stdin.reopen(File::NULL)
+output = $stdout.dup
+$stdout.reopen($stderr)
+
+while line = input.gets
 	message = JSON.parse(line)
 	
 	if tests = message['run']
@@ -45,7 +50,7 @@ while line = $stdin.gets
 			Thread.new do
 				while job = jobs.pop
 					guard.synchronize do
-						puts JSON.generate({started: job.identity})
+						output.puts JSON.generate({started: job.identity})
 					end
 					
 					assertions = Sus::Assertions.new(measure: true)
@@ -53,9 +58,9 @@ while line = $stdin.gets
 					
 					guard.synchronize do
 						if assertions.passed?
-							puts JSON.generate({passed: job.identity, duration: assertions.clock.ms})
+							output.puts JSON.generate({passed: job.identity, duration: assertions.clock.ms})
 						else
-							puts JSON.generate({failed: job.identity, message: assertions.output.string, duration: assertions.clock.ms})
+							output.puts JSON.generate({failed: job.identity, message: assertions.output.string, duration: assertions.clock.ms})
 						end
 					end
 				end
@@ -74,12 +79,12 @@ while line = $stdin.gets
 		if config.respond_to?(:covered)
 			if covered = config.covered and covered.record?
 				covered.policy.each do |coverage|
-					puts JSON.generate({coverage: coverage.path, counts: coverage.counts})
+					output.puts JSON.generate({coverage: coverage.path, counts: coverage.counts})
 				end
 			end
 		end
 		
-		puts JSON.generate({finished: true, message: top.output.string, duration: top.clock.ms})
+		output.puts JSON.generate({finished: true, message: top.output.string, duration: top.clock.ms})
 	else
 		$stderr.puts "Unknown message: #{message}"
 	end
