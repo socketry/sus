@@ -32,7 +32,7 @@ while line = input.gets
 		
 		aggregate = Thread.new do
 			while result = results.pop
-				top.add(result.assertions)
+				top.add(result)
 			end
 		end
 		
@@ -55,6 +55,8 @@ while line = input.gets
 					
 					assertions = Sus::Assertions.new(measure: true)
 					job.call(assertions)
+					
+					results.push(assertions)
 					
 					guard.synchronize do
 						if assertions.passed?
