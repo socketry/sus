@@ -35,7 +35,7 @@ module Sus
 	
 	class FileLoadError
 		def self.build(parent, path, error)
-			self.new(Identity.new(path), path, error)
+			self.new(Identity.new(path, path, 1), path, error)
 		end
 		
 		def initialize(identity, path, error)
@@ -50,10 +50,14 @@ module Sus
 			true
 		end
 		
-		EMPTY = Array.new.freeze
+		EMPTY = Hash.new.freeze
 		
 		def children
 			EMPTY
+		end
+		
+		def description
+			@path
 		end
 		
 		def print(output)
