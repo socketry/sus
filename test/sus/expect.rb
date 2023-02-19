@@ -10,6 +10,11 @@ describe Sus::Expect do
 		it "can expect equality" do
 			expect(target).to be == {}
 		end
+		
+		it "can expect to include" do
+			target[:key] = "value"
+			expect(target).to be(:include?, :key)
+		end
 	end
 	
 	with "exceptions" do

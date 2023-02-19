@@ -39,10 +39,11 @@ module Sus
 		end
 	end
 	
-	def self.base(description = nil)
+	def self.base(description = nil, root: nil)
 		base = Class.new(Base)
 		
 		base.extend(Context)
+		base.identity = Identity.new(root) if root
 		base.description = description
 				
 		return base

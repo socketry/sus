@@ -1,0 +1,12 @@
+#!/usr/bin/env ruby
+
+require 'json'
+
+require_relative '../lib/sus/config'
+config = Sus::Config.load
+
+require_relative '../lib/sus'
+
+verbose = false
+registry = config.registry
+puts Sus::Tree.new(registry.base).to_json

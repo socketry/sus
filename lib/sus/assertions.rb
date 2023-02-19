@@ -138,20 +138,32 @@ module Sus
 			@errored.any?
 		end
 		
+		class Assert
+			def initialize(location, message)
+				@location = location
+				@message = message
+			end
+			
+			attr :location
+			attr :message
+		end
+		
 		def assert(condition, message = nil)
 			@count += 1
+			backtrace = Output::Backtrace.first(@identity)
 			
 			if condition
-				@passed << self
+				@passed << Assert.new(message, backtrace)
 				
 				if !@orientation || @verbose
-					@output.puts(:indent, *pass_prefix, message || "assertion", Output::Backtrace.first(@identity))
+					@output.puts(:indent, *pass_prefix, message || "assertion", backtrace)
 				end
 			else
-				@failed << self
+				
+				@failed << Assert.new(message, backtrace)
 				
 				if @orientation || @verbose
-					@output.puts(:indent, *fail_prefix, message || "assertion", Output::Backtrace.first(@identity))
+					@output.puts(:indent, *fail_prefix, message || "assertion", backtrace)
 				end
 			end
 		end

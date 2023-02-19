@@ -33,6 +33,10 @@ module Sus
 			duration
 		end
 		
+		def ms
+			duration * 1000.0
+		end
+		
 		def to_s
 			duration = self.duration
 			
@@ -43,6 +47,10 @@ module Sus
 			else
 				"#{duration.round(1)}s"
 			end
+		end
+		
+		def reset!(duration = 0.0)
+			@duration = duration
 		end
 		
 		def start!

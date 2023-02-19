@@ -82,12 +82,12 @@ module Sus
 			@registry ||= self.load_registry
 		end
 		
-		def load_registry
-			registry = Sus::Registry.new
+		def load_registry(paths = @paths)
+			registry = Sus::Registry.new(root: @root)
 			
-			if @paths&.any?
+			if paths&.any?
 				registry = Sus::Filter.new(registry)
-				@paths.each do |path|
+				paths.each do |path|
 					registry.load(path)
 				end
 			else
@@ -99,42 +99,41 @@ module Sus
 			return registry
 		end
 		
-		def before_tests(assertions)
+		def before_tests(assertions, output: self.output)
+			@clock.reset!
 			@clock.start!
 		end
 		
-		def after_tests(assertions)
+		def after_tests(assertions, output: self.output)
 			@clock.stop!
 			
-			self.print_summary(assertions)
+			self.print_summary(output, assertions)
 		end
 		
 		protected
 		
-		def print_summary(assertions)
-			output = self.output
-			
+		def print_summary(output, assertions)
 			assertions.print(output)
 			output.puts
 			
-			print_finished_statistics(assertions)
+			print_finished_statistics(output, assertions)
 			
 			if !partial? and assertions.passed?
-				print_test_feedback(assertions)
+				print_test_feedback(output, assertions)
 			end
 			
-			print_slow_tests(assertions)
-			print_failed_assertions(assertions)
+			print_slow_tests(output, assertions)
+			print_failed_assertions(output, assertions)
 		end
 		
-		def print_finished_statistics(assertions)
+		def print_finished_statistics(output, assertions)
 			duration = @clock.duration
 			rate = assertions.count / duration
 			
 			output.puts "🏁 Finished in ", @clock, "; #{rate.round(3)} assertions per second."
 		end
 		
-		def print_test_feedback(assertions)
+		def print_test_feedback(output, assertions)
 			duration = @clock.duration
 			rate = assertions.count / duration
 			
@@ -179,7 +178,7 @@ module Sus
 			end
 		end
 		
-		def print_slow_tests(assertions, threshold = 0.1)
+		def print_slow_tests(output, assertions, threshold = 0.1)
 			slowest_tests = assertions.passed.select{|test| test.clock > threshold}.sort_by(&:clock).reverse!
 			
 			if slowest_tests.empty?
@@ -193,7 +192,7 @@ module Sus
 			end
 		end
 		
-		def print_assertions(title, assertions)
+		def print_assertions(output, title, assertions)
 			if assertions.any?
 				output.puts
 				output.puts title
@@ -206,9 +205,9 @@ module Sus
 			end
 		end
 		
-		def print_failed_assertions(assertions)
-			print_assertions("🤔 Failed assertions:", assertions.failed)
-			print_assertions("🔥 Errored assertions:", assertions.errored)
+		def print_failed_assertions(output, assertions)
+			print_assertions(output, "🤔 Failed assertions:", assertions.failed)
+			print_assertions(output, "🔥 Errored assertions:", assertions.errored)
 		end
 	end
 end
