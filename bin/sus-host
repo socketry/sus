@@ -60,7 +60,7 @@ while line = input.gets
 					
 					guard.synchronize do
 						if assertions.passed?
-							output.puts JSON.generate({passed: job.identity, duration: assertions.clock.ms})
+							output.puts JSON.generate({passed: job.identity, message: assertions.output.string, duration: assertions.clock.ms})
 						else
 							output.puts JSON.generate({failed: job.identity, message: assertions.output.string, duration: assertions.clock.ms})
 						end
