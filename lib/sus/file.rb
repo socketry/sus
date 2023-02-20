@@ -9,6 +9,17 @@ require_relative 'context'
 # This has to be done at the top level. It allows us to define constants within the given class while still retaining top-level constant resolution.
 Sus::TOPLEVEL_CLASS_EVAL = ->(__klass__, __path__){__klass__.class_eval(::File.read(__path__), __path__)}
 
+# This is a hack to allow us to get the line number of a syntax error.
+unless SyntaxError.method_defined?(:lineno)
+	class SyntaxError
+		def lineno
+			if message =~ /:(\d+):/
+				$1.to_i
+			end
+		end
+	end
+end
+
 module Sus
 	module File
 		extend Context
@@ -41,7 +52,15 @@ module Sus
 	
 	class FileLoadError
 		def self.build(parent, path, error)
-			identity = Identity.file(parent.identity, path).scoped(error.backtrace_locations)
+			identity = Identity.file(parent.identity, path)
+			
+			# This is a mess.
+			if error.is_a?(SyntaxError) and error.path == path
+				identity = identity.with_line(error.lineno)
+			else
+				identity = identity.scoped(error.backtrace_locations)
+			end
+			
 			self.new(identity, path, error)
 		end
 		
@@ -52,6 +71,7 @@ module Sus
 		end
 		
 		attr :identity
+		attr :error
 		
 		def leaf?
 			true

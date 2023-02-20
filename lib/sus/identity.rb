@@ -26,6 +26,10 @@ module Sus
 			@key = nil
 		end
 		
+		def with_line(line)
+			self.class.new(@path, @name, line, @parent, unique: @unique)
+		end
+		
 		attr :path
 		attr :name
 		attr :line
@@ -102,10 +106,6 @@ module Sus
 		end
 		
 		protected
-		
-		def with_line(line)
-			Identity.new(@path, @name, line, @parent, unique: @unique)
-		end
 		
 		def append_unique_key(key, unique = @unique)
 			if @parent
