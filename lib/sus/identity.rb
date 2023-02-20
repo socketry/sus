@@ -5,6 +5,10 @@
 
 module Sus
 	class Identity
+		def self.file(parent, path, name = path, **options)
+			self.new(path, name, nil, nil, **options)
+		end
+		
 		def self.nested(parent, name, location = nil, **options)
 			location ||= caller_locations(3...4).first
 			
@@ -30,6 +34,13 @@ module Sus
 		
 		def to_s
 			self.key
+		end
+		
+		def to_location
+			{
+				path: ::File.expand_path(@path),
+				line: @line,
+			}
 		end
 		
 		def inspect
@@ -69,7 +80,32 @@ module Sus
 			return @key
 		end
 		
+		# Given a set of locations, find the first one which matches this identity and return a new identity with the updated line number. This can be used to extract a location from a backtrace.
+		def scoped(locations = nil)
+			if locations
+				# This code path is normally taken if we've got an exception with a backtrace:
+				locations.each do |location|
+					if location.path == @path
+						return self.with_line(location.lineno)
+					end
+				end
+			else
+				# In theory this should be a bit faster:
+				Thread.each_caller_location do |location|
+					if location.path == @path
+						return self.with_line(location.lineno)
+					end
+				end
+			end
+			
+			return self
+		end
+		
 		protected
+		
+		def with_line(line)
+			Identity.new(@path, @name, line, @parent, unique: @unique)
+		end
 		
 		def append_unique_key(key, unique = @unique)
 			if @parent

@@ -20,6 +20,16 @@ $stdin.reopen(File::NULL)
 output = $stdout.dup
 $stdout.reopen($stderr)
 
+def failure_messages_for(assertions)
+	messages = []
+	
+	assertions.each_failure do |failure|
+		messages << failure.message
+	end
+	
+	return messages
+end
+
 while line = input.gets
 	message = JSON.parse(line)
 	
@@ -55,14 +65,15 @@ while line = input.gets
 					
 					assertions = Sus::Assertions.new(measure: true)
 					job.call(assertions)
-					
 					results.push(assertions)
 					
 					guard.synchronize do
 						if assertions.passed?
-							output.puts JSON.generate({passed: job.identity, message: assertions.output.string, duration: assertions.clock.ms})
+							output.puts JSON.generate({passed: job.identity, duration: assertions.clock.ms})
+						elsif assertions.errored?
+							output.puts JSON.generate({errored: job.identity, messages: failure_messages_for(assertions), duration: assertions.clock.ms})
 						else
-							output.puts JSON.generate({failed: job.identity, message: assertions.output.string, duration: assertions.clock.ms})
+							output.puts JSON.generate({failed: job.identity, messages: failure_messages_for(assertions), duration: assertions.clock.ms})
 						end
 					end
 				end

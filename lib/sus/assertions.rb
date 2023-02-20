@@ -41,6 +41,7 @@ module Sus
 			@count = 0
 		end
 		
+		attr :identity
 		attr :target
 		attr :output
 		attr :level
@@ -73,6 +74,13 @@ module Sus
 		
 		def inspect
 			"\#<#{self.class} #{@passed.size} passed #{@failed.size} failed #{@deferred.size} deferred #{@skipped.size} skipped #{@errored.size} errored>"
+		end
+		
+		def message
+			{
+				text: @output.string,
+				location: @identity&.to_location
+			}
 		end
 		
 		def total
@@ -139,32 +147,61 @@ module Sus
 		end
 		
 		class Assert
-			def initialize(location, message)
-				@location = location
+			def initialize(identity, message)
+				@identity = identity
 				@message = message
 			end
 			
-			attr :location
+			attr :identity
 			attr :message
+			
+			def each_failure(&block)
+				yield self
+			end
+			
+			def message
+				{
+					text: @message,
+					location: @identity&.to_location
+				}
+			end
 		end
 		
 		def assert(condition, message = nil)
 			@count += 1
+			
+			message ||= self.output.string
 			backtrace = Output::Backtrace.first(@identity)
+			identity = @identity&.scoped
 			
 			if condition
-				@passed << Assert.new(message, backtrace)
+				@passed << Assert.new(identity, message)
 				
 				if !@orientation || @verbose
-					@output.puts(:indent, *pass_prefix, message || "assertion", backtrace)
+					@output.puts(:indent, *pass_prefix, message, backtrace)
 				end
 			else
-				
-				@failed << Assert.new(message, backtrace)
+				@failed << Assert.new(identity, message)
 				
 				if @orientation || @verbose
-					@output.puts(:indent, *fail_prefix, message || "assertion", backtrace)
+					@output.puts(:indent, *fail_prefix, message, backtrace)
 				end
+			end
+		end
+		
+		def each_failure(&block)
+			return to_enum(__method__) unless block_given?
+			
+			# if self.failed? and @identity
+			# 	yield self
+			# end
+			
+			@failed.each do |assertions|
+				assertions.each_failure(&block)
+			end
+			
+			@errored.each do |assertions|
+				assertions.each_failure(&block)
 			end
 		end
 		
@@ -196,8 +233,31 @@ module Sus
 			end
 		end
 		
+		class Error
+			def initialize(identity, error)
+				@identity = identity
+				@error = error
+			end
+			
+			attr :identity
+			attr :error
+			
+			def each_failure(&block)
+				yield self
+			end
+			
+			def message
+				{
+					text: @error.message,
+					location: @identity&.to_location
+				}
+			end
+		end
+		
 		def error!(error)
-			@errored << self
+			identity = @identity.scoped(error.backtrace_locations)
+			
+			@errored << Error.new(identity, error)
 			
 			lines = error.message.split(/\r?\n/)
 			
@@ -210,11 +270,11 @@ module Sus
 			@output.write(Output::Backtrace.for(error, @identity))
 		end
 		
-		def nested(target, identity: @identity, isolated: false, inverted: false, **options)
+		def nested(target, identity: @identity, isolated: false, buffered: false, inverted: false, **options)
 			result = nil
 			
 			# Isolated assertions need to have buffered output so they can be replayed if they fail:
-			if isolated
+			if isolated or buffered
 				output = @output.buffered
 			else
 				output = @output

@@ -45,7 +45,7 @@ module Sus
 		base.extend(Context)
 		base.identity = Identity.new(root) if root
 		base.description = description
-				
+		
 		return base
 	end
 end

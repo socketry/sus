@@ -18,7 +18,8 @@ describe Sus::Expect do
 	end
 	
 	with "exceptions" do
-		let(:assertions) {Sus::Assertions.new}
+		let(:identity) {Sus::Identity.new(__FILE__)}
+		let(:assertions) {Sus::Assertions.new(identity: identity)}
 		let(:expectation) {Sus::Expect.new(assertions, Object.new)}
 		
 		it "is expected to propagate errors" do

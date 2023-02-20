@@ -19,11 +19,17 @@ module Sus
 		
 		def self.build(parent, path)
 			base = Class.new(parent)
+			
 			base.extend(File)
 			base.description = path
-			base.identity = Identity.new(path)
+			base.identity = Identity.file(parent.identity, path)
 			
-			TOPLEVEL_CLASS_EVAL.call(base, path)
+			begin
+				TOPLEVEL_CLASS_EVAL.call(base, path)
+			rescue StandardError, LoadError, SyntaxError => error
+				# We add this as a child of the base class so that it is included in the tree under the file rather than completely replacing it, which can be confusing:
+				base.add FileLoadError.build(self, path, error)
+			end
 			
 			return base
 		end
@@ -35,7 +41,8 @@ module Sus
 	
 	class FileLoadError
 		def self.build(parent, path, error)
-			self.new(Identity.new(path, path, 1), path, error)
+			identity = Identity.file(parent.identity, path).scoped(error.backtrace_locations)
+			self.new(identity, path, error)
 		end
 		
 		def initialize(identity, path, error)
@@ -76,8 +83,6 @@ module Sus
 	module Context
 		def file(path)
 			add File.build(self, path)
-		rescue StandardError, LoadError, SyntaxError => error
-			add FileLoadError.build(self, path, error)
 		end
 	end
 end
