@@ -95,7 +95,7 @@ module Sus
 				end
 			else
 				# In theory this should be a bit faster:
-				Thread.each_caller_location do |location|
+				each_caller_location do |location|
 					if location.path == @path
 						return self.with_line(location.lineno)
 					end
@@ -106,6 +106,16 @@ module Sus
 		end
 		
 		protected
+		
+		if Thread.respond_to?(:each_caller_location)
+			def each_caller_location(&block)
+				Thread.each_caller_location(&block)
+			end
+		else
+			def each_caller_location(&block)
+				caller_locations(1).each(&block)
+			end
+		end
 		
 		def append_unique_key(key, unique = @unique)
 			if @parent
