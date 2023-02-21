@@ -55,4 +55,14 @@ describe Sus::Identity do
 			expect(identifier.key).to be == "file1.rb:one:20"
 		end
 	end
+	
+	with '#scoped' do
+		let(:identifier) {subject.new(__FILE__, "test")}
+		
+		it "can scope an identifier to the current caller" do
+			line_number = __LINE__ + 1
+			scoped_identifier = identifier.scoped
+			expect(scoped_identifier.key).to be == "#{__FILE__}:#{line_number}"
+		end
+	end
 end
