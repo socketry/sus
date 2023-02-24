@@ -49,6 +49,14 @@ describe Sus::It do
 		end
 	end
 	
+	with "unique:" do
+		it "can be unique" do
+			base = Sus.base
+			it = base.it("test", unique: "test") {}
+			expect(it.identity).to have_attributes(unique: be == "test")
+		end
+	end
+	
 	with "__assertions__" do
 		it "counts assertions" do
 			assert(true)

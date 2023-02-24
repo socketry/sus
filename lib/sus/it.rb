@@ -7,11 +7,11 @@ require_relative 'context'
 
 module Sus
 	module It
-		def self.build(parent, description = nil, &block)
+		def self.build(parent, description = nil, unique: true, &block)
 			base = Class.new(parent)
 			base.extend(It)
 			base.description = description
-			base.identity = Identity.nested(parent.identity, base.description)
+			base.identity = Identity.nested(parent.identity, base.description, unique: unique)
 			
 			if block_given?
 				base.define_method(:call, &block)

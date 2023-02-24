@@ -44,10 +44,10 @@ module Sus
 	end
 	
 	module Context
-		def with(subject = nil, **variables, &block)
+		def with(subject = nil, unique: true, **variables, &block)
 			subject ||= variables.inspect
 			
-			add With.build(self, subject, variables, &block)
+			add With.build(self, subject, variables, unique: unique, &block)
 		end
 	end
 end

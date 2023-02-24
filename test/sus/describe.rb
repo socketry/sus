@@ -3,20 +3,20 @@
 # Released under the MIT License.
 # Copyright, 2021-2022, by Samuel Williams.
 
-describe Sus::With do
+describe Sus::Describe do
 	with 'nested contexts' do
 		let(:context) do
-			Sus::With.build(self.class, 'a test variable', {}) {}
+			Sus::Describe.build(self.class, 'a test class') {}
 		end
 		
 		it 'has a description' do
-			expect(context.description).to be == 'a test variable'
+			expect(context.description).to be == 'a test class'
 		end
 		
 		it 'can print context name' do
 			buffer = Sus::Output.buffered
 			context.print(buffer)
-			expect(buffer.string).to be =~ %r{describe Sus::With with nested contexts it can print context name test/sus/with.rb:\d+ with a test variable}
+			expect(buffer.string).to be =~ %r{describe a test class}
 		end
 	end
 	
