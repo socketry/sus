@@ -170,7 +170,7 @@ module Sus
 		def assert(condition, message = nil)
 			@count += 1
 			
-			message ||= self.output.string
+			message ||= "Assertion"
 			backtrace = Output::Backtrace.first(@identity)
 			identity = @identity&.scoped
 			
