@@ -147,13 +147,13 @@ module Sus
 		end
 		
 		class Assert
-			def initialize(identity, message)
+			def initialize(identity, assertions)
 				@identity = identity
-				@message = message
+				@assertions = assertions
 			end
 			
 			attr :identity
-			attr :message
+			attr :assertions
 			
 			def each_failure(&block)
 				yield self
@@ -161,7 +161,7 @@ module Sus
 			
 			def message
 				{
-					text: @message,
+					text: assertions.output.string,
 					location: @identity&.to_location
 				}
 			end
@@ -170,21 +170,20 @@ module Sus
 		def assert(condition, message = nil)
 			@count += 1
 			
-			message ||= "Assertion"
 			backtrace = Output::Backtrace.first(@identity)
 			identity = @identity&.scoped
 			
 			if condition
-				@passed << Assert.new(identity, message)
+				@passed << Assert.new(identity, self)
 				
 				if !@orientation || @verbose
-					@output.puts(:indent, *pass_prefix, message, backtrace)
+					@output.puts(:indent, *pass_prefix, message || "assertion passed", backtrace)
 				end
 			else
-				@failed << Assert.new(identity, message)
+				@failed << Assert.new(identity, self)
 				
 				if @orientation || @verbose
-					@output.puts(:indent, *fail_prefix, message, backtrace)
+					@output.puts(:indent, *fail_prefix, message || "assertion failed", backtrace)
 				end
 			end
 		end
