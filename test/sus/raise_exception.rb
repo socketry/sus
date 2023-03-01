@@ -31,4 +31,13 @@ describe Sus::RaiseException do
 			end.to raise_exception(AgeError, message: be =~ /Too old/).and(have_attributes(age: be >= 20))
 		end
 	end
+	
+	with "failed expectation" do
+		it "includes the exception message when it fails" do
+			assertions = Sus::Assertions.new
+			Sus::Expect.new(assertions, ->{raise "Boom"}).to raise_exception(RuntimeError, message: be =~ /Bam/)
+			
+			expect(assertions.output.string).to be =~ /expect "Boom"/
+		end
+	end
 end
