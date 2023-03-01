@@ -5,16 +5,15 @@
 
 module Sus
 	class Expect
-		def initialize(assertions, subject, inverted: false, buffered: false)
+		def initialize(assertions, subject, inverted: false, distinct: false)
 			@assertions = assertions
 			@subject = subject
 			@inverted = inverted
-			@buffered = buffered
+			@distinct = true
 		end
 		
 		attr :subject
 		attr :inverted
-		attr :assertions
 		
 		def not
 			self.dup.tap do |expect|
@@ -36,7 +35,7 @@ module Sus
 			# This gets the identity scoped to the current call stack, which ensures that any failures are logged at this point in the code.
 			identity = @assertions.identity&.scoped
 			
-			@assertions.nested(self, inverted: @inverted, buffered: @buffered, identity: identity) do |assertions|
+			@assertions.nested(self, inverted: @inverted, identity: identity, distinct: @distinct) do |assertions|
 				predicate.call(assertions, @subject)
 			end
 			
@@ -51,9 +50,9 @@ module Sus
 	class Base
 		def expect(subject = nil, &block)
 			if block_given?
-				Expect.new(@__assertions__, block, buffered: true)
+				Expect.new(@__assertions__, block, distinct: true)
 			else
-				Expect.new(@__assertions__, subject, buffered: true)
+				Expect.new(@__assertions__, subject, distinct: true)
 			end
 		end
 	end

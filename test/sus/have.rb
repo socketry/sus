@@ -43,6 +43,13 @@ describe Sus::Have do
 			expect(array).to have_value(be == 3)
 		end
 		
+		it "reports a single failure" do
+			assertions = Sus::Assertions.new
+			Sus::Expect.new(assertions, array).to have_value(be == 4)
+			
+			expect(assertions.failed).to have_attributes(size: be == 1)
+		end
+		
 		it "doesn't contain a value" do
 			expect(array).not.to have_value(be == 4)
 			expect(array).not.to have_value(be < 1)

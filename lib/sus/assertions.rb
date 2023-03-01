@@ -16,7 +16,7 @@ module Sus
 		
 		# @parameter orientation [Boolean] Whether the assertions are positive or negative in general.
 		# @parameter inverted [Boolean] Whether the assertions are inverted with respect to the parent.
-		def initialize(identity: nil, target: nil, output: Output.buffered, inverted: false, orientation: true, isolated: false, measure: false, verbose: false)
+		def initialize(identity: nil, target: nil, output: Output.buffered, inverted: false, orientation: true, isolated: false, distinct: false, measure: false, verbose: false)
 			# In theory, the target could carry the identity of the assertion group, but it's not really necessary, so we just handle it explicitly and pass it into any nested assertions.
 			@identity = identity
 			@target = target
@@ -24,6 +24,7 @@ module Sus
 			@inverted = inverted
 			@orientation = orientation
 			@isolated = isolated
+			@distinct = distinct
 			@verbose = verbose
 			
 			if measure
@@ -46,13 +47,18 @@ module Sus
 		attr :output
 		attr :level
 		
-		# Whether this aset of assertions is inverted
+		# Whether this aset of assertions is inverted, i.e. the assertions are expected to fail relative to the parent. Used for grouping assertions and ensuring they are added to the parent passed/failed array correctly.
 		attr :inverted
 		
-		# The absolute orientation of this set of assertions:
+		# The absolute orientation of this set of assertions, i.e. whether the assertions are expected to pass or fail regardless of the parent. Used for correctly formatting the output.
 		attr :orientation
 		
+		# Whether this set of assertions is isolated from the parent. This is used to ensure taht any deferred assertions are competed before the parent is completed. This is used by `receive` assertions which are deferred until the user code of the test has completed.
 		attr :isolated
+		
+		# Distinct is used to identify a set of assertions as a single statement for the purpose of user feedback. It's used by top level ensure statements to ensure that error messages are captured and reported on those statements.
+		attr :distinct
+		
 		attr :verbose
 		
 		attr :clock
@@ -147,13 +153,13 @@ module Sus
 		end
 		
 		class Assert
-			def initialize(identity, assertions)
+			def initialize(identity, backtrace)
 				@identity = identity
-				@assertions = assertions
+				@backtrace = backtrace
 			end
 			
 			attr :identity
-			attr :assertions
+			attr :backtrace
 			
 			def each_failure(&block)
 				yield self
@@ -161,7 +167,7 @@ module Sus
 			
 			def message
 				{
-					text: assertions.output.string,
+					text: "assert",
 					location: @identity&.to_location
 				}
 			end
@@ -170,17 +176,17 @@ module Sus
 		def assert(condition, message = nil)
 			@count += 1
 			
-			backtrace = Output::Backtrace.first(@identity)
 			identity = @identity&.scoped
+			backtrace = Output::Backtrace.first(identity)
 			
 			if condition
-				@passed << Assert.new(identity, self)
+				@passed << Assert.new(identity, backtrace)
 				
 				if !@orientation || @verbose
 					@output.puts(:indent, *pass_prefix, message || "assertion passed", backtrace)
 				end
 			else
-				@failed << Assert.new(identity, self)
+				@failed << Assert.new(identity, backtrace)
 				
 				if @orientation || @verbose
 					@output.puts(:indent, *fail_prefix, message || "assertion failed", backtrace)
@@ -188,12 +194,19 @@ module Sus
 			end
 		end
 		
+		def message
+			{
+				text: @output.string,
+				location: @identity&.to_location
+			}
+		end
+		
 		def each_failure(&block)
 			return to_enum(__method__) unless block_given?
 			
-			# if self.failed? and @identity
-			# 	yield self
-			# end
+			if self.failed? and @distinct
+				return yield(self)
+			end
 			
 			@failed.each do |assertions|
 				assertions.each_failure(&block)
@@ -247,14 +260,14 @@ module Sus
 			
 			def message
 				{
-					text: @error.message,
+					text: @error.full_message,
 					location: @identity&.to_location
 				}
 			end
 		end
 		
 		def error!(error)
-			identity = @identity.scoped(error.backtrace_locations)
+			identity = @identity&.scoped(error.backtrace_locations)
 			
 			@errored << Error.new(identity, error)
 			
@@ -269,11 +282,11 @@ module Sus
 			@output.write(Output::Backtrace.for(error, @identity))
 		end
 		
-		def nested(target, identity: @identity, isolated: false, buffered: false, inverted: false, **options)
+		def nested(target, identity: nil, isolated: false, distinct: false, inverted: false, **options)
 			result = nil
 			
 			# Isolated assertions need to have buffered output so they can be replayed if they fail:
-			if isolated or buffered
+			if isolated or distinct
 				output = @output.buffered
 			else
 				output = @output
@@ -288,7 +301,7 @@ module Sus
 			
 			output.puts(:indent, target)
 			
-			assertions = self.class.new(identity: identity, target: target, output: output, isolated: isolated, inverted: inverted, orientation: orientation, verbose: @verbose, **options)
+			assertions = self.class.new(identity: identity, target: target, output: output, isolated: isolated, inverted: inverted, orientation: orientation, distinct: distinct, verbose: @verbose, **options)
 			
 			output.indented do
 				begin
@@ -309,14 +322,16 @@ module Sus
 			# All child assertions should be resolved by this point:
 			raise "Nested assertions must be fully resolved!" if assertions.deferred?
 			
-			if assertions.isolated or assertions.inverted
+			if assertions.append?
 				# If we are isolated, we merge all child assertions into the parent as a single entity:
-				merge!(assertions)
+				append!(assertions)
 			else
 				# Otherwise, we append all child assertions into the parent assertions:
-				append!(assertions)
+				merge!(assertions)
 			end
 		end
+		
+		protected
 		
 		def resolve_into(parent)
 			# If the assertions should be an isolated group, make sure any deferred assertions are resolved:
@@ -339,9 +354,14 @@ module Sus
 			end
 		end
 		
+		# Whether the child assertions should be merged into the parent assertions.
+		def append?
+			@isolated || @inverted || @distinct
+		end
+		
 		private
 		
-		def merge!(assertions)
+		def append!(assertions)
 			@count += assertions.count
 			
 			if assertions.errored?
@@ -363,7 +383,8 @@ module Sus
 			end
 		end
 		
-		def append!(assertions)
+		# Concatenate the child assertions into this instance.
+		def merge!(assertions)
 			@count += assertions.count
 			@passed.concat(assertions.passed)
 			@failed.concat(assertions.failed)
