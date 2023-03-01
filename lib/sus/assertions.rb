@@ -153,13 +153,15 @@ module Sus
 		end
 		
 		class Assert
-			def initialize(identity, backtrace)
+			def initialize(identity, backtrace, assertions)
 				@identity = identity
 				@backtrace = backtrace
+				@assertions = assertions
 			end
 			
 			attr :identity
 			attr :backtrace
+			attr :assertions
 			
 			def each_failure(&block)
 				yield self
@@ -167,7 +169,8 @@ module Sus
 			
 			def message
 				{
-					text: "assert",
+					# It's possible that several Assert instances might share the same output text. This is because the output is buffered for each test and each top-level test expectation.
+					text: @assertions.output.string,
 					location: @identity&.to_location
 				}
 			end
@@ -178,15 +181,16 @@ module Sus
 			
 			identity = @identity&.scoped
 			backtrace = Output::Backtrace.first(identity)
+			assert = Assert.new(identity, backtrace, self)
 			
 			if condition
-				@passed << Assert.new(identity, backtrace)
+				@passed << assert
 				
 				if !@orientation || @verbose
 					@output.puts(:indent, *pass_prefix, message || "assertion passed", backtrace)
 				end
 			else
-				@failed << Assert.new(identity, backtrace)
+				@failed << assert
 				
 				if @orientation || @verbose
 					@output.puts(:indent, *fail_prefix, message || "assertion failed", backtrace)
