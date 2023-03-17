@@ -248,7 +248,7 @@ module Sus
 				end
 			end
 		end
-		
+
 		class Error
 			def initialize(identity, error)
 				@identity = identity
@@ -272,18 +272,18 @@ module Sus
 		
 		def error!(error)
 			identity = @identity&.scoped(error.backtrace_locations)
-			
+
 			@errored << Error.new(identity, error)
-			
+
 			lines = error.message.split(/\r?\n/)
-			
+
 			@output.puts(:indent, *error_prefix, error.class, ": ", lines.shift)
 			
 			lines.each do |line|
 				@output.puts(:indent, line)
 			end
 
-			@output.write(Output::Backtrace.for(error, @identity, verbose: @verbose))
+			@output.write(Output::Backtrace.for(error, verbose: @verbose))
 		end
 		
 		def nested(target, identity: nil, isolated: false, distinct: false, inverted: false, **options)

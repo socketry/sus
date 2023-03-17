@@ -12,8 +12,8 @@ module Sus
 				self.new(caller_locations(1), identity&.path, 1)
 			end
 			
-			def self.for(exception, identity = nil, verbose: false)
-				self.new(exception.backtrace_locations, verbose ? nil : identity&.path)
+			def self.for(exception, verbose: false)
+				self.new(exception.backtrace_locations, verbose ? nil : Pathname.pwd.to_s)
 			end
 			
 			def initialize(stack, root = nil, limit = nil)
@@ -25,7 +25,7 @@ module Sus
 			def filter(root = @root)
 				if @root
 					stack = @stack.select do |frame|
-						frame.path.start_with?(@root)
+						!frame.path.start_with?('/') || frame.path.start_with?(@root)
 					end
 				else
 					stack = @stack
@@ -41,12 +41,14 @@ module Sus
 			def print(output)
 				if @limit == 1
 					filter.each do |frame|
-						output.write " ", :path, frame.path, :line, ":", frame.lineno
+						path = @root ? "./#{frame.path.delete_prefix("#{@root}/")}" : frame.path
+						output.write " ", :path, path, :line, ":", frame.lineno
 					end
 				else
 					output.indented do
 						filter.each do |frame|
-							output.puts :indent, :path, frame.path, :line, ":", frame.lineno, :reset, " ", frame.label
+							path = @root ? "./#{frame.path.delete_prefix("#{@root}/")}" : frame.path
+							output.puts :indent, :path, path, :line, ":", frame.lineno, :reset, " ", frame.label
 						end
 					end
 				end
