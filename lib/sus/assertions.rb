@@ -282,8 +282,8 @@ module Sus
 			lines.each do |line|
 				@output.puts(:indent, line)
 			end
-				
-			@output.write(Output::Backtrace.for(error, @identity))
+
+			@output.write(Output::Backtrace.for(error, @identity, verbose: @verbose))
 		end
 		
 		def nested(target, identity: nil, isolated: false, distinct: false, inverted: false, **options)

@@ -12,10 +12,8 @@ module Sus
 				self.new(caller_locations(1), identity&.path, 1)
 			end
 			
-			def self.for(exception, identity = nil)
-				# I've disabled the root filter here, because partial backtraces are not very useful.
-				# We might want to do something to improve presentation of the backtrace based on the root instead.
-				self.new(exception.backtrace_locations) # , identity&.path)
+			def self.for(exception, identity = nil, verbose: false)
+				self.new(exception.backtrace_locations, verbose ? nil : identity&.path)
 			end
 			
 			def initialize(stack, root = nil, limit = nil)
