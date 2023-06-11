@@ -28,9 +28,11 @@ module Sus
 				end
 				
 				@io.puts(JSON.generate({
-					inform: message,
-					identity: @identity,
-					location: identity&.to_location,
+					inform: @identity,
+					message: {
+						text: message,
+						location: identity&.to_location,
+					}
 				}))
 				
 				@io.flush

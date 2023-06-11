@@ -40,7 +40,7 @@ describe Sus::It do
 	with "skip" do
 		it "can skip tests" do
 			context = Sus::It.build(self.class, "test") do
-				throw :skip, "skipped test"
+				skip "skipped test"
 			end
 			
 			context.call(assertions)

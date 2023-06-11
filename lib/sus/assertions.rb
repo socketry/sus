@@ -222,7 +222,7 @@ module Sus
 		end
 		
 		def skip(reason)
-			@output.skip(reason, @identity)
+			@output.skip(reason, @identity&.scoped)
 			
 			@skipped << self
 		end

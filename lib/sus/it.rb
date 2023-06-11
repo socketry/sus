@@ -45,13 +45,9 @@ module Sus
 		end
 		
 		def handle_skip(instance, assertions)
-			reason = catch(:skip) do
+			catch(:skip) do
 				return instance.call
 			end
-			
-			assertions.skip(reason)
-			
-			return nil
 		end
 	end
 	
@@ -62,7 +58,10 @@ module Sus
 	end
 	
 	class Base
+		# Skip the current test with a reason.
+		# @parameter reason [String] The reason for skipping the test.
 		def skip(reason)
+			@__assertions__.skip(reason)
 			throw :skip, reason
 		end
 	end
