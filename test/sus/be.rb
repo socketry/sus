@@ -7,6 +7,7 @@ describe Sus::Be do
 	with "true" do
 		it "can expect equality" do
 			expect(true).to be == true
+			
 		end
 		
 		it "can expect inequality" do

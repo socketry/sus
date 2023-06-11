@@ -15,12 +15,14 @@ count = Etc.nprocessors
 
 $stdout.sync = true
 
+require_relative '../lib/sus/output/structured'
+
 input = $stdin.dup
 $stdin.reopen(File::NULL)
 output = $stdout.dup
 $stdout.reopen($stderr)
 
-def failure_messages_for(assertions)
+def messages_for(assertions)
 	messages = []
 	
 	assertions.each_failure do |failure|
@@ -63,17 +65,19 @@ while line = input.gets
 						output.puts JSON.generate({started: job.identity})
 					end
 					
-					assertions = Sus::Assertions.new(measure: true)
+					structured_output = Sus::Output::Structured.buffered(output, job.identity)
+					
+					assertions = Sus::Assertions.new(output: structured_output, measure: true)
 					job.call(assertions)
 					results.push(assertions)
 					
 					guard.synchronize do
 						if assertions.passed?
-							output.puts JSON.generate({passed: job.identity, duration: assertions.clock.ms})
+							output.puts JSON.generate({passed: job.identity, messages: messages_for(assertions), duration: assertions.clock.ms})
 						elsif assertions.errored?
-							output.puts JSON.generate({errored: job.identity, messages: failure_messages_for(assertions), duration: assertions.clock.ms})
+							output.puts JSON.generate({errored: job.identity, messages: messages_for(assertions), duration: assertions.clock.ms})
 						else
-							output.puts JSON.generate({failed: job.identity, messages: failure_messages_for(assertions), duration: assertions.clock.ms})
+							output.puts JSON.generate({failed: job.identity, messages: messages_for(assertions), duration: assertions.clock.ms})
 						end
 					end
 				end

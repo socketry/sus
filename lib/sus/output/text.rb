@@ -3,13 +3,14 @@
 # Released under the MIT License.
 # Copyright, 2021-2022, by Samuel Williams.
 
-require 'io/console'
+require_relative 'messages'
 require_relative 'buffered'
 
 module Sus
-	# Styled io io.
 	module Output
 		class Text
+			include Messages
+			
 			def initialize(io)
 				@io = io
 				

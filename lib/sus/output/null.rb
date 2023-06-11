@@ -3,13 +3,14 @@
 # Released under the MIT License.
 # Copyright, 2021-2022, by Samuel Williams.
 
-require 'io/console'
-require 'stringio'
+require_relative 'messages'
 
 module Sus
 	# Styled output output.
 	module Output
 		class Null
+			include Messages
+			
 			def initialize
 			end
 			

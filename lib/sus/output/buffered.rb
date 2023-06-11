@@ -75,6 +75,26 @@ module Sus
 				@chunks << [:puts, *arguments]
 				@tee&.puts(*arguments)
 			end
+			
+			def assert(*arguments)
+				@chunks << [:assert, *arguments]
+				@tee&.assert(*arguments)
+			end
+			
+			def skip(*arguments)
+				@chunks << [:skip, *arguments]
+				@tee&.skip(*arguments)
+			end
+			
+			def error(*arguments)
+				@chunks << [:error, *arguments]
+				@tee&.error(*arguments)
+			end
+			
+			def inform(*arguments)
+				@chunks << [:inform, *arguments]
+				@tee&.inform(*arguments)
+			end
 		end
 	end
 end

@@ -187,13 +187,13 @@ module Sus
 				@passed << assert
 				
 				if !@orientation || @verbose
-					@output.puts(:indent, *pass_prefix, message || "assertion passed", backtrace)
+					@output.assert(condition, @orientation, message || "assertion passed", backtrace)
 				end
 			else
 				@failed << assert
 				
 				if @orientation || @verbose
-					@output.puts(:indent, *fail_prefix, message || "assertion failed", backtrace)
+					@output.assert(condition, @orientation, message || "assertion failed", backtrace)
 				end
 			end
 		end
@@ -222,12 +222,21 @@ module Sus
 		end
 		
 		def skip(reason)
-			@output.puts(:indent, :skipped, skip_prefix, reason)
+			@output.skip(reason, @identity)
+			
 			@skipped << self
 		end
 		
-		def inform(message)
-			@output.puts(:indent, :inform, inform_prefix, message)
+		def inform(message = nil)
+			if message.nil? and block_given?
+				begin
+					message = yield
+				rescue => error
+					message = error.full_message
+				end
+			end
+			
+			@output.inform(message, @identity&.scoped)
 		end
 		
 		# Add deferred assertions.
@@ -275,15 +284,8 @@ module Sus
 			
 			@errored << Error.new(identity, error)
 			
-			lines = error.message.split(/\r?\n/)
-			
-			@output.puts(:indent, *error_prefix, error.class, ": ", lines.shift)
-			
-			lines.each do |line|
-				@output.puts(:indent, line)
-			end
-				
-			@output.write(Output::Backtrace.for(error, @identity))
+			# TODO consider passing `identity`.
+			@output.error(error, @identity)
 		end
 		
 		def nested(target, identity: nil, isolated: false, distinct: false, inverted: false, **options)
@@ -401,37 +403,6 @@ module Sus
 			# 	self.print(@output, verbose: false)
 			# 	@output.puts
 			# end
-		end
-		
-		PASSED_PREFIX = [:passed, "✓ "].freeze
-		FAILED_PREFIX = [:failed, "✗ "].freeze
-		
-		def pass_prefix
-			if @orientation
-				PASSED_PREFIX
-			else
-				FAILED_PREFIX
-			end
-		end
-		
-		def fail_prefix
-			if @orientation
-				FAILED_PREFIX
-			else
-				PASSED_PREFIX
-			end
-		end
-		
-		def inform_prefix
-			"ℹ "
-		end
-		
-		def skip_prefix
-			"⏸ "
-		end
-		
-		def error_prefix
-			[:errored, "⚠ "]
 		end
 	end
 end
