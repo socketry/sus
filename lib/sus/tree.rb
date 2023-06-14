@@ -20,7 +20,7 @@ module Sus
 		
 		def to_json(options = nil)
 			traverse do |context|
-				[context.identity, context.description, context.leaf?]
+				[context.identity.to_s, context.description.to_s, context.leaf?]
 			end.to_json(options)
 		end
 	end
