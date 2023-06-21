@@ -24,6 +24,14 @@ module Sus
 	module File
 		extend Context
 		
+		def self.[] path
+			self.build(Sus.base, path)
+		end
+		
+		def inspect
+			self.name
+		end
+		
 		def self.extended(base)
 			base.children = Hash.new
 		end
@@ -34,6 +42,9 @@ module Sus
 			base.extend(File)
 			base.description = path
 			base.identity = Identity.file(parent.identity, path)
+			if base.respond_to?(:set_temporary_name)
+				base.set_temporary_name("#{self}[#{path.inspect}]")
+			end
 			
 			begin
 				TOPLEVEL_CLASS_EVAL.call(base, path)
