@@ -18,6 +18,8 @@ module Sus
 			base.subject = subject
 			base.description = subject.to_s
 			base.identity = Identity.nested(parent.identity, base.description, unique: unique)
+			base.set_temporary_name("#{self}[#{base.description}]")
+			
 			base.define_method(:subject, ->{subject})
 			
 			if block_given?

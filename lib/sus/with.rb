@@ -19,6 +19,8 @@ module Sus
 			base.subject = subject
 			base.description = subject
 			base.identity = Identity.nested(parent.identity, base.description, unique: unique)
+			base.set_temporary_name("#{self}[#{base.description}]")
+			
 			base.variables = variables
 			
 			base.define_method(:description, ->{subject})

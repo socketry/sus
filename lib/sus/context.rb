@@ -16,15 +16,21 @@ module Sus
 			base.children = Hash.new
 		end
 		
-		def to_s
-			self.description || self.name
-		end
-		
-		def inspect
-			if description = self.description
-				"\#<#{self.name || "Context"} #{self.description}>"
-			else
-				self.name
+		unless respond_to?(:set_temporary_name)
+			def set_temporary_name(name)
+				# No-op.
+			end
+			
+			def to_s
+				(self.description || self.name).to_s
+			end
+			
+			def inspect
+				if description = self.description
+					"\#<#{self.name || "Context"} #{self.description}>"
+				else
+					self.name
+				end
 			end
 		end
 		
