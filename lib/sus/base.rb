@@ -45,6 +45,7 @@ module Sus
 		base.extend(Context)
 		base.identity = Identity.new(root) if root
 		base.description = description
+		base.set_temporary_name("#{self}[#{description}]")
 		
 		return base
 	end

@@ -387,6 +387,8 @@ module Sus
 				# self.print(@output, verbose: false)
 				# @output.puts
 			end
+			
+			@skipped.concat(assertions.skipped)
 		end
 		
 		# Concatenate the child assertions into this instance.

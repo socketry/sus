@@ -64,4 +64,10 @@ describe Sus::It do
 			expect(@__assertions__.passed.size).to be == 2
 		end
 	end
+	
+	it "has a class name" do
+		skip_unless_method_defined(:set_temporary_name, Module)
+		
+		expect(self.class.name).to be == "Sus::It[has a class name]"
+	end
 end

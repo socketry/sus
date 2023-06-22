@@ -35,7 +35,7 @@ module Sus
 		end
 		
 		def to_s
-			@base.identity.to_s
+			@base&.identity&.to_s || self.class.name
 		end
 		
 		def load(path)

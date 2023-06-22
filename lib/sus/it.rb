@@ -12,6 +12,7 @@ module Sus
 			base.extend(It)
 			base.description = description
 			base.identity = Identity.nested(parent.identity, base.description, unique: unique)
+			base.set_temporary_name("#{self}[#{description}]")
 			
 			if block_given?
 				base.define_method(:call, &block)
@@ -63,6 +64,18 @@ module Sus
 		def skip(reason)
 			@__assertions__.skip(reason)
 			throw :skip, reason
+		end
+		
+		def skip_unless_method_defined(method, target)
+			unless target.method_defined?(method)
+				skip "Method #{method} is not defined in #{target}!"
+			end
+		end
+		
+		def skip_unless_constant_defined(constant, target = Object)
+			unless target.const_defined?(constant)
+				skip "Constant #{constant} is not defined in #{target}!"
+			end
 		end
 	end
 end
