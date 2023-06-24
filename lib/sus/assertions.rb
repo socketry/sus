@@ -42,9 +42,16 @@ module Sus
 			@count = 0
 		end
 		
+		# The identity that is used to identify this set of assertions.
 		attr :identity
+		
+		# The specific target of the assertions, e.g. the test case or nested test assertions.
 		attr :target
+		
+		# The output buffer used to capture output from the assertions.
 		attr :output
+		
+		# The nesting level of this set of assertions.
 		attr :level
 		
 		# Whether this aset of assertions is inverted, i.e. the assertions are expected to fail relative to the parent. Used for grouping assertions and ensuring they are added to the parent passed/failed array correctly.
