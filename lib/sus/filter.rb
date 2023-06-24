@@ -4,6 +4,13 @@
 # Copyright, 2021-2022, by Samuel Williams.
 
 module Sus
+	# Provides a way to filter the registry according to the suffix on loaded paths.
+	#
+	# A test has an identity, e.g. the file and line number on which it's defined.
+	#
+	# A filter takes an identity, decomposes it into a file and suffix, loads the file, and registers the filter suffix.
+	#
+	# When the filter is used to enumerate the registry, it will only return the tests that match the suffix.
 	class Filter
 		class Index
 			def initialize
