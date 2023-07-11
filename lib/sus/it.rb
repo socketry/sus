@@ -77,5 +77,17 @@ module Sus
 				skip "Constant #{constant} is not defined in #{target}!"
 			end
 		end
+		
+		def skip_unless_minimum_ruby_version(version)
+			unless RUBY_VERSION >= version
+				skip "Ruby #{version} is required, but running #{RUBY_VERSION}!"
+			end
+		end
+		
+		def skip_if_maximum_ruby_version(version)
+			if RUBY_VERSION >= version
+				skip "Ruby #{version} is not supported, but running #{RUBY_VERSION}!"
+			end
+		end
 	end
 end
