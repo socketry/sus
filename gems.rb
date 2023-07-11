@@ -19,3 +19,5 @@ group :test do
 	gem "bake-test-external"
 	gem "covered"
 end
+
+gem "ddtrace"

@@ -1,0 +1,137 @@
+#!/usr/bin/env ruby
+
+class Worker
+	PATH = File.expand_path('sus-worker', __dir__)
+	
+	def self.fork
+		worker = self.new
+		worker.fork
+		
+		return worker unless block_given?
+		
+		begin
+			yield worker 
+		ensure
+			worker.close
+		end
+		
+		return worker
+	end
+	
+	def initialize
+		@input = IO.pipe
+		@output = IO.pipe
+		@pid = nil
+	end
+	
+	def fork
+		unless @pid
+			@pid = Process.spawn(PATH, in: @input[0], out: @output[1])
+			@input[0].close
+			@output[1].close
+		end
+		
+		return self
+	end
+	
+	def close
+		if @pid
+			Process.kill(:TERM, @pid)
+		end
+	end
+	
+	def join
+		if @pid
+			status = Process.wait(@pid)
+			
+			@pid = nil
+			
+			return status
+		end
+	end
+	
+	def call(job)
+		assertions = Sus::Assertions.new(output: Sus::Output::Null.new)
+		
+		@input.last.puts JSON.generate({run: [job.identity.to_s]})
+		
+		while line = @output.first.gets
+			message = JSON.parse(line)
+			
+			if message[]
+		end
+		
+		return assertions
+	end
+end
+
+require 'etc'
+count = Etc.nprocessors
+
+require_relative '../lib/sus/config'
+config = Sus::Config.load
+
+Result = Struct.new(:job, :assertions)
+
+require_relative '../lib/sus'
+require_relative '../lib/sus/output'
+
+jobs = Thread::Queue.new
+results = Thread::Queue.new
+guard = Thread::Mutex.new
+progress = Sus::Output::Progress.new(config.output)
+
+loader = Thread.new do
+	registry = config.registry
+	
+	registry.each do |child|
+		guard.synchronize{progress.expand}
+		jobs << child
+	end
+	
+	jobs.close
+end
+
+top = Sus::Assertions.new(output: Sus::Output::Null.new)
+config.before_tests(top)
+
+aggregation = Thread.new do
+	while result = results.pop
+		guard.synchronize{progress.increment}
+		
+		top.add(result.assertions)
+		
+		guard.synchronize{progress.report(count, top, :busy)}
+	end
+	
+	guard.synchronize{progress.clear}
+	
+	top
+end
+
+workers = count.times.map do |index|
+	Thread.new do
+		Worker.fork do |worker|
+			while job = jobs.pop
+				guard.synchronize{progress.report(index, job, :busy)}
+				
+				assertions = worker.call(job)
+				results << Result.new(job, assertions)
+				
+				guard.synchronize{progress.report(index, "idle", :free)}
+			end
+		end
+	end
+end
+
+loader.join
+
+workers.each(&:join)
+results.close
+
+assertions = aggregation.value
+config.after_tests(assertions)
+
+unless assertions.passed?
+	exit(1)
+end
