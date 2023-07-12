@@ -23,9 +23,5 @@ Gem::Specification.new do |spec|
 	
 	spec.executables = ["sus", "sus-parallel", "sus-tree", "sus-host"]
 	
-	spec.required_ruby_version = ">= 2.7.0"
-	
-	spec.add_development_dependency "bake-test", "~> 0.1"
-	spec.add_development_dependency "bake-test-external", "~> 0.1"
-	spec.add_development_dependency "covered", "~> 0.18"
+	spec.required_ruby_version = ">= 3.0"
 end
