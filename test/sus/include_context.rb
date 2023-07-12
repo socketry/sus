@@ -1,3 +1,7 @@
+# frozen_string_literal: true
+
+# Released under the MIT License.
+# Copyright, 2023, by Samuel Williams.
 
 AThing = Sus::Shared("a thing") do |key, value: 42|
 	let(:a_thing) {{key => value}}
