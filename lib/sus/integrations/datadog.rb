@@ -57,6 +57,7 @@ module Sus
 					
 					::Datadog::CI::Test.trace("sus.test", options) do |span|
 						span['test.identity'] = self.class.identity.to_s
+						span['test.module'] = @__assertions__.target.to_s,
 						
 						status = nil
 						
