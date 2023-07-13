@@ -63,7 +63,13 @@ module Sus
 						begin
 							result = super
 							status = :passed
-							::Datadog::CI::Test.passed!(span)
+							
+							if @__assertions__.passed?
+								::Datadog::CI::Test.passed!(span)
+							else
+								message = @__assertions__.message
+								::Datadog::CI::Test.failed!(span, message.text)
+							end
 							
 							return result
 						rescue => error
