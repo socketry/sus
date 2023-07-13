@@ -46,6 +46,12 @@ jobs:
         ruby-version: ${{matrix.ruby}}
         bundler-cache: true
     
+    - name: Setup docker
+      if: runner.os == 'macos'
+      run: |
+        brew install docker
+        colima start
+    
     - uses: datadog/agent-github-action@v1.3
       with:
         api_key: ${{secrets.DD_API_KEY}}
