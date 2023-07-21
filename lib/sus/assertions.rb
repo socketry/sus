@@ -295,7 +295,7 @@ module Sus
 			@output.error(error, @identity)
 		end
 		
-		def nested(target, identity: nil, isolated: false, distinct: false, inverted: false, **options)
+		def nested(target, identity: @identity, isolated: false, distinct: false, inverted: false, **options)
 			result = nil
 			
 			# Isolated assertions need to have buffered output so they can be replayed if they fail:

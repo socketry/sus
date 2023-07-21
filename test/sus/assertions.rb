@@ -15,8 +15,8 @@ end
 
 describe Sus::Assertions do
 	let(:inverted) {false}
-	
-	let(:assertions) {Sus::Assertions.new(output: Sus::Output.buffered, inverted: inverted)}
+	let(:identity) {Sus::Identity.new("fake.rb", "fake", 1)}
+	let(:assertions) {Sus::Assertions.new(identity: identity, output: Sus::Output.buffered, inverted: inverted)}
 	
 	it "defaults to passing" do
 		expect(assertions).to be(:passed?)
@@ -128,6 +128,14 @@ describe Sus::Assertions do
 			
 			expect(assertions).to be(:passed?)
 			expect(assertions).not.to be(:failed?)
+		end
+	end
+	
+	with 'nested assertions' do
+		it "can nest assertions and preserve identity" do
+			assertions.nested(Nested.new('outer')) do |assertions|
+				expect(assertions.identity).to be_equal(identity)
+			end
 		end
 	end
 end
