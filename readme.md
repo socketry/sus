@@ -1,4 +1,4 @@
-# Sus(picious) \[working name\]
+# Sus(picious)
 
 An opinionated test framework designed with several goals:
 
