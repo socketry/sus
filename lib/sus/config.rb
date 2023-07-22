@@ -78,12 +78,12 @@ module Sus
 			return Dir.glob(DEFAULT_TEST_PATTERN, base: @root)
 		end
 		
-		def registry
-			@registry ||= self.load_registry
+		def make_registry
+			Sus::Registry.new(root: @root)
 		end
 		
 		def load_registry(paths = @paths)
-			registry = Sus::Registry.new(root: @root)
+			registry = make_registry
 			
 			if paths&.any?
 				registry = Sus::Filter.new(registry)
@@ -97,6 +97,10 @@ module Sus
 			end
 			
 			return registry
+		end
+		
+		def registry
+			@registry ||= self.load_registry
 		end
 		
 		def before_tests(assertions, output: self.output)

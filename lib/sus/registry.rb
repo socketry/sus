@@ -27,7 +27,7 @@ module Sus
 			@base = Sus.base(self, **options)
 			@loaded = {}
 		end
-
+		
 		attr :base
 		
 		def print(output)
