@@ -28,11 +28,11 @@ module Sus
 		def print(output)
 			self.superclass.print(output)
 			
-			if description = self.description
-				output.write(" it ", :it, description, :reset, " ", :identity, self.identity.to_s, :reset)
-			else
-				output.write(" and ", :identity, self.identity.to_s, :reset)
-			end
+			output.write(" it ", :it, self.description, :reset, " ", :identity, self.identity.to_s, :reset)
+		end
+		
+		def to_s
+			"it #{description}"
 		end
 		
 		def call(assertions)
