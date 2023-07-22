@@ -23,9 +23,18 @@ end
 describe Sus::Describe do
 	let(:instance) {subject.build(Sus.base, "test")}
 	it_behaves_like Context
+	
+	it "has a full name" do
+		expect(instance.full_name).to be == "describe test"
+	end
 end
 
 describe Sus::With do
-	let(:instance) {subject.build(Sus.base, "test", {x: 10})}
+	let(:describe) {Sus::Describe.build(Sus.base, "test")}
+	let(:instance) {subject.build(describe, "hash", {x: 10})}
 	it_behaves_like Context
+	
+	it "has a full name" do
+		expect(instance.full_name).to be == "describe test with hash"
+	end
 end

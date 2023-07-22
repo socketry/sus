@@ -38,6 +38,7 @@ module Sus
 		
 		def print(output)
 			self.superclass.print(output)
+			
 			output.write(
 				" with ", :with, self.description, :reset,
 				# " ", :variables, self.variables.inspect

@@ -47,7 +47,13 @@ module Sus
 		end
 		
 		def print(output)
-			output.write("context ", :context, self.description)
+			output.write("context", :context, self.description)
+		end
+		
+		def full_name
+			output = Output::Buffered.new
+			print(output)
+			return output.string
 		end
 		
 		def call(assertions)
