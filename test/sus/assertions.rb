@@ -18,39 +18,41 @@ describe Sus::Assertions do
 	let(:identity) {Sus::Identity.new("fake.rb", "fake", 1)}
 	let(:assertions) {Sus::Assertions.new(identity: identity, output: Sus::Output.buffered, inverted: inverted)}
 	
-	it "defaults to passing" do
-		expect(assertions).to be(:passed?)
-		expect(assertions).not.to be(:failed?)
-	end
-	
-	it "can assert something true" do
-		assertions.assert(true)
+	with "empty assertions" do
+		it "defaults to passing" do
+			expect(assertions).to be(:passed?)
+			expect(assertions).not.to be(:failed?)
+		end
 		
-		expect(assertions.passed.size).to be == 1
-		expect(assertions.failed.size).to be == 0
-		expect(assertions.count).to be == 1
+		it "can assert something true" do
+			assertions.assert(true)
+			
+			expect(assertions.passed.size).to be == 1
+			expect(assertions.failed.size).to be == 0
+			expect(assertions.count).to be == 1
+			
+			expect(assertions).to be(:passed?)
+			expect(assertions).not.to be(:failed?)
+		end
 		
-		expect(assertions).to be(:passed?)
-		expect(assertions).not.to be(:failed?)
-	end
-	
-	it "can assert something false" do
-		assertions.assert(false)
+		it "can assert something false" do
+			assertions.assert(false)
+			
+			expect(assertions.passed.size).to be == 0
+			expect(assertions.failed.size).to be == 1
+			expect(assertions.count).to be == 1
+			
+			expect(assertions).not.to be(:passed?)
+			expect(assertions).to be(:failed?)
+		end
 		
-		expect(assertions.passed.size).to be == 0
-		expect(assertions.failed.size).to be == 1
-		expect(assertions.count).to be == 1
-		
-		expect(assertions).not.to be(:passed?)
-		expect(assertions).to be(:failed?)
-	end
-	
-	it "can add informational output" do
-		assertions.inform("Hello world")
-		
-		expect(assertions.output).to have_attributes(
-			string: be =~ /Hello world/
-		)
+		it "can add informational output" do
+			assertions.inform("Hello world")
+			
+			expect(assertions.output).to have_attributes(
+				string: be =~ /Hello world/
+			)
+		end
 	end
 	
 	# Inverted assertions mean that we are passing if at least one assertion fails!
