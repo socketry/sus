@@ -15,6 +15,10 @@ module Sus
 			self.new(location.path, name, location.lineno, parent, **options)
 		end
 		
+		def self.current
+			self.nested(nil, nil, caller_locations(1...2).first)
+		end
+		
 		# @parameter unique [Boolean | Symbol] Whether this identity is unique or needs a unique key/line number suffix.
 		def initialize(path, name = nil, line = nil, parent = nil, unique: true)
 			@path = path

@@ -24,19 +24,23 @@ module Sus
 				@limit = limit
 			end
 			
-			def filter(root = @root)
-				if @root
-					if @limit
+			attr :stack
+			attr :root
+			attr :limit
+			
+			def filter(root: @root, limit: @limit)
+				if root
+					if limit
 						return @stack.lazy.select do |frame|
-							frame.path.start_with?(@root)
-						end.first(@limit)
+							frame.path.start_with?(root)
+						end.first(limit)
 					else
 						return up_to_and_matching(@stack) do |frame|
-							frame.path.start_with?(@root)
+							frame.path.start_with?(root)
 						end
 					end
-				elsif @limit
-					return @stack.first(@limit)
+				elsif limit
+					return @stack.first(limit)
 				else
 					return @stack
 				end
