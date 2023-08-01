@@ -15,7 +15,7 @@ module Sus
 			def self.for(exception, identity = nil)
 				# I've disabled the root filter here, because partial backtraces are not very useful.
 				# We might want to do something to improve presentation of the backtrace based on the root instead.
-				self.new(exception.backtrace_locations) # , identity&.path)
+				self.new(exception.backtrace_locations, identity&.path)
 			end
 			
 			def initialize(stack, root = nil, limit = nil)
@@ -24,20 +24,26 @@ module Sus
 				@limit = limit
 			end
 			
-			def filter(root = @root)
-				if @root
-					stack = @stack.select do |frame|
-						frame.path.start_with?(@root)
+			attr :stack
+			attr :root
+			attr :limit
+			
+			def filter(root: @root, limit: @limit)
+				if root
+					if limit
+						return @stack.lazy.select do |frame|
+							frame.path.start_with?(root)
+						end.first(limit)
+					else
+						return up_to_and_matching(@stack) do |frame|
+							frame.path.start_with?(root)
+						end
 					end
+				elsif limit
+					return @stack.first(limit)
 				else
-					stack = @stack
+					return @stack
 				end
-				
-				if @limit
-					stack = stack.take(@limit)
-				end
-				
-				return stack
 			end
 			
 			def print(output)
@@ -50,6 +56,22 @@ module Sus
 						filter.each do |frame|
 							output.puts :indent, :path, frame.path, :line, ":", frame.lineno, :reset, " ", frame.label
 						end
+					end
+				end
+			end
+			
+			private def up_to_and_matching(things, &block)
+				preface = true
+				things.select do |thing|
+					if preface
+						if yield(thing)
+							preface = false
+						end
+						true
+					elsif yield(thing)
+						true
+					else
+						false
 					end
 				end
 			end
