@@ -202,9 +202,7 @@ module Sus
 				output.puts title
 				
 				assertions.each do |assertion|
-					assertions.each do |failure|
-						output.append(failure.output)
-					end
+					output.append(assertion.output)
 				end
 			end
 		end
