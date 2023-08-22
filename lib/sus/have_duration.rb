@@ -16,9 +16,7 @@ module Sus
 		
 		def call(assertions, subject)
 			assertions.nested(self) do |assertions|
-				duration = measure(subject)
-				
-				@predicate.call(assertions, duration)
+				Expect.new(assertions, measure(subject)).to(@predicate)
 			end
 		end
 		
