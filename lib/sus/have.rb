@@ -21,7 +21,9 @@ module Sus
 			def call(assertions, subject)
 				assertions.nested(self) do |assertions|
 					assertions.assert(subject.key?(@name), "has key")
-					@predicate&.call(assertions, subject[@name])
+					if @predicate
+						Expect.new(assertions, subject[@name]).to(@predicate)
+					end
 				end
 			end
 		end
@@ -39,7 +41,9 @@ module Sus
 			def call(assertions, subject)
 				assertions.nested(self) do |assertions|
 					assertions.assert(subject.respond_to?(@name), "has attribute")
-					@predicate&.call(assertions, subject.send(@name))
+					if @predicate
+						Expect.new(assertions, subject.send(@name)).to(@predicate)
+					end
 				end
 			end
 		end
