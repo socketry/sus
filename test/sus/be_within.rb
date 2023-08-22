@@ -44,4 +44,17 @@ describe Sus::BeWithin do
 			expect(13).not.to be_within(2).of(10)
 		end
 	end
+	
+	with '#percent_of' do
+		it "can expect number to be within a percentage tolerance" do
+			expect(8).to be_within(20).percent_of(10)
+			expect(10).to be_within(20).percent_of(10)
+			expect(12).to be_within(20).percent_of(10)
+		end
+		
+		it "can expect number to be outside of a percentage tolerance" do
+			expect(7).not.to be_within(20).percent_of(10)
+			expect(13).not.to be_within(20).percent_of(10)
+		end
+	end
 end

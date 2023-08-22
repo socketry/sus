@@ -16,7 +16,7 @@ module Sus
 			
 			def call(assertions, subject)
 				assertions.nested(self) do |assertions|
-					assertions.assert(@range.include?(subject), subject)
+					assertions.assert(@range.include?(subject))
 				end
 			end
 		end
@@ -32,7 +32,9 @@ module Sus
 		end
 		
 		def percent_of(value)
-			of(value * Rational(@tolerance, 100))
+			tolerance = Rational(@tolerance, 100)
+			
+			return Bounded.new(Range.new(value - value * tolerance, value + value * tolerance))
 		end
 		
 		def print(output)
