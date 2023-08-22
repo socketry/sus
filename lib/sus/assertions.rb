@@ -192,16 +192,10 @@ module Sus
 			
 			if condition
 				@passed << assert
-				
-				if !@orientation || @verbose
-					@output.assert(condition, @orientation, message || "assertion passed", backtrace)
-				end
+				@output.assert(condition, @orientation, message || "assertion passed", backtrace)
 			else
 				@failed << assert
-				
-				if @orientation || @verbose
-					@output.assert(condition, @orientation, message || "assertion failed", backtrace)
-				end
+				@output.assert(condition, @orientation, message || "assertion failed", backtrace)
 			end
 		end
 		
