@@ -23,7 +23,22 @@ end
 
 describe Sus::Mock do
 	let(:interface) {Interface.new}
-
+	
+	it "can expect a method to be called" do
+		expect(interface).to receive(:implementation)
+		interface.implementation
+	end
+	
+	it "can expect a method to be called with arguments" do
+		expect(interface).to receive(:implementation).with(10)
+		interface.implementation(10)
+	end
+	
+	it "can expect a method to be called and return a value" do
+		expect(interface).to receive(:implementation).and_return(10)
+		expect(interface.implementation).to be == 10
+	end
+	
 	it "can replace a method on an object" do
 		mock(interface) do |mock|
 			mock.replace(:implementation) do
