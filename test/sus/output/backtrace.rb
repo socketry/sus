@@ -34,6 +34,8 @@ describe Sus::Output::Backtrace do
 			# This causes the exception to have a backtrace but not backtrace_locations.
 			exception.set_backtrace(caller)
 			
+			expect(exception.backtrace_locations).to be_nil
+			
 			stack = subject.extract_stack(exception)
 			expect(stack).to be_a(Array)
 			expect(stack).to have_attributes(size: be >= 1)
