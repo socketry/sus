@@ -26,4 +26,20 @@ describe Sus::Output::Backtrace do
 			expect(stack.last.path).to be(:start_with?, identity.path)
 		end
 	end
+	
+	with "a wonky exception" do
+		let(:exception) {Exception.new}
+		
+		it "has a backtrace" do
+			# This causes the exception to have a backtrace but not backtrace_locations.
+			exception.set_backtrace(caller)
+			
+			stack = subject.extract_stack(exception)
+			expect(stack).to be_a(Array)
+			expect(stack).to have_attributes(size: be >= 1)
+			
+			# This is a compatibility wrapper...
+			expect(stack.first).to be_a(Sus::Output::Backtrace::Location)
+		end
+	end
 end
