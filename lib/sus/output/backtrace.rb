@@ -15,7 +15,21 @@ module Sus
 			def self.for(exception, identity = nil)
 				# I've disabled the root filter here, because partial backtraces are not very useful.
 				# We might want to do something to improve presentation of the backtrace based on the root instead.
-				self.new(exception.backtrace_locations, identity&.path)
+				self.new(extract_stack(exception), identity&.path)
+			end
+			
+			Location = Struct.new(:path, :lineno, :label)
+			
+			def self.extract_stack(exception)
+				if stack = exception.backtrace_locations
+					return stack
+				elsif stack = exception.backtrace
+					return stack.map do |line|
+						Location.new(*line.split(":", 3))
+					end
+				else
+					[]
+				end
 			end
 			
 			def initialize(stack, root = nil, limit = nil)
