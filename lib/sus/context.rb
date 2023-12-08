@@ -47,7 +47,7 @@ module Sus
 		end
 		
 		def print(output)
-			output.write("context", :context, self.description)
+			output.write("context ", :context, self.description, :reset)
 		end
 		
 		def full_name
