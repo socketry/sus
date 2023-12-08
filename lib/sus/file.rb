@@ -51,7 +51,7 @@ module Sus
 		end
 		
 		def print(output)
-			output.write("file ", :path, self.identity)
+			output.write("file ", :path, self.identity, :reset)
 		end
 	end
 	
