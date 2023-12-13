@@ -73,6 +73,9 @@ module Sus
 			def inform(message, identity)
 				self.puts(:indent, :inform, inform_prefix, message)
 			end
+			
+			def pass(assertions)
+			end
 		end
 	end
 end

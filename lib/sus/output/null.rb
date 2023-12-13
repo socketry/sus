@@ -40,6 +40,10 @@ module Sus
 			def puts(*arguments)
 				# Do nothing.
 			end
+			
+			def each(&block)
+				# Not buffered - do nothing.
+			end
 		end
 	end
 end
