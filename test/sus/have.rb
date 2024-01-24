@@ -5,6 +5,8 @@
 
 User = Struct.new(:name, :age)
 
+require 'socket'
+
 describe Sus::Have do
 	describe User do
 		let(:user) {subject.new("Sus", 20)}
@@ -31,6 +33,26 @@ describe Sus::Have do
 			expect(hash).to have_keys(
 				:name, "age"
 			)
+		end
+	end
+	
+	describe Socket do
+		def before
+			super
+			
+			@socket = Socket.new(:INET, :STREAM)
+		end
+		
+		def after
+			@socket.close
+			
+			super
+		end
+		
+		it 'can use have_attributes on object that defines #send' do
+			skip_unless_method_defined(:timeout, Socket)
+			
+			expect(@socket).to have_attributes(timeout: be_nil)
 		end
 	end
 	

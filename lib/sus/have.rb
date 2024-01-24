@@ -42,7 +42,7 @@ module Sus
 				assertions.nested(self) do |assertions|
 					assertions.assert(subject.respond_to?(@name), "has attribute")
 					if @predicate
-						Expect.new(assertions, subject.send(@name)).to(@predicate)
+						Expect.new(assertions, subject.public_send(@name)).to(@predicate)
 					end
 				end
 			end
