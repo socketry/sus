@@ -12,7 +12,11 @@ module Sus
 		def print(output)
 			operation, *arguments = *@arguments
 			
-			output.write("be ", :be, operation.to_s, :reset, " ", :variable, arguments.map(&:inspect).join, :reset)
+			output.write("be ", :be, operation.to_s, :reset)
+			
+			if arguments.any?
+				output.write(" ", :variable, arguments.map(&:inspect).join, :reset)
+			end
 		end
 		
 		def call(assertions, subject)

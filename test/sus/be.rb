@@ -82,4 +82,14 @@ describe Sus::Be do
 			expect([1, 2, 3]).to be == [1, 2, 3]
 		end
 	end
+	
+	describe Sus::Be::NIL do
+		let(:buffer) {StringIO.new}
+		let(:output) {Sus::Output::Text.new(buffer)}
+		
+		it "can print" do
+			subject.print(output)
+			expect(buffer.string).to be == "be nil?"
+		end
+	end
 end
