@@ -199,13 +199,6 @@ module Sus
 			end
 		end
 		
-		def message
-			{
-				text: @output.string,
-				location: @identity&.to_location
-			}
-		end
-		
 		def each_failure(&block)
 			return to_enum(__method__) unless block_given?
 			

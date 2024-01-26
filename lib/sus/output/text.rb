@@ -55,8 +55,6 @@ module Sus
 				@io.tty?
 			end
 			
-			attr :io
-			
 			def [] key
 				@styles[key]
 			end
