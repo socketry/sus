@@ -10,7 +10,11 @@ end
 
 describe Sus::RespondTo do
 	let(:interface) {Interface.new}
-
+	
+	it "can respond to a method" do
+		expect(interface).to respond_to(:method_with_options)
+	end
+	
 	it "can respond to a method with one option" do
 		expect(interface).to respond_to(:method_with_options).with_options(:x)
 	end
