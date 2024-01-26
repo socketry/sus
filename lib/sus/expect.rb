@@ -8,6 +8,10 @@ module Sus
 		def initialize(assertions, subject, inverted: false, distinct: false)
 			@assertions = assertions
 			@subject = subject
+			
+			# We capture this here, as changes to state may cause the inspect output to change, affecting the output produced by #print.
+			@inspect = @subject.inspect
+			
 			@inverted = inverted
 			@distinct = true
 		end
@@ -22,7 +26,7 @@ module Sus
 		end
 		
 		def print(output)
-			output.write("expect ", :variable, @subject.inspect, :reset, " ")
+			output.write("expect ", :variable, @inspect, :reset, " ")
 			
 			if @inverted
 				output.write("not to", :reset)
