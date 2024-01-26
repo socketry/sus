@@ -4,5 +4,5 @@
 # Copyright, 2021-2023, by Samuel Williams.
 
 module Sus
-	VERSION = "0.24.4"
+	VERSION = "0.24.5"
 end
