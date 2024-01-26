@@ -25,7 +25,7 @@ module Sus
 			output.write("expect ", :variable, @subject.inspect, :reset, " ")
 			
 			if @inverted
-				output.write("to not", :reset)
+				output.write("not to", :reset)
 			else
 				output.write("to", :reset)
 			end
