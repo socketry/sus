@@ -16,7 +16,7 @@ class FakeImplementation
 end
 
 class Interface
-	def implementation(*arguments)
+	def implementation(*arguments, **options)
 		RealImplementation.new
 	end
 end
@@ -37,9 +37,15 @@ describe Sus::Receive do
 		interface.implementation(:foo, :bar)
 	end
 	
-	it "can validate arguments" do
+	it "can validate (not) arguments" do
 		expect(interface).not.to receive(:implementation).with(:foo, :bar)
 
 		interface.implementation(:foo, :bar2)
+	end
+	
+	it "can validate options" do
+		expect(interface).to receive(:implementation).with(x: 1, y: 2)
+
+		interface.implementation(x: 1, y: 2)
 	end
 end

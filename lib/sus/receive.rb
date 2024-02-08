@@ -21,7 +21,7 @@ module Sus
 		end
 		
 		def print(output)
-			output.write("receive ", :variable, @method.to_s, :reset, " ")
+			output.write("receive ", :variable, @method.to_s, :reset)
 		end
 		
 		def with_arguments(predicate)
@@ -70,33 +70,37 @@ module Sus
 		end
 		
 		def validate(mock, assertions, arguments, options, block)
-			@arguments.call(assertions, arguments) if @arguments
-			@options.call(assertions, options) if @options
-			@block.call(assertions, block) if @block
+			return unless @arguments or @options or @block
+			
+			assertions.nested(self) do |assertions|
+				@arguments.call(assertions, arguments) if @arguments
+				@options.call(assertions, options) if @options
+				@block.call(assertions, block) if @block
+			end
 		end
 		
 		def call(assertions, subject)
 			assertions.nested(self) do |assertions|
 				mock = @base.mock(subject)
-			
+				
 				called = 0
-
+				
 				if call_original?
 					mock.before(@method) do |*arguments, **options, &block|
 						called += 1
-
+						
 						validate(mock, assertions, arguments, options, block)
 					end
 				else
 					mock.replace(@method) do |*arguments, **options, &block|
 						called += 1
-
+						
 						validate(mock, assertions, arguments, options, block)
-
+						
 						next @returning
 					end
 				end
-
+				
 				if @times
 					assertions.defer do
 						@times.call(assertions, called)
@@ -120,7 +124,7 @@ module Sus
 			
 			def call(assertions, subject)
 				assertions.nested(self) do |assertions|
-					@predicate.call(assertions, subject)
+					Expect.new(assertions, subject).to(@predicate)
 				end
 			end
 		end
@@ -136,7 +140,7 @@ module Sus
 			
 			def call(assertions, subject)
 				assertions.nested(self) do |assertions|
-					@predicate.call(assertions, subject)
+					Expect.new(assertions, subject).to(@predicate)
 				end
 			end
 		end
