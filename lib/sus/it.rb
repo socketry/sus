@@ -89,5 +89,11 @@ module Sus
 				skip "Ruby #{version} is not supported, but running #{RUBY_VERSION}!"
 			end
 		end
+		
+		def skip_if_ruby_platform(pattern)
+			if match = RUBY_PLATFORM.match(pattern)
+				skip "Ruby platform #{match} is not supported!"
+			end
+		end
 	end
 end
