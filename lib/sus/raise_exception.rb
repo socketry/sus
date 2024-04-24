@@ -5,7 +5,7 @@
 
 module Sus
 	class RaiseException
-		def initialize(exception_class = nil, message: nil)
+		def initialize(exception_class = Exception, message: nil)
 			@exception_class = exception_class
 			@message = message
 			@predicate = nil

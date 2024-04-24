@@ -21,6 +21,7 @@ describe Sus::RaiseException do
 	
 	it "can not raise an exception" do
 		expect do
+			# Nothing.
 		end.not.to raise_exception
 	end
 	
