@@ -16,12 +16,14 @@ Gem::Specification.new do |spec|
 	spec.homepage = "https://github.com/ioquatix/sus"
 	
 	spec.metadata = {
+		"documentation_uri" => "https://ioquatix.github.io/sus/",
 		"funding_uri" => "https://github.com/sponsors/ioquatix/",
+		"source_code_uri" => "https://github.com/ioquatix/sus.git",
 	}
 	
 	spec.files = Dir.glob(['{bin,lib}/**/*', '*.md'], File::FNM_DOTMATCH, base: __dir__)
 	
 	spec.executables = ["sus", "sus-parallel", "sus-tree", "sus-host"]
 	
-	spec.required_ruby_version = ">= 3.0"
+	spec.required_ruby_version = ">= 3.1"
 end
