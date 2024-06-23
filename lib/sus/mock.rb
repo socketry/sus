@@ -62,6 +62,23 @@ module Sus
 
 			return self
 		end
+		
+		# Wrap a method, yielding the original method as the first argument, so you can call it from within the hook.
+		def wrap(method, &hook)
+			execution_context = Thread.current
+			
+			@interceptor.define_method(method) do |*arguments, **options, &block|
+				if execution_context == Thread.current
+					original = proc do |*arguments, **options|
+						super(*arguments, **options)
+					end
+					
+					hook.call(original, *arguments, **options, &block) 
+				else
+					super(*arguments, **options, &block)
+				end
+			end
+		end
 	end
 
 	module Mocks
