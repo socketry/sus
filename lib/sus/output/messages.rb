@@ -54,16 +54,20 @@ module Sus
 				[:errored, "⚠ "]
 			end
 			
-			def error(error, identity)
+			def error(error, identity, prefix = error_prefix)
 				lines = error.message.split(/\r?\n/)
 			
-				self.puts(:indent, *error_prefix, error.class, ": ", lines.shift)
+				self.puts(:indent, *prefix, error.class, ": ", lines.shift)
 				
 				lines.each do |line|
 					self.puts(:indent, line)
 				end
 					
 				self.write(Output::Backtrace.for(error, identity))
+				
+				if cause = error.cause
+					self.error(cause, identity, ["Caused by ", :errored])
+				end
 			end
 			
 			def inform_prefix
