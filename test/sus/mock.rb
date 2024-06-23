@@ -4,6 +4,12 @@
 # Copyright, 2022-2024, by Samuel Williams.
 
 class RealImplementation
+	def initialize(value = nil)
+		@value = value
+	end
+	
+	attr :value
+	
 	def call
 		"Real Implementation"
 	end
@@ -76,7 +82,7 @@ describe Sus::Mock do
 		expect(count).to be == 1
 	end
 
-	with "mocked class method" do
+	with "#replace" do
 		def before
 			mock(RealImplementation) do |mock|
 				mock.replace(:new) do
@@ -95,6 +101,21 @@ describe Sus::Mock do
 				interface = Interface.new
 				expect(interface.implementation).to be(:kind_of?, RealImplementation)
 			end.join
+		end
+	end
+	
+	with "#wrap" do
+		def before
+			mock(RealImplementation) do |mock|
+				mock.wrap(:new) do |original, value|
+					original.call(value * 2)
+				end
+			end
+		end
+		
+		it "can wrap a method" do
+			interface = RealImplementation.new(10)
+			expect(interface.value).to be == 20
 		end
 	end
 end
