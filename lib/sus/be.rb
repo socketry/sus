@@ -5,8 +5,94 @@
 
 module Sus
 	class Be
+		class And
+			def initialize(predicates)
+				@predicates = predicates
+			end
+			
+			def print(output)
+				@predicates.each_with_index do |predicate, index|
+					if index > 0
+						output.write(" and ", :reset)
+					end
+					
+					predicate.print(output)
+				end
+			end
+			
+			def call(assertions, subject)
+				@predicates.each do |predicate|
+					predicate.call(assertions, subject)
+				end
+			end
+			
+			def &(other)
+				And.new(@predicates + [other])
+			end
+			
+			def |(other)
+				Or.new(self, other)
+			end
+		end
+		
+		class Or
+			def initialize(predicates)
+				@predicates = predicates
+			end
+			
+			def print(output)
+				@predicates.each_with_index do |predicate, index|
+					if index > 0
+						output.write(" or ", :reset)
+					end
+					
+					predicate.print(output)
+				end
+			end
+			
+			def call(assertions, subject)
+				assertions.nested(self) do |assertions|
+					@predicates.each do |predicate|
+						predicate.call(assertions, subject)
+					end
+					
+					if assertions.passed.any?
+						# At least one passed, so we don't care about failures:
+						assertions.failed.clear
+					else
+						# Nothing passed, so we failed:
+						assertions.assert(false, "could not find any matching predicate")
+					end
+				end
+			end
+			
+			def &(other)
+				And.new(self, other)
+			end
+			
+			def |(other)
+				Or.new(@predicates + [other])
+			end
+		end
+		
 		def initialize(*arguments)
 			@arguments = arguments
+		end
+		
+		def |(other)
+			Or.new([self, other])
+		end
+		
+		def or(*others)
+			Or.new([self, *others])
+		end
+		
+		def &(other)
+			And.new([self, other])
+		end
+		
+		def and(*others)
+			And.new([self, *others])
 		end
 		
 		def print(output)

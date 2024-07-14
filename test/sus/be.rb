@@ -92,4 +92,52 @@ describe Sus::Be do
 			expect(buffer.string).to be == "be nil?"
 		end
 	end
+	
+	describe Sus::Be::And do
+		it "can combine two predicates" do
+			expect(10).to (be > 5) & (be < 20)
+		end
+		
+		it "can combine three predicates" do
+			expect(10).to (be > 5) & (be < 20) & (be != 15)
+		end
+		
+		it "can combine several predicates" do
+			expect(10).to (be > 5).and(be < 20, be != 15)
+		end
+		
+		it "can combine four predicates with one failure" do
+			assertions = Sus::Assertions.new
+			
+			Sus::Expect.new(assertions, 10).to (be > 5) & (be < 20) & (be != 15) & (be == 15)
+			
+			expect(assertions).to be(:failed?)
+		end
+	end
+	
+	describe Sus::Be::Or do
+		it "can combine two predicates" do
+			expect(10).to (be > 5) | (be < 5)
+		end
+		
+		it "can combine three predicates" do
+			expect(10).to (be > 5) | (be < 5) | (be == 10)
+		end
+		
+		it "can combine several predicates" do
+			expect(10).to (be > 5).or(be < 5, be == 10)
+		end
+		
+		it "can combine four predicates with one failure" do
+			expect(10).to (be > 5) | (be < 5) | (be == 10) | (be == 15)
+		end
+		
+		it "can combine four predicates with all failures" do
+			assertions = Sus::Assertions.new
+			
+			Sus::Expect.new(assertions, 10).to (be > 10) | (be < 5) | (be == 15) | (be == 20)
+			
+			expect(assertions).to be(:failed?)
+		end
+	end
 end
