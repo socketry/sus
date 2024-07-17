@@ -58,10 +58,14 @@ module Sus
 			end
 			
 			def call(assertions, subject)
-				subject.each_with_index do |value, index|
+				index = 0
+				
+				subject.each do |value|
 					assertions.nested("[#{index}] = #{value.inspect}") do |assertions|
 						@predicate&.call(assertions, value)
 					end
+					
+					index += 1
 				end
 			end
 		end
