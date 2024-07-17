@@ -60,7 +60,7 @@ module Sus
 		# The absolute orientation of this set of assertions, i.e. whether the assertions are expected to pass or fail regardless of the parent. Used for correctly formatting the output.
 		attr :orientation
 		
-		# Whether this set of assertions is isolated from the parent. This is used to ensure taht any deferred assertions are competed before the parent is completed. This is used by `receive` assertions which are deferred until the user code of the test has completed.
+		# Whether this set of assertions is isolated from the parent. This is used to ensure that any deferred assertions are competed before the parent is completed. This is used by `receive` assertions which are deferred until the user code of the test has completed.
 		attr :isolated
 		
 		# Distinct is used to identify a set of assertions as a single statement for the purpose of user feedback. It's used by top level ensure statements to ensure that error messages are captured and reported on those statements.

@@ -19,7 +19,8 @@ module Sus
 			end
 			
 			def call(assertions, subject)
-				assertions.nested(self) do |assertions|
+				# We want to group all the assertions in to a distinct group:
+				assertions.nested(self, distinct: true) do |assertions|
 					assertions.assert(subject.key?(@name), "has key")
 					if @predicate
 						Expect.new(assertions, subject[@name]).to(@predicate)
@@ -39,7 +40,7 @@ module Sus
 			end
 			
 			def call(assertions, subject)
-				assertions.nested(self) do |assertions|
+				assertions.nested(self, distinct: true) do |assertions|
 					assertions.assert(subject.respond_to?(@name), "has attribute")
 					if @predicate
 						Expect.new(assertions, subject.public_send(@name)).to(@predicate)
@@ -61,7 +62,7 @@ module Sus
 				index = 0
 				
 				subject.each do |value|
-					assertions.nested("[#{index}] = #{value.inspect}") do |assertions|
+					assertions.nested("[#{index}] = #{value.inspect}", distinct: true) do |assertions|
 						@predicate&.call(assertions, value)
 					end
 					

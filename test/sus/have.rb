@@ -77,4 +77,17 @@ describe Sus::Have do
 			expect(array).not.to have_value(be < 1)
 		end
 	end
+	
+	describe Hash do
+		let(:values) {[{a: 1}, {b: 2}, {c: 3}]}
+		
+		it "can contain keys" do
+			expect(values).to have_value(have_keys(a: be == 1))
+		end
+		
+		it "doesn't contain keys" do
+			expect(values).not.to have_value(have_keys(a: be == 2))
+			expect(values).not.to have_value(have_keys(d: be == 4))
+		end
+	end
 end
