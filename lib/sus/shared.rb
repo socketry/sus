@@ -18,6 +18,10 @@ module Sus
 			
 			return base
 		end
+		
+		def included(base, *arguments, **options)
+			base.class_exec(*arguments, **options, &self.block)
+		end
 	end
 	
 	def self.Shared(name, &block)

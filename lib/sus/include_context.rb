@@ -6,9 +6,47 @@
 require_relative 'context'
 
 module Sus
+	module IncludeContext
+		module Helpers
+			def prepend(*arguments, &block)
+				arguments.each do |argument|
+					if argument.class == Module
+						super(argument)
+					else
+						argument.prepended(self)
+					end
+				end
+
+				if block_given?
+					wrapper = Module.new
+					wrapper.instance_exec(&block)
+					super(wrapper)
+				end
+			end
+			
+			def include(*arguments, &block)
+				arguments.each do |argument|
+					if argument.class == Module
+						super(argument)
+					else
+						argument.included(self)
+					end
+				end
+				
+				if block_given?
+					wrapper = Module.new
+					wrapper.module_exec(&block)
+					super(wrapper)
+				end
+			end
+		end
+	end
+	
 	module Context
-		def include_context(shared, *arguments, **options)
-			self.class_exec(*arguments, **options, &shared.block)
+		include IncludeContext::Helpers
+		
+		def include_context(shared, ...)
+			shared.included(self, ...)
 		end
 	end
 end
