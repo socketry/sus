@@ -12,7 +12,7 @@ Non-features:
   - Flexibility at the expense of performance.
   - Backwards compatibility.
 
-[![Development Status](https://github.com/sus-rb/sus/workflows/Test/badge.svg)](https://github.com/sus-rb/sus/actions?workflow=Test)
+[![Development Status](https://github.com/suspecting/sus/workflows/Test/badge.svg)](https://github.com/suspecting/sus/actions?workflow=Test)
 
 ## Ideas
 
