@@ -7,8 +7,8 @@ require_relative 'context'
 
 module Sus
 	module Context
-		def include_context(shared, ...)
-			shared.included(self, ...)
+		def include_context(shared, *arguments, **options)
+			self.class_exec(*arguments, **options, &shared.block)
 		end
 	end
 end

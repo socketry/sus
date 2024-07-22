@@ -76,38 +76,54 @@ module Sus
 			end
 		end
 		
-		def before(&block)
+		# Include an around method to the context class, that invokes the given block before running the test.
+		#
+		# Before hooks are called in the reverse order they are defined, in other words the last defined before hook is called first.
+		#
+		# @parameter hook [Proc] The block to execute before each test.
+		def before(&hook)
 			wrapper = Module.new
 			
-			wrapper.define_method(:before) do
-				super()
-				instance_exec(&block)
+			wrapper.define_method(:around) do |&block|
+				instance_exec(&hook)
+				super(&block)
 			end
 			
 			self.include(wrapper)
 		end
 		
-		def after(&block)
+		# Include an around method to the context class, that invokes the given block after running the test.
+		#
+		# After hooks are called in the order they are defined, in other words the last defined after hook is called last.
+		#
+		# @parameter hook [Proc] The block to execute after each test. An `error` argument is passed if the test failed with an exception.
+		def after(&hook)
 			wrapper = Module.new
 			
-			wrapper.define_method(:after) do
-				instance_exec(&block)
-				super()
+			wrapper.define_method(:around) do |&block|
+				error = nil
+				
+				super(&block)
+			rescue => error
+				raise
+			ensure
+				instance_exec(error, &hook)
 			end
 			
 			self.include(wrapper)
 		end
 		
+		# Add an around hook to the context class.
+		#
+		# Around hooks are called in the reverse order they are defined.
+		#
+		# The top level `around` implementation invokes before and after hooks.
+		#
+		# @paremeter block [Proc] The block to execute around each test.
 		def around(&block)
 			wrapper = Module.new
 			
-			wrapper.define_method(:around) do
-				call_super = proc do
-					super()
-				end
-				
-				instance_exec(call_super, &block)
-			end
+			wrapper.define_method(:around, &block)
 			
 			self.include(wrapper)
 		end

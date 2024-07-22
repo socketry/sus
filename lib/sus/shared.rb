@@ -11,7 +11,7 @@ module Sus
 		attr_accessor :block
 		
 		def self.build(name, block)
-			base = Class.new
+			base = Module.new
 			base.extend(Shared)
 			base.name = name
 			base.block = block
@@ -19,8 +19,12 @@ module Sus
 			return base
 		end
 		
-		def included(base, *arguments, **options)
-			base.class_exec(*arguments, **options, &self.block)
+		def included(base)
+			base.class_exec(&self.block)
+		end
+		
+		def prepended(base)
+			base.class_exec(&self.block)
 		end
 	end
 	
