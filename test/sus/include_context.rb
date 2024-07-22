@@ -6,12 +6,19 @@
 AThing = Sus::Shared("a thing") do |key, value: 42|
 	let(:a_thing) {{key => value}}
 	
-	include do
-		def before
-			super
-			
-			events << :shared_before
-		end
+	before do
+		$stderr.puts "before: #{self}"
+		events << :shared_before
+	end
+	
+	after do
+		$stderr.puts "after: #{self}"
+		events << :shared_after
+	end
+	
+	around do |block|
+		$stderr.puts "around: #{self}"
+		block.call
 	end
 end
 
@@ -21,9 +28,7 @@ describe Sus::Context do
 			let(:events) {Array.new}
 			include_context AThing, :key, value: 42
 			
-			def before
-				super
-				
+			before do
 				events << :example_before
 			end
 			

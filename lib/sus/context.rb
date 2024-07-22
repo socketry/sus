@@ -75,5 +75,41 @@ module Sus
 				end
 			end
 		end
+		
+		def before(&block)
+			wrapper = Module.new
+			
+			wrapper.define_method(:before) do
+				super()
+				instance_exec(&block)
+			end
+			
+			self.include(wrapper)
+		end
+		
+		def after(&block)
+			wrapper = Module.new
+			
+			wrapper.define_method(:after) do
+				instance_exec(&block)
+				super()
+			end
+			
+			self.include(wrapper)
+		end
+		
+		def around(&block)
+			wrapper = Module.new
+			
+			wrapper.define_method(:around) do
+				call_super = proc do
+					super()
+				end
+				
+				instance_exec(call_super, &block)
+			end
+			
+			self.include(wrapper)
+		end
 	end
 end
