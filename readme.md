@@ -10,31 +10,15 @@ An opinionated test framework designed with several goals:
 Non-features:
 
   - Flexibility at the expense of performance.
-  - Backwards compatibility.
+  - Backwards compatibility (for now).
 
 [![Development Status](https://github.com/suspecting/sus/workflows/Test/badge.svg)](https://github.com/suspecting/sus/actions?workflow=Test)
 
-## Ideas
-
-I've been thinking about how this should grow long term. I see a separation between "defining tests" and "running tests". I think this gem should be split across those responsibilities. By doing so, defining tests remains relatively static, but can be extended independently of execution model. And execution models which include parallelism, code coverage, multi-server, etc can be implemented effectively.
-
-The key point is that we need a well defined interface between defining tests and running tests. This interface is provided by the test registry, which can load test files. The test registry provides a way to enumerate all tests where each test has an identity that uniquely identifies it.
-
-### Sequential vs Parallel
-
-`sus` has both sequential and multi-threaded (`sus-parallel`) execution models for tests. Parallel execution is potentially much faster. This is an experimental feature.
-
-![Sequential vs Parallel](https://user-images.githubusercontent.com/30030/144770080-092cf07b-b121-4754-96e0-8ff1d8ea0695.mov)
-
-## Installation
-
-``` shell
-bundle add sus
-```
-
 ## Usage
 
-Check `test` directory for examples.
+Please see the [project documentation](https://suspecting.github.io/sus/) for more details.
+
+  - [Getting Started](https://suspecting.github.io/sus/guides/getting-started/index) - This guide explains how to use the `sus` gem to write tests for your Ruby projects.
 
 ## Contributing
 
