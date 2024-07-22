@@ -18,12 +18,12 @@ module Sus
 			base.description = shared.name
 			base.identity = Identity.nested(parent.identity, base.description, unique: unique)
 			base.set_temporary_name("#{self}[#{base.description}]")
-
+			
 			# User provided block is evaluated first, so that it can provide default behaviour for the shared context:
 			if block_given?
 				base.class_exec(*arguments, &block)
 			end
-
+			
 			base.class_exec(*arguments, &shared.block)
 			return base
 		end
