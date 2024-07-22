@@ -12,17 +12,17 @@ Non-features:
   - Flexibility at the expense of performance.
   - Backwards compatibility (for now).
 
-[![Development Status](https://github.com/suspecting/sus/workflows/Test/badge.svg)](https://github.com/suspecting/sus/actions?workflow=Test)
+[![Development Status](https://github.com/socketry/sus/workflows/Test/badge.svg)](https://github.com/socketry/sus/actions?workflow=Test)
 
 ## Usage
 
-Please see the [project documentation](https://suspecting.github.io/sus/) for more details.
+Please see the [project documentation](https://socketry.github.io/sus/) for more details.
 
-  - [Getting Started](https://suspecting.github.io/sus/guides/getting-started/index) - This guide explains how to use the `sus` gem to write tests for your Ruby projects.
+  - [Getting Started](https://socketry.github.io/sus/guides/getting-started/index) - This guide explains how to use the `sus` gem to write tests for your Ruby projects.
 
 ## See Also
 
-- [sus-vscode](https://github.com/suspecting/sus-vscode) - Visual Studio Code extension for Sus.
+- [sus-vscode](https://github.com/socketry/sus-vscode) - Visual Studio Code extension for Sus.
 
 ## Contributing
 
