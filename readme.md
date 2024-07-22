@@ -1,4 +1,4 @@
-# Sus(picious)
+# Sus
 
 An opinionated test framework designed with several goals:
 
@@ -19,6 +19,10 @@ Non-features:
 Please see the [project documentation](https://suspecting.github.io/sus/) for more details.
 
   - [Getting Started](https://suspecting.github.io/sus/guides/getting-started/index) - This guide explains how to use the `sus` gem to write tests for your Ruby projects.
+
+## See Also
+
+- [sus-vscode](https://github.com/suspecting/sus-vscode) - Visual Studio Code extension for Sus.
 
 ## Contributing
 
