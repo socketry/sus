@@ -30,6 +30,9 @@ Run your tests with the `sus` command:
 
 ~~~ bash
 $ sus
+1 passed out of 1 total (1 assertions)
+🏁 Finished in 47.0µs; 21272.535 assertions per second.
+🐇 No slow tests found! Well done!
 ~~~
 
 You can also run your tests in parallel:
@@ -37,3 +40,10 @@ You can also run your tests in parallel:
 ~~~ bash
 $ sus-parallel
 ~~~
+
+## More Examples
+
+Check out all the repositories in this organisation, including these notable examples:
+
+- [sus/test](https://github.com/socketry/sus/tree/main/test/sus)
+- [async/test](https://github.com/socketry/async/tree/main/test)

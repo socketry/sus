@@ -1,18 +1,23 @@
 # Sus
 
-An opinionated test framework designed with several goals:
+Sus is a testing framework for Ruby.
 
-  - As fast as possible, aiming for \~10,000 assertions per second per core.
-  - Isolated tests which parallelise easily (including `class` definitions).
-  - Native support for balanced (work-stealing) multi-core execution.
-  - Incredible test output with detailed failure logging (including nested assertions and predicates).
-
-Non-features:
-
-  - Flexibility at the expense of performance.
-  - Backwards compatibility (for now).
+- It's similar to RSpec but with less baggage and more parallelism.
+- It uses `expect` style syntax with first-class predicates.
+- It has direct [support for code coverage](https://github.com/socketry/covered).
+- It supports the [VSCode Test Runner interface](https://github.com/socketry/sus-vscode).
+- It's based on my experience writing thousands of tests.
+- It's easy to extend (see the `sus-fixtures-` gems for examples).
 
 [![Development Status](https://github.com/socketry/sus/workflows/Test/badge.svg)](https://github.com/socketry/sus/actions?workflow=Test)
+
+## Lightning Talk: Testing with Sus (2023)
+
+<div align="center">
+  <a href="https://www.youtube.com/watch?v=BDQHgb2rrwU">
+    <img src="https://img.youtube.com/vi/BDQHgb2rrwU/0.jpg" alt="Testing with Sus">
+  </a>
+</div>
 
 ## Usage
 
