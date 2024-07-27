@@ -78,17 +78,16 @@ module Sus
 		
 		# Include an around method to the context class, that invokes the given block before running the test.
 		#
-		# Before hooks are called in the reverse order they are defined, in other words the last defined before hook is called first.
+		# Before hooks are usually invoked in the order they are defined, i.e. the first defined hook is invoked first.
 		#
 		# @parameter hook [Proc] The block to execute before each test.
 		def before(&hook)
 			wrapper = Module.new
 			
-			wrapper.define_method(:around) do |&block|
-				super() do
-					instance_exec(&hook)
-					block.call
-				end
+			wrapper.define_method(:before) do
+				super()
+				
+				instance_exec(&hook)
 			end
 			
 			self.include(wrapper)
@@ -96,20 +95,18 @@ module Sus
 		
 		# Include an around method to the context class, that invokes the given block after running the test.
 		#
-		# After hooks are called in the order they are defined, in other words the last defined after hook is called last.
+		# After hooks are usually invoked in the reverse order they are defined, i.e. the last defined hook is invoked first.
 		#
 		# @parameter hook [Proc] The block to execute after each test. An `error` argument is passed if the test failed with an exception.
 		def after(&hook)
 			wrapper = Module.new
 			
-			wrapper.define_method(:around) do |&block|
-				super() do
-					block.call
-				rescue => error
-					raise
-				ensure
-					instance_exec(error, &hook)
-				end
+			wrapper.define_method(:after) do |error|
+				instance_exec(error, &hook)
+			rescue => error
+				raise
+			ensure
+				super(error)
 			end
 			
 			self.include(wrapper)

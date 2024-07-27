@@ -43,7 +43,7 @@ describe Sus::Have do
 			@socket = Socket.new(:INET, :STREAM)
 		end
 		
-		def after
+		def after(error = nil)
 			@socket.close
 			
 			super

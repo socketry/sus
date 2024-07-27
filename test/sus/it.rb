@@ -14,7 +14,7 @@ describe Sus::It do
 			self.before_hook_invoked = true
 		end
 		
-		def after
+		def after(error = nil)
 			self.after_hook_invoked = true
 		end
 		
