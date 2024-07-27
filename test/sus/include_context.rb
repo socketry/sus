@@ -17,8 +17,11 @@ AContextWithHooks = Sus::Shared("a context with hooks") do
 	end
 	
 	around do |&block|
-		events << :shared_around_before
-		super(&block)
+		super() do
+			events << :shared_around_before
+			
+			block.call
+		end
 	end
 end
 

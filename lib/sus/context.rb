@@ -85,8 +85,10 @@ module Sus
 			wrapper = Module.new
 			
 			wrapper.define_method(:around) do |&block|
-				instance_exec(&hook)
-				super(&block)
+				super() do
+					instance_exec(&hook)
+					block.call
+				end
 			end
 			
 			self.include(wrapper)
@@ -101,13 +103,13 @@ module Sus
 			wrapper = Module.new
 			
 			wrapper.define_method(:around) do |&block|
-				error = nil
-				
-				super(&block)
-			rescue => error
-				raise
-			ensure
-				instance_exec(error, &hook)
+				super() do
+					block.call
+				rescue => error
+					raise
+				ensure
+					instance_exec(error, &hook)
+				end
 			end
 			
 			self.include(wrapper)
