@@ -22,10 +22,15 @@ module Sus
 		def after
 		end
 		
-		def around
+		# Wrap logic around the test being executed.
+		#
+		# Invokes the before hook, then the block, then the after hook.
+		#
+		# @yields {...} the block which should execute a test.
+		def around(&block)
 			self.before
 			
-			return yield
+			return block.call
 		ensure
 			self.after
 		end
