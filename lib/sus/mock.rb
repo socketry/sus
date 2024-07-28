@@ -82,7 +82,7 @@ module Sus
 	end
 
 	module Mocks
-		def after
+		def after(error = nil)
 			super
 			
 			@mocks&.each_value(&:clear)

@@ -16,18 +16,31 @@ module Sus
 			"\#<Sus::Base for #{self.class.description.inspect}>"
 		end
 		
+		# A hook which is called before the test is executed.
+		#
+		# If you override this method, you must call super.
 		def before
 		end
 		
-		def after
+		# A hook which is called after the test is executed.
+		#
+		# If you override this method, you must call super.
+		def after(error = nil)
 		end
 		
-		def around
+		# Wrap logic around the test being executed.
+		#
+		# Invokes the before hook, then the block, then the after hook.
+		#
+		# @yields {...} the block which should execute a test.
+		def around(&block)
 			self.before
 			
-			return yield
+			return block.call
+		rescue => error
+			raise
 		ensure
-			self.after
+			self.after(error)
 		end
 		
 		def assert(...)

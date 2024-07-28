@@ -9,16 +9,23 @@ end
 
 AContextWithHooks = Sus::Shared("a context with hooks") do
 	before do
-		events << :shared_before
+		events << :context_before
 	end
 	
 	after do
-		events << :shared_after
+		events << :context_after
 	end
 	
 	around do |&block|
-		events << :shared_around_before
-		super(&block)
+		events << :context_around_before
+		
+		super() do
+			events << :context_around_super_before
+			block.call
+			events << :context_around_super_after
+		end
+		
+		events << :context_around_after
 	end
 end
 
@@ -32,7 +39,7 @@ describe Sus::Context do
 			end
 		end
 		
-		with "a shared context with arguments" do
+		with "a shared context with hooks" do
 			let(:events) {Array.new}
 			
 			include AContextWithHooks
@@ -41,8 +48,51 @@ describe Sus::Context do
 				events << :example_before
 			end
 			
+			after do
+				events << :example_after
+			end
+			
+			around do	|&block|
+				events << :example_around_before
+				
+				super() do
+					events << :example_around_super_before
+					block.call
+					events << :example_around_super_after
+				end
+				
+				events << :example_around_after
+				
+				# This is the full sequence of events:
+				expect(events).to be == [
+					:example_around_before,
+					:context_around_before,
+					:context_before,
+					:example_before,
+					:context_around_super_before,
+					:example_around_super_before,
+					:example,
+					:example_around_super_after,
+					:context_around_super_after,
+					:example_after,
+					:context_after,
+					:context_around_after,
+					:example_around_after,
+				]
+			end
+			
 			it "can include a shared context" do
-				expect(events).to be == [:example_before, :shared_around_before, :shared_before]
+				events << :example
+				
+				expect(events).to be == [
+					:example_around_before,
+					:context_around_before,
+					:context_before,
+					:example_before,
+					:context_around_super_before,
+					:example_around_super_before,
+					:example,
+				]
 			end
 		end
 	end

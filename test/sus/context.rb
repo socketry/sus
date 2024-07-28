@@ -27,6 +27,39 @@ describe Sus::Describe do
 	it "has a full name" do
 		expect(instance.full_name).to be == "describe test"
 	end
+	
+	with "before hooks" do
+		let(:events) {Array.new}
+		
+		before do
+			events << :before1
+		end
+		
+		before do
+			events << :before2
+		end
+		
+		it "invokes before hooks" do
+			expect(events).to be == [:before1, :before2]
+		end
+	end
+	
+	with "after hooks" do
+		let(:events) {Array.new}
+		
+		after do
+			events << :after1
+			expect(events).to be == [:example, :after2, :after1]
+		end
+		
+		after do
+			events << :after2
+		end
+		
+		it "invokes after hooks" do
+			events << :example
+		end
+	end
 end
 
 describe Sus::With do
