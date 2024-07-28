@@ -15,7 +15,7 @@ Sus is a testing framework for Ruby.
 
 <div align="center">
   <a href="https://www.youtube.com/watch?v=BDQHgb2rrwU">
-    <img src="https://img.youtube.com/vi/BDQHgb2rrwU/0.jpg" alt="Testing with Sus">
+    <img src="https://img.youtube.com/vi/BDQHgb2rrwU/0.jpg" alt="Testing with Sus"/>
   </a>
 </div>
 
