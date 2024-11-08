@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2021-2022, by Samuel Williams.
+# Copyright, 2021-2024, by Samuel Williams.
 
-require 'io/console'
+require "io/console"
 
-require_relative 'text'
+require_relative "text"
 
 module Sus
 	# Styled output output.

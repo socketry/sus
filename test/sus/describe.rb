@@ -1,19 +1,19 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2023, by Samuel Williams.
+# Copyright, 2023-2024, by Samuel Williams.
 
 describe Sus::Describe do
-	with 'nested contexts' do
+	with "nested contexts" do
 		let(:context) do
-			Sus::Describe.build(self.class, 'a test class') {}
+			Sus::Describe.build(self.class, "a test class") {}
 		end
 		
-		it 'has a description' do
-			expect(context.description).to be == 'a test class'
+		it "has a description" do
+			expect(context.description).to be == "a test class"
 		end
 		
-		it 'can print context name' do
+		it "can print context name" do
 			buffer = Sus::Output.buffered
 			context.print(buffer)
 			expect(buffer.string).to be =~ %r{describe a test class}

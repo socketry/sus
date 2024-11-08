@@ -3,8 +3,8 @@
 # Released under the MIT License.
 # Copyright, 2021-2024, by Samuel Williams.
 
-require_relative 'messages'
-require_relative 'buffered'
+require_relative "messages"
+require_relative "buffered"
 
 module Sus
 	module Output

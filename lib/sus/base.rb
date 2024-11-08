@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2021-2023, by Samuel Williams.
+# Copyright, 2021-2024, by Samuel Williams.
 
-require_relative 'context'
+require_relative "context"
 
 module Sus
 	# The base test case class. We need to be careful about what local state is stored.

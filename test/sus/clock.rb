@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2022, by Samuel Williams.
+# Copyright, 2022-2024, by Samuel Williams.
 
 describe Sus::Clock do
 	let(:clock) {subject.new}
@@ -36,15 +36,15 @@ describe Sus::Clock do
 		expect(Sus::Clock.new(1.123) <=> Sus::Clock.new(1.122)).to be == 1
 	end
 	
-	with '.start!' do
+	with ".start!" do
 		let(:clock) {Sus::Clock.start!}
-		it 'can start instance of clock' do
+		it "can start instance of clock" do
 			clock
 			sleep(0.005)
 			expect(clock.stop!).to be > 0.0
 		end
 		
-		it 'can accumulate duration' do
+		it "can accumulate duration" do
 			clock
 			sleep(0.005)
 			expect(clock.duration).to be > 0.0

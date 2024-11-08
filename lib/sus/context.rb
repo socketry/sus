@@ -3,8 +3,8 @@
 # Released under the MIT License.
 # Copyright, 2021-2024, by Samuel Williams.
 
-require_relative 'assertions'
-require_relative 'identity'
+require_relative "assertions"
+require_relative "identity"
 
 module Sus
 	module Context

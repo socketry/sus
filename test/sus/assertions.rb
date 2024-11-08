@@ -96,7 +96,7 @@ describe Sus::Assertions do
 		end
 	end
 	
-	with 'deferred assertions' do
+	with "deferred assertions" do
 		it "can defer an assertion" do
 			assertions.defer do
 				assertions.assert(true)
@@ -111,8 +111,8 @@ describe Sus::Assertions do
 		end
 		
 		it "can defer a nested assertion" do
-			assertions.nested(Nested.new('outer'), isolated: true) do |assertions|
-				assertions.nested(Nested.new('inner')) do |assertions|
+			assertions.nested(Nested.new("outer"), isolated: true) do |assertions|
+				assertions.nested(Nested.new("inner")) do |assertions|
 					assertions.defer do
 						assertions.assert(true)
 					end
@@ -133,9 +133,9 @@ describe Sus::Assertions do
 		end
 	end
 	
-	with 'nested assertions' do
+	with "nested assertions" do
 		it "can nest assertions and preserve identity" do
-			assertions.nested(Nested.new('outer')) do |assertions|
+			assertions.nested(Nested.new("outer")) do |assertions|
 				expect(assertions.identity).to be_equal(identity)
 			end
 		end

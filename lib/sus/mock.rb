@@ -3,7 +3,7 @@
 # Released under the MIT License.
 # Copyright, 2022-2024, by Samuel Williams.
 
-require_relative 'expect'
+require_relative "expect"
 
 module Sus
 	class Mock

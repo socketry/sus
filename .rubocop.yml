@@ -16,6 +16,9 @@ Layout/IndentationConsistency:
   Enabled: true
   EnforcedStyle: normal
 
+Layout/BlockAlignment:
+  Enabled: true
+
 Layout/EndAlignment:
   Enabled: true
   EnforcedStyleAlignWith: start_of_line
@@ -44,3 +47,7 @@ Layout/EmptyLinesAroundModuleBody:
 
 Style/FrozenStringLiteralComment:
   Enabled: true
+
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: double_quotes

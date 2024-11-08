@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2022-2023, by Samuel Williams.
+# Copyright, 2022-2024, by Samuel Williams.
 
-require_relative 'clock'
-require_relative 'registry'
+require_relative "clock"
+require_relative "registry"
 
 module Sus
 	class Config
@@ -28,7 +28,7 @@ module Sus
 			end
 			
 			options = {
-				verbose: !!arguments.delete('--verbose')
+				verbose: !!arguments.delete("--verbose")
 			}
 			
 			return derived.new(root, arguments, **options)
@@ -53,8 +53,8 @@ module Sus
 		end
 		
 		def add_default_load_paths
-			add_load_path('lib')
-			add_load_path('fixtures')
+			add_load_path("lib")
+			add_load_path("fixtures")
 		end
 		
 		attr :root

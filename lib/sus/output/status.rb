@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2021-2022, by Samuel Williams.
+# Copyright, 2021-2024, by Samuel Williams.
 
 module Sus
 	module Output
@@ -17,8 +17,8 @@ module Sus
 			end
 			
 			INDICATORS = {
-				busy: ['◑', '◒', '◐', '◓'],
-				free: ['◌']
+				busy: ["◑", "◒", "◐", "◓"],
+				free: ["◌"]
 			}
 			
 			def update(state, context = nil)

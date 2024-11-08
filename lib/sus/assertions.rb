@@ -3,10 +3,10 @@
 # Released under the MIT License.
 # Copyright, 2021-2024, by Samuel Williams.
 
-require_relative 'output'
-require_relative 'clock'
+require_relative "output"
+require_relative "clock"
 
-require_relative 'output/backtrace'
+require_relative "output/backtrace"
 
 module Sus
 	class Assertions

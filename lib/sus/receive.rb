@@ -3,7 +3,7 @@
 # Released under the MIT License.
 # Copyright, 2022-2024, by Samuel Williams.
 
-require_relative 'respond_to'
+require_relative "respond_to"
 
 module Sus
 	class Receive

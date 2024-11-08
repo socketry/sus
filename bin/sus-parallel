@@ -1,19 +1,19 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-require_relative '../lib/sus/config'
+require_relative "../lib/sus/config"
 config = Sus::Config.load
 
 Result = Struct.new(:job, :assertions)
 
-require_relative '../lib/sus'
-require_relative '../lib/sus/output'
+require_relative "../lib/sus"
+require_relative "../lib/sus/output"
 jobs = Thread::Queue.new
 results = Thread::Queue.new
 guard = Thread::Mutex.new
 progress = Sus::Output::Progress.new(config.output)
 
-require 'etc'
+require "etc"
 count = Etc.nprocessors
 
 loader = Thread.new do

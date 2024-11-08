@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2023, by Samuel Williams.
+# Copyright, 2023-2024, by Samuel Williams.
 
-require 'sus/output/status'
+require "sus/output/status"
 
 describe Sus::Output::Backtrace do
 	let(:identity) {Sus::Identity.current}

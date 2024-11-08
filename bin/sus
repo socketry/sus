@@ -1,13 +1,10 @@
 #!/usr/bin/env ruby
 # frozen_string_literal: true
 
-# require 'stackprof'
-# StackProf.start(mode: :wall, interval: 10)
-
-require_relative '../lib/sus/config'
+require_relative "../lib/sus/config"
 config = Sus::Config.load
 
-require_relative '../lib/sus'
+require_relative "../lib/sus"
 registry = config.registry
 
 if config.verbose?
@@ -23,11 +20,6 @@ assertions = Sus::Assertions.default(output: output, verbose: verbose)
 config.before_tests(assertions)
 registry.call(assertions)
 config.after_tests(assertions)
-
-# StackProf.stop
-# StackProf.results('sus.stackprof')
-#
-# $ stackprof sus.stackprof --text --limit 10
 
 unless assertions.passed?
 	exit(1)

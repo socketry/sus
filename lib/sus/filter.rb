@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2021-2023, by Samuel Williams.
+# Copyright, 2021-2024, by Samuel Williams.
 
 module Sus
 	# Provides a way to filter the registry according to the suffix on loaded paths.
@@ -48,7 +48,7 @@ module Sus
 		end
 		
 		def load(target)
-			path, filter = target.split(':', 2)
+			path, filter = target.split(":", 2)
 			
 			@registry.load(path)
 			

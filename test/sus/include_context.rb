@@ -30,7 +30,7 @@ AContextWithHooks = Sus::Shared("a context with hooks") do
 end
 
 describe Sus::Context do
-	with '.include_context' do
+	with ".include_context" do
 		with "a shared context with an option" do
 			include_context AContextWithArguments, :key, value: 42
 			
@@ -52,7 +52,7 @@ describe Sus::Context do
 				events << :example_after
 			end
 			
-			around do	|&block|
+			around do |&block|
 				events << :example_around_before
 				
 				super() do

@@ -1,22 +1,22 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2021-2023, by Samuel Williams.
+# Copyright, 2021-2024, by Samuel Williams.
 # Copyright, 2022, by Brad Schrag.
 
-require_relative 'base'
+require_relative "base"
 
-require_relative 'file'
-require_relative 'describe'
-require_relative 'with'
+require_relative "file"
+require_relative "describe"
+require_relative "with"
 
-require_relative 'it'
+require_relative "it"
 
-require_relative 'shared'
-require_relative 'it_behaves_like'
-require_relative 'include_context'
+require_relative "shared"
+require_relative "it_behaves_like"
+require_relative "include_context"
 
-require_relative 'let'
+require_relative "let"
 
 module Sus
 	class Registry

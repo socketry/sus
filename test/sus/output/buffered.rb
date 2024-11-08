@@ -3,7 +3,7 @@
 # Released under the MIT License.
 # Copyright, 2024, by Samuel Williams.
 
-require 'sus/output/buffered'
+require "sus/output/buffered"
 
 class StatefulThing
 	def initialize

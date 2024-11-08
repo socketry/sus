@@ -32,7 +32,7 @@ describe Sus::BeWithin do
 		end
 	end
 	
-	with '#of' do
+	with "#of" do
 		it "can expect number to be within an absolute tolerance" do
 			expect(8).to be_within(2).of(10)
 			expect(10).to be_within(2).of(10)
@@ -45,7 +45,7 @@ describe Sus::BeWithin do
 		end
 	end
 	
-	with '#percent_of' do
+	with "#percent_of" do
 		it "can expect number to be within a percentage tolerance" do
 			expect(8).to be_within(20).percent_of(10)
 			expect(10).to be_within(20).percent_of(10)

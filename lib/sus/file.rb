@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2021-2023, by Samuel Williams.
+# Copyright, 2021-2024, by Samuel Williams.
 # Copyright, 2022, by Brad Schrag.
 
-require_relative 'context'
+require_relative "context"
 
 # This has to be done at the top level. It allows us to define constants within the given class while still retaining top-level constant resolution.
 Sus::TOPLEVEL_CLASS_EVAL = ->(__klass__, __path__){__klass__.class_eval(::File.read(__path__), __path__)}

@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2021-2023, by Samuel Williams.
+# Copyright, 2021-2024, by Samuel Williams.
 
 describe Sus::Identity do
-	with 'basic identifier' do
+	with "basic identifier" do
 		def identifier
 			subject.new("file.rb", "file", 123)
 		end
@@ -14,7 +14,7 @@ describe Sus::Identity do
 		end
 	end
 	
-	with 'nested unique identifiers' do
+	with "nested unique identifiers" do
 		def parent
 			subject.new("file1.rb", "file1", 10)
 		end
@@ -28,7 +28,7 @@ describe Sus::Identity do
 		end
 	end
 	
-	with 'nested non-unique identifiers' do
+	with "nested non-unique identifiers" do
 		def parent
 			subject.new("file1.rb", "file1", 10, unique: false)
 		end
@@ -42,7 +42,7 @@ describe Sus::Identity do
 		end
 	end
 	
-	with 'nested non-unique named identifiers' do
+	with "nested non-unique named identifiers" do
 		def parent
 			subject.new("file1.rb", "file1", 10, unique: "one")
 		end
@@ -56,7 +56,7 @@ describe Sus::Identity do
 		end
 	end
 	
-	with '#scoped' do
+	with "#scoped" do
 		let(:identifier) {subject.new(__FILE__, "test")}
 		
 		it "can scope an identifier to the current caller" do

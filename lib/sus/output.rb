@@ -1,14 +1,14 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2021-2022, by Samuel Williams.
+# Copyright, 2021-2024, by Samuel Williams.
 
-require_relative 'output/bar'
-require_relative 'output/text'
-require_relative 'output/xterm'
+require_relative "output/bar"
+require_relative "output/text"
+require_relative "output/xterm"
 
-require_relative 'output/null'
-require_relative 'output/progress'
+require_relative "output/null"
+require_relative "output/progress"
 
 module Sus
 	module Output

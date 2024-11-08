@@ -3,8 +3,8 @@
 # Released under the MIT License.
 # Copyright, 2022-2024, by Samuel Williams.
 
-require_relative 'have/all'
-require_relative 'have/any'
+require_relative "have/all"
+require_relative "have/any"
 
 module Sus
 	module Have

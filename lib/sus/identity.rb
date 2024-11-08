@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2021-2023, by Samuel Williams.
+# Copyright, 2021-2024, by Samuel Williams.
 
 module Sus
 	class Identity
@@ -82,7 +82,7 @@ module Sus
 				# For a specific leaf node, the last part is not unique, i.e. it must be identified explicitly.
 				append_unique_key(key, @unique == true ? false : @unique)
 				
-				@key = key.join(':')
+				@key = key.join(":")
 			end
 			
 			return @key
