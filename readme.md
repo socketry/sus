@@ -2,12 +2,12 @@
 
 Sus is a testing framework for Ruby.
 
-- It's similar to RSpec but with less baggage and more parallelism.
-- It uses `expect` style syntax with first-class predicates.
-- It has direct [support for code coverage](https://github.com/socketry/covered).
-- It supports the [VSCode Test Runner interface](https://github.com/socketry/sus-vscode).
-- It's based on my experience writing thousands of tests.
-- It's easy to extend (see the `sus-fixtures-` gems for examples).
+  - It's similar to RSpec but with less baggage and more parallelism.
+  - It uses `expect` style syntax with first-class predicates.
+  - It has direct [support for code coverage](https://github.com/socketry/covered).
+  - It supports the [VSCode Test Runner interface](https://github.com/socketry/sus-vscode).
+  - It's based on my experience writing thousands of tests.
+  - It's easy to extend (see the `sus-fixtures-` gems for examples).
 
 [![Development Status](https://github.com/socketry/sus/workflows/Test/badge.svg)](https://github.com/socketry/sus/actions?workflow=Test)
 
@@ -25,9 +25,17 @@ Please see the [project documentation](https://socketry.github.io/sus/) for more
 
   - [Getting Started](https://socketry.github.io/sus/guides/getting-started/index) - This guide explains how to use the `sus` gem to write tests for your Ruby projects.
 
+## Releases
+
+Please see the [project releases](https://socketry.github.io/sus/releases/index) for all releases.
+
+### Unreleased
+
+  - `Sus::Config` now has a `prepare_warnings!` hook which enables deprecated warnings by default. This is generally considered good behaviour for a test framework.
+
 ## See Also
 
-- [sus-vscode](https://github.com/socketry/sus-vscode) - Visual Studio Code extension for Sus.
+  - [sus-vscode](https://github.com/socketry/sus-vscode) - Visual Studio Code extension for Sus.
 
 ## Contributing
 
