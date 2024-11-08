@@ -103,9 +103,15 @@ module Sus
 			@registry ||= self.load_registry
 		end
 		
+		def prepare_warnings!
+			Warning[:deprecated] = true
+		end
+		
 		def before_tests(assertions, output: self.output)
 			@clock.reset!
 			@clock.start!
+			
+			prepare_warnings!
 		end
 		
 		def after_tests(assertions, output: self.output)
