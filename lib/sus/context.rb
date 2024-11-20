@@ -56,6 +56,12 @@ module Sus
 			return output.string
 		end
 		
+		def full_name
+			output = Output::Buffered.new
+			print(output)
+			return output.string
+		end
+		
 		def call(assertions)
 			return if self.empty?
 			

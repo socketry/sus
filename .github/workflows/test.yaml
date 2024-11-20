@@ -7,6 +7,7 @@ permissions:
 
 env:
   CONSOLE_OUTPUT: XTerm
+  DD_API_KEY: ${{secrets.DD_API_KEY}}
 
 jobs:
   test:
@@ -44,6 +45,16 @@ jobs:
       with:
         ruby-version: ${{matrix.ruby}}
         bundler-cache: true
+    
+    - name: Setup docker
+      if: runner.os == 'macos'
+      run: |
+        brew install docker
+        colima start
+    
+    - uses: datadog/agent-github-action@v1.3
+      with:
+        api_key: ${{secrets.DD_API_KEY}}
     
     - name: Run tests
       timeout-minutes: 10
