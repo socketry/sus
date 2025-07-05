@@ -25,5 +25,5 @@ Gem::Specification.new do |spec|
 	
 	spec.executables = ["sus", "sus-parallel", "sus-tree", "sus-host"]
 	
-	spec.required_ruby_version = ">= 3.1"
+	spec.required_ruby_version = ">= 3.2"
 end
