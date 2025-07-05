@@ -45,6 +45,19 @@ describe Sus::Mock do
 		expect(interface.implementation).to be == 10
 	end
 	
+	it "can expect a method to be called and call a block" do
+		expect(interface).to receive(:implementation){|*arguments|
+			"Called with arguments: #{arguments.first}"
+		}
+		
+		expect(interface.implementation(10)).to be == "Called with arguments: 10"
+	end
+	
+	it "can expect a method to be called and raise an exception" do
+		expect(interface).to receive(:implementation).and_raise(RuntimeError, "An error occurred")
+		expect{interface.implementation}.to raise_exception(RuntimeError, message: be =~ /An error occurred/)
+	end
+	
 	it "can replace a method on an object" do
 		mock(interface) do |mock|
 			mock.replace(:implementation) do

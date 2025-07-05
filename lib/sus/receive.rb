@@ -7,9 +7,7 @@ require_relative "respond_to"
 
 module Sus
 	class Receive
-		CALL_ORIGINAL = Object.new
-
-		def initialize(base, method)
+		def initialize(base, method, &block)
 			@base = base
 			@method = method
 			
@@ -17,7 +15,8 @@ module Sus
 			@arguments = nil
 			@options = nil
 			@block = nil
-			@returning = CALL_ORIGINAL
+			
+			@returning = block
 		end
 		
 		def print(output)
@@ -60,12 +59,27 @@ module Sus
 			return self
 		end
 		
-		def and_return(*returning)
-			if returning.size == 1
-				@returning = returning.first
+		def and_return(*returning, &block)
+			if block_given?
+				if returning.any?
+					raise ArgumentError, "Cannot specify both a block and returning values."
+				end
+				
+				@returning = block
+			elsif returning.size == 1
+				@returning = proc{returning.first}
 			else
-				@returning = returning
+				@returning = proc{returning}
 			end
+			
+			return self
+		end
+		
+		def and_raise(...)
+			@returning = proc do
+				raise(...)
+			end
+			
 			return self
 		end
 		
@@ -97,7 +111,7 @@ module Sus
 						
 						validate(mock, assertions, arguments, options, block)
 						
-						next @returning
+						next @returning.call(*arguments, **options, &block)
 					end
 				end
 				
@@ -110,7 +124,7 @@ module Sus
 		end
 		
 		def call_original?
-			@returning == CALL_ORIGINAL
+			@returning.nil?
 		end
 		
 		class WithArguments
@@ -128,7 +142,7 @@ module Sus
 				end
 			end
 		end
-
+		
 		class WithOptions
 			def initialize(predicate)
 				@predicate = predicate
@@ -153,7 +167,7 @@ module Sus
 			def print(output)
 				output.write("with block", @predicate)
 			end
-
+			
 			def call(assertions, subject)
 				assertions.nested(self) do |assertions|
 					
@@ -161,7 +175,7 @@ module Sus
 				end
 			end
 		end
-
+		
 		class Times
 			ONCE = Be.new(:==, 1)
 			
@@ -172,7 +186,7 @@ module Sus
 			def print(output)
 				output.write("with call count ", @condition)
 			end
-
+			
 			def call(assertions, subject)
 				assertions.nested(self) do |assertions|
 					Expect.new(assertions, subject).to(@condition)
@@ -182,8 +196,8 @@ module Sus
 	end
 	
 	class Base
-		def receive(method)
-			Receive.new(self, method)
+		def receive(method, &block)
+			Receive.new(self, method, &block)
 		end
 	end
 end
