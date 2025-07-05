@@ -1,6 +1,6 @@
 # Releases
 
-## Unreleased
+## v0.33.0
 
   - Add support for `agent-context` gem.
 
@@ -8,7 +8,7 @@
 
 The `receive` predicate has been enhanced to support blocks and the `and_raise` method, allowing for more flexible mocking of method calls.
 
-```ruby
+``` ruby
 # `receive` with a block:
 expect(interface).to receive(:implementation) {10}
 
