@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+  - Add support for `agent-context` gem.
+
 ### `receive` now supports blocks and `and_raise`.
 
 The `receive` predicate has been enhanced to support blocks and the `and_raise` method, allowing for more flexible mocking of method calls.
