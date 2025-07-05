@@ -7,6 +7,8 @@ source "https://rubygems.org"
 
 gemspec
 
+gem "agent-context"
+
 group :maintenance, optional: true do
 	gem "bake-modernize"
 	gem "bake-gem"
