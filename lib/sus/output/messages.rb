@@ -56,13 +56,13 @@ module Sus
 			
 			def error(error, identity, prefix = error_prefix)
 				lines = error.message.split(/\r?\n/)
-			
+				
 				self.puts(:indent, *prefix, error.class, ": ", lines.shift)
 				
 				lines.each do |line|
 					self.puts(:indent, line)
 				end
-					
+				
 				self.write(Output::Backtrace.for(error, identity))
 				
 				if cause = error.cause

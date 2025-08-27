@@ -182,7 +182,7 @@ module Sus
 			def initialize(condition = AT_LEAST_ONCE)
 				@condition = condition
 			end
-				
+			
 			def print(output)
 				output.write("with call count ", @condition)
 			end

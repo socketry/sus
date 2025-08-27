@@ -64,37 +64,37 @@ describe Sus::Mock do
 				FakeImplementation.new
 			end
 		end
-
+		
 		expect(interface).to be(:kind_of?, Interface)
 		expect(interface.implementation).to be(:kind_of?, FakeImplementation)
 	end
-
+	
 	it "can execute code before a method is executed" do
 		count = 0
-
+		
 		mock(interface) do |mock|
 			mock.before(:implementation) do
 				count += 1
 			end
 		end
-
+		
 		expect(interface.implementation).to be(:kind_of?, RealImplementation)
 		expect(count).to be == 1
 	end
-
+	
 	it "can execute code after a method is executed" do
 		count = 0
-
+		
 		mock(interface) do |mock|
 			mock.after(:implementation) do |result|
 				count += 1
 			end
 		end
-
+		
 		expect(interface.implementation).to be(:kind_of?, RealImplementation)
 		expect(count).to be == 1
 	end
-
+	
 	with "#replace" do
 		def before
 			mock(RealImplementation) do |mock|
@@ -103,12 +103,12 @@ describe Sus::Mock do
 				end
 			end
 		end
-
+		
 		it "can mock class methods" do
 			interface = Interface.new
 			expect(interface.implementation).to be(:kind_of?, FakeImplementation)
 		end
-
+		
 		it "doesn't affect other threads" do
 			Thread.new do
 				interface = Interface.new

@@ -368,7 +368,7 @@ module Sus
 				@errored << assertions
 			elsif assertions.passed?
 				@passed << assertions
-
+				
 				# if @verbose
 				# 	@output.write(:indent, :passed, pass_prefix, :reset)
 				# 	self.print(@output, verbose: false)
@@ -376,7 +376,7 @@ module Sus
 				# end
 			else
 				@failed << assertions
-
+				
 				# @output.write(:indent, :failed, fail_prefix, :reset)
 				# self.print(@output, verbose: false)
 				# @output.puts

@@ -195,7 +195,7 @@ module Sus
 				output.puts "🐇 No slow tests found! Well done!"
 			else
 				output.puts "🐢 Slow tests:"
-			
+				
 				slowest_tests.each do |test|
 					output.puts "\t", :variable, test.clock, :reset, ": ", test.target
 				end

@@ -22,13 +22,13 @@ module Sus
 			
 			def append(buffer)
 			end
-
+			
 			def indent
 			end
 			
 			def outdent
 			end
-
+			
 			def indented
 				yield
 			end

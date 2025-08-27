@@ -36,7 +36,7 @@ module Sus
 			def initialize(options)
 				@options = options
 			end
-						
+			
 			def print(output)
 				output.write("with options ", :variable, @options.inspect)
 			end
