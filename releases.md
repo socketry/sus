@@ -1,5 +1,9 @@
 # Releases
 
+## Unreleased
+
+  - Allow `expect(...).to receive(...)` to accept one or more calls (at least once).
+
 ## v0.33.0
 
   - Add support for `agent-context` gem.

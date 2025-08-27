@@ -77,4 +77,19 @@ describe Sus::Receive do
 		
 		interface.implementation(x: 1, y: 2)
 	end
+	
+	describe Sus::Receive::Times do
+		it "expects at least one call by default" do
+			expect(interface).to receive(:implementation)
+			
+			interface.implementation
+		end
+		
+		it "allows multiple calls by default" do
+			expect(interface).to receive(:implementation)
+			
+			interface.implementation
+			interface.implementation
+		end
+	end
 end

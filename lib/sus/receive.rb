@@ -177,9 +177,9 @@ module Sus
 		end
 		
 		class Times
-			ONCE = Be.new(:==, 1)
+			AT_LEAST_ONCE = Be.new(:>=, 1)
 			
-			def initialize(condition = ONCE)
+			def initialize(condition = AT_LEAST_ONCE)
 				@condition = condition
 			end
 				
