@@ -1,0 +1,13 @@
+# Automatically generated context index for Utopia::Project guides.
+# Do not edit then files in this directory directly, instead edit the guides and then run `bake utopia:project:agent:context:update`.
+---
+description: A fast and scalable test runner.
+metadata:
+  documentation_uri: https://socketry.github.io/sus/
+  funding_uri: https://github.com/sponsors/ioquatix/
+  source_code_uri: https://github.com/socketry/sus.git
+files:
+- path: getting-started.md
+  title: Getting Started
+  description: This guide explains how to use the `sus` gem to write tests for your
+    Ruby projects.

@@ -29,6 +29,10 @@ Please see the [project documentation](https://socketry.github.io/sus/) for more
 
 Please see the [project releases](https://socketry.github.io/sus/releases/index) for all releases.
 
+### v0.34.0
+
+  - Allow `expect(...).to receive(...)` to accept one or more calls (at least once).
+
 ### v0.33.0
 
   - Add support for `agent-context` gem.
