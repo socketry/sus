@@ -27,4 +27,8 @@ describe Sus::With do
 			expect(with.identity).to have_attributes(unique: be == "test")
 		end
 	end
+
+	it "fails" do
+		expect(false).to be == true
+	end
 end

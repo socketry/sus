@@ -11,7 +11,7 @@ if config.verbose?
 	output = config.output
 	verbose = true
 else
-	output = Sus::Output::Null.new
+	output = Sus::Output::Null.new(nested: false)
 	verbose = false
 end
 

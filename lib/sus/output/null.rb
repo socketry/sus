@@ -11,16 +11,24 @@ module Sus
 		class Null
 			include Messages
 			
-			def initialize
+			def initialize(nested: true)
+				@nested = nested
 			end
 			
 			def buffered
-				Buffered.new(nil)
+				if @nested
+					self
+				else
+					Buffered.new(nil)
+				end
 			end
 			
 			attr :options
 			
 			def append(buffer)
+			end
+			
+			def each
 			end
 			
 			def indent

@@ -1,0 +1,86 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+
+require_relative "../lib/sus/config"
+config = Sus::Config.load
+
+require_relative "../lib/sus"
+
+# Two-pass test execution:
+# Pass 1: Run all tests with null output to collect failures quickly
+# Pass 2: Re-run only failed tests with full output
+
+puts "🚀 Running fast two-pass test execution..."
+
+# Pass 1: Fast execution with null output
+print "Pass 1: Running all tests with null output... "
+
+registry = config.registry
+null_assertions = Sus::Assertions.default(output: Sus::Output::Null.new, verbose: false)
+
+config.before_tests(null_assertions)
+registry.call(null_assertions)
+config.after_tests(null_assertions)
+
+# Collect failure keys
+failure_keys = []
+null_assertions.each_failure do |failure|
+	
+	if failure.respond_to?(:assertions) && failure.assertions.respond_to?(:identity) && failure.assertions.identity
+		# This is for nested Assertions (test level)
+		failure_keys << failure.assertions.identity.key
+	elsif failure.respond_to?(:identity) && failure.identity
+		# This is for individual Assert objects - we need the parent test identity
+		# Try to get the test identity by using the parent or finding the containing test
+		if failure.identity.parent
+			failure_keys << failure.identity.parent.key
+		else
+			failure_keys << failure.identity.key
+		end
+	end
+end
+
+failure_keys.uniq!
+
+puts "done. Found #{failure_keys.size} failures out of #{null_assertions.total} tests."
+
+if failure_keys.empty?
+	# All tests passed! Just use the after_tests callback with proper output for summary
+	puts "🎉 All tests passed!"
+	
+	# Get the appropriate output for the summary
+	if config.verbose?
+		summary_output = config.output
+	else
+		summary_output = Sus::Output.default
+	end
+	
+	# Print summary manually to avoid conflicts with hooks
+	config.send(:print_summary, summary_output, null_assertions)
+else
+	# Pass 2: Re-run failures with full output
+	puts "Pass 2: Re-running #{failure_keys.size} failed tests with full output..."
+	
+	# Use Filter::Index directly to look up and execute failed tests
+	index = Sus::Filter::Index.new
+	index.add(registry.base)
+	
+	# Run with full output
+	output = config.verbose? ? config.output : Sus::Output.default
+	failure_assertions = Sus::Assertions.default(output: output, verbose: true)
+	
+	config.before_tests(failure_assertions)
+	
+	# Execute only the failed tests directly from the index
+	failure_keys.each do |key|
+		if test_context = index[key]
+			test_context.call(failure_assertions)
+		end
+	end
+	
+	config.after_tests(failure_assertions)
+	
+	unless failure_assertions.passed?
+		exit(1)
+	end
+end
