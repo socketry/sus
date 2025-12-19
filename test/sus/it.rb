@@ -52,7 +52,7 @@ describe Sus::It do
 	with "unique:" do
 		it "can be unique" do
 			base = Sus.base
-			it = base.it("test", unique: "test") {}
+			it = base.it("test", unique: "test"){}
 			expect(it.identity).to have_attributes(unique: be == "test")
 		end
 	end

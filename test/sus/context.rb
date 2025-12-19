@@ -5,7 +5,7 @@
 
 Context = Sus::Shared("context") do
 	it "can define a nested example" do
-		instance.it("has an example") {}
+		instance.it("has an example"){}
 		
 		expect(instance.children).not.to be(:empty?)
 	end

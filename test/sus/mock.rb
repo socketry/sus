@@ -46,7 +46,7 @@ describe Sus::Mock do
 	end
 	
 	it "can expect a method to be called and call a block" do
-		expect(interface).to receive(:implementation){|*arguments|
+		expect(interface).to receive(:implementation) {|*arguments|
 			"Called with arguments: #{arguments.first}"
 		}
 		

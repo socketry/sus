@@ -65,7 +65,7 @@ Require and use shared fixtures in your test files:
 
 ```ruby
 # test/my_gem/user_manager.rb
-require 'my_gem/a_user'
+require "my_gem/a_user"
 
 describe MyGem::UserManager do
 	it_behaves_like MyGem::AUser, "manager"
@@ -108,7 +108,7 @@ Use specific shared fixtures:
 
 ```ruby
 # test/my_gem/authorization.rb
-require 'my_gem/users'
+require "my_gem/users"
 
 describe MyGem::Authorization do
 	with "standard user" do

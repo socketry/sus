@@ -33,7 +33,7 @@ Create `config/sus.rb`:
 # frozen_string_literal: true
 
 # Use the covered gem for test coverage reporting:
-require 'covered/sus'
+require "covered/sus"
 include Covered::Sus
 
 def before_tests(assertions, output: self.output)
@@ -248,9 +248,9 @@ expect(hash).to have_keys(key1: be == 1, "key2" => be == 2)
 
 ```ruby
 expect(user).to have_attributes(
-  name: be == "John",
-  age: be >= 18,
-  email: be(:include?, "@")
+	name: be == "John",
+	age: be >= 18,
+	email: be(:include?, "@")
 )
 ```
 

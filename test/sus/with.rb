@@ -6,7 +6,7 @@
 describe Sus::With do
 	with "nested contexts" do
 		let(:context) do
-			Sus::With.build(self.class, "a test variable", {}) {}
+			Sus::With.build(self.class, "a test variable", {}){}
 		end
 		
 		it "has a description" do
@@ -23,7 +23,7 @@ describe Sus::With do
 	with "unique:" do
 		it "can be unique" do
 			base = Sus.base
-			with = base.with("test", unique: "test") {}
+			with = base.with("test", unique: "test"){}
 			expect(with.identity).to have_attributes(unique: be == "test")
 		end
 	end
