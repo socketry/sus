@@ -4,6 +4,7 @@
 # Copyright, 2022, by Samuel Williams.
 
 module Sus
+	# @namespace
 	module Fixtures
 	end
 end

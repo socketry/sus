@@ -1,5 +1,9 @@
 # Releases
 
+## Unreleased
+
+  - Add `Sus::Fixtures::TemporaryDirectoryContext`.
+
 ## v0.34.0
 
   - Allow `expect(...).to receive(...)` to accept one or more calls (at least once).
