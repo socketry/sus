@@ -6,12 +6,23 @@
 require_relative "context"
 
 module Sus
+	# Represents a test context with specific conditions or variables.
 	module With
 		extend Context
 		
+		# @attribute [String] The subject description of this context.
 		attr_accessor :subject
+		
+		# @attribute [Hash] The variables available in this context.
 		attr_accessor :variables
 		
+		# Build a new with block class.
+		# @parameter parent [Class] The parent context class.
+		# @parameter subject [String] The subject description.
+		# @parameter variables [Hash] Variables to make available in the context.
+		# @parameter unique [Boolean] Whether the identity should be unique.
+		# @yields {...} Optional block containing nested tests.
+		# @returns [Class] A new with block class.
 		def self.build(parent, subject, variables, unique: true, &block)
 			base = Class.new(parent)
 			base.singleton_class.prepend(With)
@@ -36,6 +47,8 @@ module Sus
 			return base
 		end
 		
+		# Print a representation of this with block.
+		# @parameter output [Output] The output target.
 		def print(output)
 			self.superclass.print(output)
 			
@@ -47,6 +60,11 @@ module Sus
 	end
 	
 	module Context
+		# Define a new test context with specific conditions or variables.
+		# @parameter subject [String | Nil] Optional subject description. If nil, uses variables.inspect.
+		# @parameter unique [Boolean] Whether the identity should be unique.
+		# @parameter variables [Hash] Variables to make available in the context.
+		# @yields {...} Optional block containing nested tests.
 		def with(subject = nil, unique: true, **variables, &block)
 			subject ||= variables.inspect
 			

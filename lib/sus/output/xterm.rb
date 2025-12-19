@@ -8,9 +8,10 @@ require "io/console"
 require_relative "text"
 
 module Sus
-	# Styled output output.
 	module Output
+		# Represents an XTerm-compatible output handler with color and style support.
 		class XTerm < Text
+			# Color codes for ANSI terminal colors.
 			COLORS = {
 				black: 0,
 				red: 1,
@@ -23,6 +24,7 @@ module Sus
 				default: 9,
 			}
 			
+			# Style attribute codes for ANSI terminal attributes.
 			ATTRIBUTES = {
 				normal: 0,
 				bold: 1,
@@ -35,14 +37,21 @@ module Sus
 				hidden: 8,
 			}
 			
+			# @returns [Boolean] Always returns true, as XTerm output supports colors.
 			def colors?
 				true
 			end
 			
+			# @returns [Array(Integer)] The terminal size [height, width].
 			def size
 				@io.winsize
 			end
 			
+			# Create an ANSI escape sequence for styling.
+			# @parameter foreground [Symbol, nil] The foreground color name.
+			# @parameter background [Symbol, nil] The background color name.
+			# @parameter attributes [Array] Additional style attributes.
+			# @returns [String] An ANSI escape sequence.
 			def style(foreground, background = nil, *attributes)
 				tokens = []
 				
@@ -61,6 +70,7 @@ module Sus
 				return "\e[#{tokens.join(';')}m"
 			end
 			
+			# @returns [String] The ANSI reset sequence.
 			def reset
 				"\e[0m"
 			end

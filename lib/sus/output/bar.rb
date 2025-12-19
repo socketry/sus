@@ -5,7 +5,9 @@
 
 module Sus
 	module Output
+		# Represents a progress bar for displaying test execution progress.
 		class Bar
+			# Unicode block characters for drawing the progress bar.
 			BLOCK = [
 				" ",
 				"▏",
@@ -18,6 +20,10 @@ module Sus
 				"█",
 			]
 			
+			# Initialize a new progress bar.
+			# @parameter current [Integer] The current progress value.
+			# @parameter total [Integer] The total value.
+			# @parameter message [String, nil] Optional message to display.
 			def initialize(current = 0, total = 0, message = nil)
 				@maximum_message_width = 0
 				
@@ -26,19 +32,30 @@ module Sus
 				@message = message
 			end
 			
+			# Update the progress bar values.
+			# @parameter current [Integer] The current progress value.
+			# @parameter total [Integer] The total value.
+			# @parameter message [String, nil] Optional message to display.
 			def update(current, total, message)
 				@current = current
 				@total = total
 				@message = message
 			end
 			
+			# Register progress bar styling with an output handler.
+			# @parameter output [Output] The output handler to register with.
 			def self.register(output)
 				output[:progress_bar] ||= output.style(:blue, :white)
 			end
 			
+			# The minimum width for the progress bar.
 			MINIMUM_WIDTH = 8
+			
+			# The suffix to append to messages.
 			MESSAGE_SUFFIX = ": "
 			
+			# Print the progress bar to the output.
+			# @parameter output [Output] The output handler.
 			def print(output)
 				width = output.width
 				

@@ -1,6 +1,16 @@
 # Shared Test Behaviors and Fixtures
 
+This guide explains how to use shared test contexts and fixtures in sus to reduce duplication and ensure consistent test behavior across your test suite.
+
 ## Overview
+
+When you have common test behaviors that need to be applied to multiple test files or multiple implementations of the same interface, shared contexts allow you to define those behaviors once and reuse them. This reduces duplication, ensures consistency, and makes it easier to maintain your tests.
+
+Use shared contexts when you need:
+- **Code reuse**: Apply the same test behavior to multiple classes or modules
+- **Consistency**: Ensure all implementations of an interface are tested the same way
+- **Maintainability**: Update test behavior in one place rather than many
+- **Parameterization**: Run the same tests with different inputs or configurations
 
 Sus provides shared test contexts which can be used to define common behaviours or tests that can be reused across one or more test files.
 
@@ -9,6 +19,8 @@ When you have common test behaviors that you want to apply to multiple test file
 ## Shared Fixtures
 
 ### Directory Structure
+
+Shared fixtures are stored in the `fixtures/` directory, which mirrors your project structure:
 
 ```
 my-gem/
@@ -24,6 +36,8 @@ my-gem/
     └── my_gem/
         └── my_thing.rb
 ```
+
+The `fixtures/` directory is automatically added to the `$LOAD_PATH`, so you can require files from there without needing to specify the full path.
 
 ### Creating Shared Fixtures
 
@@ -183,3 +197,16 @@ end
 ```
 
 Note the use of `unique: adapter.name` to ensure each test is uniquely identified, which is useful for reporting and debugging - otherwise the same test line number would be used for all iterations, which can make it hard to identify which specific test failed.
+
+## Best Practices
+
+1. **Organize by domain**: Group related shared contexts together in modules
+2. **Keep contexts focused**: Each shared context should test one cohesive behavior
+3. **Use parameters**: Make shared contexts flexible by accepting parameters
+4. **Document intent**: Use clear names that explain what behavior is being tested
+
+## Common Pitfalls
+
+1. **Over-sharing**: Don't create shared contexts for behaviors that are only used once
+2. **Tight coupling**: Avoid shared contexts that depend on too many specific implementation details
+3. **Unclear names**: Use descriptive names that make it obvious what behavior is being tested

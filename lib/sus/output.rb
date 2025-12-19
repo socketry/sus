@@ -11,7 +11,11 @@ require_relative "output/null"
 require_relative "output/progress"
 
 module Sus
+	# Represents output handlers for test results and messages.
 	module Output
+		# Create an appropriate output handler for the given IO.
+		# @parameter io [IO] The IO object to write to.
+		# @returns [XTerm, Text] An XTerm handler if the IO is a TTY, otherwise a Text handler.
 		def self.for(io)
 			if io.isatty
 				XTerm.new(io)
@@ -20,6 +24,9 @@ module Sus
 			end
 		end
 		
+		# Create a default output handler with styling configured.
+		# @parameter io [IO] The IO object to write to (defaults to $stderr).
+		# @returns [XTerm, Text] A configured output handler.
 		def self.default(io = $stderr)
 			output = self.for(io)
 			
@@ -47,6 +54,8 @@ module Sus
 			return output
 		end
 		
+		# Create a buffered output handler.
+		# @returns [Buffered] A new buffered output handler.
 		def self.buffered
 			Buffered.new
 		end

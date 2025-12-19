@@ -12,13 +12,18 @@ module Sus
 	#
 	# When the filter is used to enumerate the registry, it will only return the tests that match the suffix.
 	class Filter
+		# Represents an index of contexts by their identity keys.
 		class Index
+			# Initialize a new Index.
 			def initialize
 				@contexts = {}
 			end
 			
+			# @attribute [Hash] A hash mapping identity keys to contexts.
 			attr :contexts
 			
+			# Add all children from a parent context to the index.
+			# @parameter parent [Object] The parent context.
 			def add(parent)
 				parent.children&.each do |identity, child|
 					insert(identity, child)
@@ -26,6 +31,10 @@ module Sus
 				end
 			end
 			
+			# Insert a context into the index.
+			# @parameter identity [Identity] The identity of the context.
+			# @parameter context [Object] The context to index.
+			# @raises [KeyError] If a context with the same key already exists.
 			def insert(identity, context)
 				key = identity.key
 				
@@ -36,17 +45,24 @@ module Sus
 				end
 			end
 			
+			# Look up a context by its key.
+			# @parameter key [String] The identity key.
+			# @returns [Object, nil] The context if found.
 			def [] key
 				@contexts[key]
 			end
 		end
 		
+		# Initialize a new Filter.
+		# @parameter registry [Registry] The registry to filter.
 		def initialize(registry = Registry.new)
 			@registry = registry
 			@index = nil
 			@keys = Array.new
 		end
 		
+		# Load a target path, optionally with a filter suffix.
+		# @parameter target [String] The target path, optionally with a ":suffix" filter.
 		def load(target)
 			path, filter = target.split(":", 2)
 			
@@ -57,6 +73,8 @@ module Sus
 			end
 		end
 		
+		# Iterate over filtered test cases.
+		# @yields {|test| ...} Each test case that matches the filter.
 		def each(&block)
 			if @keys.any?
 				@index = Index.new
@@ -72,6 +90,9 @@ module Sus
 			end
 		end
 		
+		# Execute filtered tests.
+		# @parameter assertions [Assertions] Optional assertions instance to use.
+		# @returns [Assertions] The assertions instance with results.
 		def call(assertions = Assertions.default)
 			if @keys.any?
 				@index = Index.new

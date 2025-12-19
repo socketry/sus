@@ -25,9 +25,17 @@ Please see the [project documentation](https://socketry.github.io/sus/) for more
 
   - [Getting Started](https://socketry.github.io/sus/guides/getting-started/index) - This guide explains how to use the `sus` gem to write tests for your Ruby projects.
 
+  - [Mocking](https://socketry.github.io/sus/guides/mocking/index) - This guide explains how to use mocking in sus to isolate dependencies and verify interactions in your tests.
+
+  - [Shared Test Behaviors and Fixtures](https://socketry.github.io/sus/guides/shared-contexts/index) - This guide explains how to use shared test contexts and fixtures in sus to reduce duplication and ensure consistent test behavior across your test suite.
+
 ## Releases
 
 Please see the [project releases](https://socketry.github.io/sus/releases/index) for all releases.
+
+### Unreleased
+
+  - Add `Sus::Fixtures::TemporaryDirectoryContext`.
 
 ### v0.34.0
 

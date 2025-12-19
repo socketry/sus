@@ -7,6 +7,9 @@ require_relative "context"
 
 module Sus
 	module Context
+		# Define a lazy variable that is evaluated when first accessed.
+		# @parameter name [Symbol] The name of the variable.
+		# @yields {...} The block that computes the variable value.
 		def let(name, &block)
 			instance_variable = :"@#{name}"
 			

@@ -11,3 +11,12 @@ files:
   title: Getting Started
   description: This guide explains how to use the `sus` gem to write tests for your
     Ruby projects.
+- path: mocking.md
+  title: Mocking
+  description: This guide explains how to use mocking in sus to isolate dependencies
+    and verify interactions in your tests.
+- path: shared-contexts.md
+  title: Shared Test Behaviors and Fixtures
+  description: This guide explains how to use shared test contexts and fixtures in
+    sus to reduce duplication and ensure consistent test behavior across your test
+    suite.

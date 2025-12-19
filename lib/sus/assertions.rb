@@ -9,13 +9,25 @@ require_relative "clock"
 require_relative "output/backtrace"
 
 module Sus
+	# Represents a collection of test assertions and their results. Tracks passed, failed, skipped, and errored assertions.
 	class Assertions
+		# Create a new assertions instance with default options.
+		# @parameter options [Hash] Options to pass to {#initialize}.
+		# @returns [Assertions] A new assertions instance.
 		def self.default(**options)
 			self.new(**options)
 		end
 		
-		# @parameter orientation [Boolean] Whether the assertions are positive or negative in general.
+		# Initialize a new assertions instance.
+		# @parameter identity [Identity, nil] The identity used to identify this set of assertions.
+		# @parameter target [Object, nil] The specific target of the assertions, e.g. the test case or nested test assertions.
+		# @parameter output [Output] The output buffer used to capture output from the assertions.
 		# @parameter inverted [Boolean] Whether the assertions are inverted with respect to the parent.
+		# @parameter orientation [Boolean] Whether the assertions are positive or negative in general.
+		# @parameter isolated [Boolean] Whether this set of assertions is isolated from the parent.
+		# @parameter distinct [Boolean] Whether this set of assertions should be treated as a single statement.
+		# @parameter measure [Boolean] Whether to measure execution time.
+		# @parameter verbose [Boolean] Whether to output verbose information.
 		def initialize(identity: nil, target: nil, output: Output.buffered, inverted: false, orientation: true, isolated: false, distinct: false, measure: false, verbose: false)
 			# In theory, the target could carry the identity of the assertion group, but it's not really necessary, so we just handle it explicitly and pass it into any nested assertions.
 			@identity = identity
@@ -42,53 +54,60 @@ module Sus
 			@count = 0
 		end
 		
-		# The identity that is used to identify this set of assertions.
+		# @attribute [Identity, nil] The identity that is used to identify this set of assertions.
 		attr :identity
 		
-		# The specific target of the assertions, e.g. the test case or nested test assertions.
+		# @attribute [Object, nil] The specific target of the assertions, e.g. the test case or nested test assertions.
 		attr :target
 		
-		# The output buffer used to capture output from the assertions.
+		# @attribute [Output] The output buffer used to capture output from the assertions.
 		attr :output
 		
-		# The nesting level of this set of assertions.
+		# @attribute [Integer, nil] The nesting level of this set of assertions.
 		attr :level
 		
-		# Whether this aset of assertions is inverted, i.e. the assertions are expected to fail relative to the parent. Used for grouping assertions and ensuring they are added to the parent passed/failed array correctly.
+		# @attribute [Boolean] Whether this set of assertions is inverted, i.e. the assertions are expected to fail relative to the parent. Used for grouping assertions and ensuring they are added to the parent passed/failed array correctly.
 		attr :inverted
 		
-		# The absolute orientation of this set of assertions, i.e. whether the assertions are expected to pass or fail regardless of the parent. Used for correctly formatting the output.
+		# @attribute [Boolean] The absolute orientation of this set of assertions, i.e. whether the assertions are expected to pass or fail regardless of the parent. Used for correctly formatting the output.
 		attr :orientation
 		
-		# Whether this set of assertions is isolated from the parent. This is used to ensure that any deferred assertions are competed before the parent is completed. This is used by `receive` assertions which are deferred until the user code of the test has completed.
+		# @attribute [Boolean] Whether this set of assertions is isolated from the parent. This is used to ensure that any deferred assertions are completed before the parent is completed. This is used by `receive` assertions which are deferred until the user code of the test has completed.
 		attr :isolated
 		
-		# Distinct is used to identify a set of assertions as a single statement for the purpose of user feedback. It's used by top level ensure statements to ensure that error messages are captured and reported on those statements.
+		# @attribute [Boolean] Distinct is used to identify a set of assertions as a single statement for the purpose of user feedback. It's used by top level ensure statements to ensure that error messages are captured and reported on those statements.
 		attr :distinct
 		
+		# @attribute [Boolean] Whether to output verbose information.
 		attr :verbose
 		
+		# @attribute [Clock, nil] The clock used to measure execution time, if measurement is enabled.
 		attr :clock
 		
-		# Nested assertions that have passed.
+		# @attribute [Array] Nested assertions that have passed.
 		attr :passed
 		
-		# Nested assertions that have failed.
+		# @attribute [Array] Nested assertions that have failed.
 		attr :failed
 		
-		# Nested assertions have been deferred.
+		# @attribute [Array] Nested assertions that have been deferred.
 		attr :deferred
 		
+		# @attribute [Array] Nested assertions that have been skipped.
 		attr :skipped
+		
+		# @attribute [Array] Nested assertions that have errored.
 		attr :errored
 		
-		# The total number of assertions performed:
+		# @attribute [Integer] The total number of assertions performed.
 		attr :count
 		
+		# @returns [String] A string representation of the assertions instance.
 		def inspect
 			"\#<#{self.class} #{@passed.size} passed #{@failed.size} failed #{@deferred.size} deferred #{@skipped.size} skipped #{@errored.size} errored>"
 		end
 		
+		# @returns [Hash] A hash containing the output text and location of the assertions.
 		def message
 			{
 				text: @output.string,
@@ -96,10 +115,14 @@ module Sus
 			}
 		end
 		
+		# @returns [Integer] The total number of assertions (passed, failed, deferred, skipped, and errored).
 		def total
 			@passed.size + @failed.size + @deferred.size + @skipped.size + @errored.size
 		end
 		
+		# Print a summary of the assertions to the output.
+		# @parameter output [Output] The output target.
+		# @parameter verbose [Boolean] Whether to include verbose information.
 		def print(output, verbose: @verbose)
 			if verbose && @target
 				@target.print(output)
@@ -133,14 +156,18 @@ module Sus
 			end
 		end
 		
+		# Print a message to the output buffer.
+		# @parameter message [Array] The message parts to print.
 		def puts(*message)
 			@output.puts(:indent, *message)
 		end
 		
+		# @returns [Boolean] Whether there are no assertions (passed, failed, deferred, skipped, or errored).
 		def empty?
 			@passed.empty? and @failed.empty? and @deferred.empty? and @skipped.empty? and @errored.empty?
 		end
 		
+		# @returns [Boolean] Whether all assertions passed and none errored.
 		def passed?
 			if @inverted
 				# Inverted assertions:
@@ -151,29 +178,43 @@ module Sus
 			end
 		end
 		
+		# @returns [Boolean] Whether any assertions failed or errored.
 		def failed?
 			!self.passed?
 		end
 		
+		# @returns [Boolean] Whether any assertions errored.
 		def errored?
 			@errored.any?
 		end
 		
+		# Represents a single assertion result.
 		class Assert
+			# Initialize a new assertion result.
+			# @parameter identity [Identity, nil] The identity of the assertion.
+			# @parameter backtrace [Array] The backtrace where the assertion was made.
+			# @parameter assertions [Assertions] The assertions instance that contains this assertion.
 			def initialize(identity, backtrace, assertions)
 				@identity = identity
 				@backtrace = backtrace
 				@assertions = assertions
 			end
 			
+			# @attribute [Identity, nil] The identity of the assertion.
 			attr :identity
+			
+			# @attribute [Array] The backtrace where the assertion was made.
 			attr :backtrace
+			
+			# @attribute [Assertions] The assertions instance that contains this assertion.
 			attr :assertions
 			
+			# @yields {|assert| ...} Yields this assertion as a failure.
 			def each_failure(&block)
 				yield self
 			end
 			
+			# @returns [Hash] A hash containing the output text and location of the assertion.
 			def message
 				{
 					# It's possible that several Assert instances might share the same output text. This is because the output is buffered for each test and each top-level test expectation.
@@ -183,6 +224,9 @@ module Sus
 			end
 		end
 		
+		# Make an assertion about a condition.
+		# @parameter condition [Boolean] The condition to assert.
+		# @parameter message [String | Nil] Optional message describing the assertion.
 		def assert(condition, message = nil)
 			@count += 1
 			
@@ -199,6 +243,9 @@ module Sus
 			end
 		end
 		
+		# Iterate over all failures in this assertions instance.
+		# @yields {|failure| ...} Each failure (failed assertion or error).
+		# @returns [Enumerator] An enumerator if no block is given.
 		def each_failure(&block)
 			return to_enum(__method__) unless block_given?
 			
@@ -215,12 +262,16 @@ module Sus
 			end
 		end
 		
+		# Skip this set of assertions with a reason.
+		# @parameter reason [String] The reason for skipping.
 		def skip(reason)
 			@output.skip(reason, @identity&.scoped)
 			
 			@skipped << self
 		end
 		
+		# Print an informational message during test execution.
+		# @parameter message [String | Nil] The message to print, or a block that returns a message.
 		def inform(message = nil)
 			if message.nil? and block_given?
 				begin
@@ -233,17 +284,18 @@ module Sus
 			@output.inform(message, @identity&.scoped)
 		end
 		
-		# Add deferred assertions.
+		# Add a deferred assertion that will be resolved later.
+		# @yields {|assertions| ...} The block that will be called to resolve the deferred assertion.
 		def defer(&block)
 			@deferred << block
 		end
 		
-		# Whether there are any deferred assertions.
+		# @returns [Boolean] Whether there are any deferred assertions.
 		def deferred?
 			@deferred.any?
 		end
 		
-		# This resolves all deferred assertions in order.
+		# Resolve all deferred assertions in order.
 		def resolve!
 			@output.indented do
 				while block = @deferred.shift
@@ -252,19 +304,28 @@ module Sus
 			end
 		end
 		
+		# Represents an error that occurred during test execution.
 		class Error
+			# Initialize a new error result.
+			# @parameter identity [Identity, nil] The identity where the error occurred.
+			# @parameter error [Exception] The exception that was raised.
 			def initialize(identity, error)
 				@identity = identity
 				@error = error
 			end
 			
+			# @attribute [Identity, nil] The identity where the error occurred.
 			attr :identity
+			
+			# @attribute [Exception] The exception that was raised.
 			attr :error
 			
+			# @yields {|error| ...} Yields this error as a failure.
 			def each_failure(&block)
 				yield self
 			end
 			
+			# @returns [Hash] A hash containing the error message and location.
 			def message
 				{
 					text: @error.full_message,
@@ -273,6 +334,8 @@ module Sus
 			end
 		end
 		
+		# Record an error that occurred during test execution.
+		# @parameter error [Exception] The exception that was raised.
 		def error!(error)
 			identity = @identity&.scoped(error.backtrace_locations)
 			
@@ -282,6 +345,15 @@ module Sus
 			@output.error(error, @identity)
 		end
 		
+		# Create a nested set of assertions.
+		# @parameter target [Object] The target object for the nested assertions.
+		# @parameter identity [Identity, nil] The identity for the nested assertions.
+		# @parameter isolated [Boolean] Whether the nested assertions are isolated from the parent.
+		# @parameter distinct [Boolean] Whether the nested assertions should be treated as a single statement.
+		# @parameter inverted [Boolean] Whether the nested assertions are inverted.
+		# @parameter options [Hash] Additional options to pass to the nested assertions instance.
+		# @yields {|assertions| ...} The nested assertions instance.
+		# @returns [Object] The result of the block.
 		def nested(target, identity: @identity, isolated: false, distinct: false, inverted: false, **options)
 			result = nil
 			
@@ -317,7 +389,8 @@ module Sus
 			return result
 		end
 		
-		# Add the child assertions which were nested to this instance.
+		# Add child assertions that were nested to this instance.
+		# @parameter assertions [Assertions] The child assertions to add.
 		def add(assertions)
 			# All child assertions should be resolved by this point:
 			raise "Nested assertions must be fully resolved!" if assertions.deferred?

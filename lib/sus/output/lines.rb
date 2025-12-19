@@ -7,7 +7,10 @@ require "io/console"
 
 module Sus
 	module Output
+		# Represents a line buffer for managing multiple lines of output on a terminal.
 		class Lines
+			# Initialize a new Lines buffer.
+			# @parameter output [Output] The output handler to write to.
 			def initialize(output)
 				@output = output
 				@lines = []
@@ -15,21 +18,28 @@ module Sus
 				@current_count = 0
 			end
 			
+			# @returns [Integer] The height of the terminal.
 			def height
 				@output.size.first
 			end
 			
+			# Set a line at the given index.
+			# @parameter index [Integer] The line index.
+			# @parameter line [Object] The line content (should respond to #print).
 			def []= index, line
 				@lines[index] = line
 				
 				redraw(index)
 			end
 			
+			# Clear all lines.
 			def clear
 				@lines.clear
 				write
 			end
 			
+			# Redraw a specific line or all lines.
+			# @parameter index [Integer] The line index to redraw.
 			def redraw(index)
 				if index < @current_count
 					update(index, @lines[index])

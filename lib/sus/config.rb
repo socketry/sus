@@ -7,9 +7,14 @@ require_relative "clock"
 require_relative "registry"
 
 module Sus
+	# Represents the configuration for running tests.
 	class Config
+		# The default path to the configuration file.
 		PATH = "config/sus.rb"
 		
+		# Find the configuration file path for the given root directory.
+		# @parameter root [String] The root directory to search in.
+		# @returns [String | Nil] The path to the configuration file if it exists.
 		def self.path(root)
 			path = ::File.join(root, PATH)
 			
@@ -18,6 +23,10 @@ module Sus
 			end
 		end
 		
+		# Load configuration from the given root directory.
+		# @parameter root [String] The root directory to load configuration from.
+		# @parameter arguments [Array] Command line arguments to parse.
+		# @returns [Config] A new Config instance.
 		def self.load(root: Dir.pwd, arguments: ARGV)
 			derived = Class.new(self)
 			
@@ -34,6 +43,10 @@ module Sus
 			return derived.new(root, arguments, **options)
 		end
 		
+		# Initialize a new Config instance.
+		# @parameter root [String] The root directory for the project.
+		# @parameter paths [Array] Optional paths to specific test files.
+		# @parameter verbose [Boolean] Whether to output verbose information.
 		def initialize(root, paths, verbose: false)
 			@root = root
 			@paths = paths
@@ -44,6 +57,8 @@ module Sus
 			self.add_default_load_paths
 		end
 		
+		# Add a directory to the load path.
+		# @parameter path [String] The path to add.
 		def add_load_path(path)
 			path = ::File.expand_path(path, @root)
 			
@@ -52,36 +67,50 @@ module Sus
 			end
 		end
 		
+		# Add default load paths (lib and fixtures).
 		def add_default_load_paths
 			add_load_path("lib")
 			add_load_path("fixtures")
 		end
 		
+		# @attribute [String] The root directory for the project.
 		attr :root
+		
+		# @attribute [Array] Optional paths to specific test files.
 		attr :paths
 		
+		# @returns [Boolean] Whether verbose output is enabled.
 		def verbose?
 			@verbose
 		end
 		
+		# @returns [Boolean] Whether only a partial set of tests is being run.
 		def partial?
 			@paths.any?
 		end
 		
+		# @returns [Output] The output handler to use.
 		def output
 			@output ||= Sus::Output.default
 		end
 		
+		# The default pattern for finding test files.
 		DEFAULT_TEST_PATTERN = "test/**/*.rb"
 		
+		# @returns [Array(String)] Paths to all test files matching the default pattern.
 		def test_paths
 			return Dir.glob(DEFAULT_TEST_PATTERN, base: @root)
 		end
 		
+		# Create a new registry instance.
+		# @returns [Registry] A new Registry instance.
 		def make_registry
 			Sus::Registry.new(root: @root)
 		end
 		
+		# Load the test registry, optionally filtering by paths.
+		# @parameter paths [Array | Nil] Optional paths to filter tests by.
+		# @returns [Registry, Filter] The loaded registry, possibly wrapped in a Filter.
 		def load_registry(paths = @paths)
 			registry = make_registry
 			
@@ -99,14 +128,19 @@ module Sus
 			return registry
 		end
 		
+		# @returns [Registry] The test registry, loading it if necessary.
 		def registry
 			@registry ||= self.load_registry
 		end
 		
+		# Prepare Ruby warnings for deprecated features.
 		def prepare_warnings!
 			Warning[:deprecated] = true
 		end
 		
+		# Called before tests are run.
+		# @parameter assertions [Assertions] The assertions instance.
+		# @parameter output [Output] The output handler.
 		def before_tests(assertions, output: self.output)
 			@clock.reset!
 			@clock.start!
@@ -114,6 +148,9 @@ module Sus
 			prepare_warnings!
 		end
 		
+		# Called after tests are run.
+		# @parameter assertions [Assertions] The assertions instance.
+		# @parameter output [Output] The output handler.
 		def after_tests(assertions, output: self.output)
 			@clock.stop!
 			
@@ -122,6 +159,9 @@ module Sus
 		
 		protected
 		
+		# Print a summary of test results.
+		# @parameter output [Output] The output handler.
+		# @parameter assertions [Assertions] The assertions instance.
 		def print_summary(output, assertions)
 			assertions.print(output)
 			output.puts
@@ -136,6 +176,9 @@ module Sus
 			print_failed_assertions(output, assertions)
 		end
 		
+		# Print finished statistics.
+		# @parameter output [Output] The output handler.
+		# @parameter assertions [Assertions] The assertions instance.
 		def print_finished_statistics(output, assertions)
 			duration = @clock.duration
 			rate = assertions.count / duration
@@ -143,6 +186,9 @@ module Sus
 			output.puts "🏁 Finished in ", @clock, "; #{rate.round(3)} assertions per second."
 		end
 		
+		# Print feedback about the test suite.
+		# @parameter output [Output] The output handler.
+		# @parameter assertions [Assertions] The assertions instance.
 		def print_test_feedback(output, assertions)
 			duration = @clock.duration
 			rate = assertions.count / duration
@@ -188,6 +234,10 @@ module Sus
 			end
 		end
 		
+		# Print information about slow tests.
+		# @parameter output [Output] The output handler.
+		# @parameter assertions [Assertions] The assertions instance.
+		# @parameter threshold [Float] The threshold in seconds for considering a test slow.
 		def print_slow_tests(output, assertions, threshold = 0.1)
 			slowest_tests = assertions.passed.select{|test| test.clock > threshold}.sort_by(&:clock).reverse!
 			
@@ -202,6 +252,10 @@ module Sus
 			end
 		end
 		
+		# Print a list of assertions.
+		# @parameter output [Output] The output handler.
+		# @parameter title [String] The title to print.
+		# @parameter assertions [Array] The assertions to print.
 		def print_assertions(output, title, assertions)
 			if assertions.any?
 				output.puts
@@ -213,6 +267,9 @@ module Sus
 			end
 		end
 		
+		# Print failed and errored assertions.
+		# @parameter output [Output] The output handler.
+		# @parameter assertions [Assertions] The assertions instance.
 		def print_failed_assertions(output, assertions)
 			print_assertions(output, "🤔 Failed assertions:", assertions.failed)
 			print_assertions(output, "🔥 Errored assertions:", assertions.errored)
