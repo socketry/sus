@@ -1,6 +1,6 @@
 # Releases
 
-## Unreleased
+## v0.35.0
 
   - Add `Sus::Fixtures::TemporaryDirectoryContext`.
 
