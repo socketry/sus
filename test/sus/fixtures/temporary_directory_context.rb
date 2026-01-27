@@ -3,6 +3,8 @@
 # Released under the MIT License.
 # Copyright, 2025, by Samuel Williams.
 
+require "sus/fixtures/temporary_directory_context"
+
 describe Sus::Fixtures::TemporaryDirectoryContext do
 	include Sus::Fixtures::TemporaryDirectoryContext
 	
