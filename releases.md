@@ -18,7 +18,7 @@ The `receive` predicate has been enhanced to support blocks and the `and_raise` 
 
 ``` ruby
 # `receive` with a block:
-expect(interface).to receive(:implementation) {10}
+expect(interface).to receive(:implementation){10}
 
 # `and_return` with a block:
 expect(interface).to receive(:implementation).and_return{FakeImplementation.new}
