@@ -168,11 +168,14 @@ module Sus
 			
 			print_finished_statistics(output, assertions)
 			
-			if !partial? and assertions.passed?
-				print_test_feedback(output, assertions)
+			unless assertions.count.zero?
+				if !partial? and assertions.passed?
+					print_test_feedback(output, assertions)
+				end
+				
+				print_slow_tests(output, assertions)
 			end
 			
-			print_slow_tests(output, assertions)
 			print_failed_assertions(output, assertions)
 		end
 		
@@ -181,9 +184,13 @@ module Sus
 		# @parameter assertions [Assertions] The assertions instance.
 		def print_finished_statistics(output, assertions)
 			duration = @clock.duration
-			rate = assertions.count / duration
 			
-			output.puts "🏁 Finished in ", @clock, "; #{rate.round(3)} assertions per second."
+			if assertions.count.zero?
+				output.puts "🏴 Finished in ", @clock, "."
+			else
+				rate = assertions.count / duration
+				output.puts "🏁 Finished in ", @clock, "; #{rate.round(3)} assertions per second."
+			end
 		end
 		
 		# Print feedback about the test suite.
