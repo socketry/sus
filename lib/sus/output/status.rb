@@ -11,7 +11,7 @@ module Sus
 			# @parameter output [Output] The output handler to register with.
 			def self.register(output)
 				output[:free] ||= output.style(:blue)
-				output[:busy] ||= output.style(:orange)
+				output[:busy] ||= output.style(:red)
 			end
 			
 			# Initialize a new Status indicator.
