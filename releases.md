@@ -1,6 +1,6 @@
 # Releases
 
-## Unreleased
+## v0.36.0
 
   - Hard code `XTerm` output for GitHub Actions, as it supports ANSI escape codes.
 

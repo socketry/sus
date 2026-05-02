@@ -33,6 +33,10 @@ Please see the [project documentation](https://socketry.github.io/sus/) for more
 
 Please see the [project releases](https://socketry.github.io/sus/releases/index) for all releases.
 
+### v0.36.0
+
+  - Hard code `XTerm` output for GitHub Actions, as it supports ANSI escape codes.
+
 ### v0.35.0
 
   - Add `Sus::Fixtures::TemporaryDirectoryContext`.
