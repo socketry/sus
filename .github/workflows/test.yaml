@@ -18,9 +18,9 @@ jobs:
           - macos
         
         ruby:
-          - "3.2"
           - "3.3"
           - "3.4"
+          - "4.0"
         
         experimental: [false]
         

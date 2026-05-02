@@ -7,7 +7,7 @@ Gem::Specification.new do |spec|
 	spec.version = Sus::VERSION
 	
 	spec.summary = "A fast and scalable test runner."
-	spec.authors = ["Samuel Williams", "Brad Schrag"]
+	spec.authors = ["Samuel Williams", "Brad Schrag", "William T. Nelson"]
 	spec.license = "MIT"
 	
 	spec.cert_chain  = ["release.cert"]
@@ -25,5 +25,5 @@ Gem::Specification.new do |spec|
 	
 	spec.executables = ["sus", "sus-parallel", "sus-tree", "sus-host"]
 	
-	spec.required_ruby_version = ">= 3.2"
+	spec.required_ruby_version = ">= 3.3"
 end

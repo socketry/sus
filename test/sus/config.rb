@@ -1,7 +1,8 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2022-2024, by Samuel Williams.
+# Copyright, 2022-2026, by Samuel Williams.
+# Copyright, 2026, by William T. Nelson.
 
 require "fixtures"
 

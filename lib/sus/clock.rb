@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2022-2023, by Samuel Williams.
+# Copyright, 2022-2026, by Samuel Williams.
 
 module Sus
 	# Represents a clock for measuring elapsed time during test execution.

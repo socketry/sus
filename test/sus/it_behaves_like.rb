@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # Released under the MIT License.
-# Copyright, 2021-2022, by Samuel Williams.
+# Copyright, 2021-2026, by Samuel Williams.
 
 ContextModule = Sus::Shared("context module") do
 	it "extends context" do
@@ -30,6 +30,6 @@ with "a falsey thing" do
 	
 	# Test that the nested thing overrides the one above:
 	it_behaves_like TestThing do
-		let(:thing) {true}
+		let(:thing){true}
 	end
 end
