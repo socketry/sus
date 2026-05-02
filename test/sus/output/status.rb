@@ -7,7 +7,7 @@ require "sus/output/status"
 
 describe Sus::Output::Status do
 	let(:buffer) {StringIO.new}
-	let(:output) {Sus::Output.for(buffer)}
+	let(:output) {Sus::Output.for(buffer, {})}
 	
 	def before
 		Sus::Output::Status.register(output)

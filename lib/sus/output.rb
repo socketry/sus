@@ -13,11 +13,19 @@ require_relative "output/progress"
 module Sus
 	# Represents output handlers for test results and messages.
 	module Output
+		# Detect if we're running in GitHub Actions, where human-readable output is preferred.
+		# GitHub Actions sets the GITHUB_ACTIONS environment variable to "true".
+		# @parameter env [Hash] The environment variables to check.
+		def self.github_actions?(env)
+			env["GITHUB_ACTIONS"] == "true"
+		end
+		
 		# Create an appropriate output handler for the given IO.
 		# @parameter io [IO] The IO object to write to.
-		# @returns [XTerm, Text] An XTerm handler if the IO is a TTY, otherwise a Text handler.
-		def self.for(io)
-			if io.isatty
+		# @parameter env [Hash] The environment variables to consider (defaults to ENV).
+		# @returns [XTerm, Text] An XTerm handler if the IO is a TTY or running in GitHub Actions, otherwise a Text handler.
+		def self.for(io, env = ENV)
+			if io.isatty or self.github_actions?(env)
 				XTerm.new(io)
 			else
 				Text.new(io)
@@ -26,9 +34,10 @@ module Sus
 		
 		# Create a default output handler with styling configured.
 		# @parameter io [IO] The IO object to write to (defaults to $stderr).
+		# @parameter env [Hash] The environment variables to consider (defaults to ENV).
 		# @returns [XTerm, Text] A configured output handler.
-		def self.default(io = $stderr)
-			output = self.for(io)
+		def self.default(io = $stderr, env = ENV)
+			output = self.for(io, env)
 			
 			Output::Bar.register(output)
 			
