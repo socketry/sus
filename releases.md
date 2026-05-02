@@ -1,5 +1,9 @@
 # Releases
 
+## Unreleased
+
+  - Hard code `XTerm` output for GitHub Actions, as it supports ANSI escape codes.
+
 ## v0.35.0
 
   - Add `Sus::Fixtures::TemporaryDirectoryContext`.
