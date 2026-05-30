@@ -57,6 +57,7 @@ Please see the [project releases](https://socketry.github.io/sus/releases/index)
 ## See Also
 
   - [sus-vscode](https://github.com/socketry/sus-vscode) - Visual Studio Code extension for Sus.
+  - [minitest-sus](https://github.com/socketry/minitest-sus) - Use Sus fixtures within Minitest tests.
 
 ## Contributing
 
