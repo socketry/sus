@@ -6,6 +6,8 @@
 require "io/console"
 require "stringio"
 
+require_relative "text"
+
 module Sus
 	module Output
 		# Represents a buffered output handler that stores output operations for later replay.
