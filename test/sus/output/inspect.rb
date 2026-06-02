@@ -42,14 +42,20 @@ describe Sus::Output::Inspect do
 	end
 	
 	with ".format" do
-		it "emits styled tokens to the output" do
+		it "emits the value in a single style" do
 			buffer = Sus::Output::Buffered.new
 			Sus::Output::Inspect.format(buffer, {"key" => 42, :sym => "value"})
 			
-			styles = buffer.chunks.filter_map {|operation| operation[1] if operation[0] == :write && operation[1].is_a?(Symbol)}
-			expect(styles).to be(:include?, :literal_string)
-			expect(styles).to be(:include?, :literal_number)
-			expect(styles).to be(:include?, :literal_symbol)
+			styles = buffer.chunks.filter_map {|operation| operation[1] if operation[0] == :write && operation[1].is_a?(Symbol)}.uniq
+			expect(styles).to be == [:variable]
+		end
+		
+		it "highlights the ellipsis distinctly when truncating" do
+			buffer = Sus::Output::Buffered.new
+			Sus::Output::Inspect.format(buffer, Array.new(100) {|i| i}, limit: 20)
+			
+			styles = buffer.chunks.filter_map {|operation| operation[1] if operation[0] == :write && operation[1].is_a?(Symbol)}.uniq
+			expect(styles).to be(:include?, :ellipsis)
 		end
 	end
 	

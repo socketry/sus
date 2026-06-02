@@ -16,9 +16,10 @@ module Sus
 		# instance).
 		#
 		# Containers (arrays and hashes) are formatted directly so we can recurse with
-		# the budget and emit per-token colour instructions (as style symbols, which
-		# are resolved by the output later). Leaf values delegate to native `inspect`
-		# so their formatting exactly matches Ruby.
+		# the budget; leaf values delegate to native `inspect` so their formatting
+		# exactly matches Ruby. The value itself is emitted in a single style (matching
+		# the rest of sus's output), and only the truncation ellipsis is highlighted
+		# distinctly so it's clear where output was cut.
 		module Inspect
 			# The default maximum length of an inspected value before it is truncated.
 			DEFAULT_LIMIT = 80
@@ -44,7 +45,7 @@ module Sus
 				# Emit a token, truncating and aborting once the budget is exceeded.
 				# @parameter text [String] The token text to emit.
 				# @parameter style [Symbol, nil] The style symbol to wrap the token in.
-				def emit(text, style = nil)
+				def emit(text, style = :variable)
 					truncated = false
 					
 					if text.length > @remaining
@@ -67,16 +68,10 @@ module Sus
 				# @parameter value [Object] The value to format.
 				def format(value)
 					case value
-					when nil, true, false
-						emit(value.inspect, :literal_keyword)
-					when Integer, Float
-						emit(value.inspect, :literal_number)
-					when Symbol
-						emit(value.inspect, :literal_symbol)
 					when String
 						# Inspect only a prefix so we never escape a huge string:
 						slice = value.length > @remaining ? value[0, @remaining] : value
-						emit(slice.inspect, :literal_string)
+						emit(slice.inspect)
 					when Array
 						format_array(value)
 					when Hash
@@ -123,7 +118,7 @@ module Sus
 							
 							if key.is_a?(Symbol)
 								# Ruby's label form for symbol keys, e.g. `key: value`:
-								emit("#{key.inspect.delete_prefix(":")}: ", :literal_symbol)
+								emit("#{key.inspect.delete_prefix(":")}: ")
 							else
 								format(key)
 								emit(" => ")
@@ -138,11 +133,11 @@ module Sus
 				end
 				
 				def format_object(value)
-					emit(value.inspect, :variable)
+					emit(value.inspect)
 				rescue Truncated
 					raise
 				rescue => error
-					emit("#<#{value.class} (inspect failed: #{error.class})>", :variable)
+					emit("#<#{value.class} (inspect failed: #{error.class})>")
 				end
 			end
 			
@@ -156,7 +151,7 @@ module Sus
 				begin
 					formatter.format(value)
 				rescue Formatter::Truncated
-					output.write(ELLIPSIS)
+					output.write(:ellipsis, ELLIPSIS, :reset)
 				end
 			end
 			

@@ -49,13 +49,9 @@ module Sus
 			
 			output[:variable] = output.style(:blue, nil, :bold)
 			
-			# Syntax highlighting for inspected values. We deliberately avoid the
-			# status colours (green/red/yellow) here, so data literals are never
-			# confused with pass/fail/warning semantics.
-			output[:literal_string] = output.style(:cyan)
-			output[:literal_number] = output.style(:magenta)
-			output[:literal_symbol] = output.style(:magenta)
-			output[:literal_keyword] = output.style(:blue, nil, :bold)
+			# The ellipsis marks where an inspected value was truncated; it is shown
+			# faintly so it reads as "trailing off" without competing with the value.
+			output[:ellipsis] = output.style(nil, nil, :faint)
 			
 			output[:path] = output.style(:yellow)
 			output[:line] = output.style(:yellow)
