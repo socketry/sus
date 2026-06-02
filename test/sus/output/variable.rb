@@ -32,7 +32,7 @@ describe Sus::Output::Variable do
 		end
 		
 		it "truncates large values with an ellipsis" do
-			big = Array.new(1000) {|i| i}
+			big = Array.new(1000){|i| i}
 			result = inspect_string(big)
 			expect(result).to be(:end_with?, "…")
 			expect(result.length).to be <= (Sus::Output::Variable::TRUNCATION_LIMIT + 1)
@@ -58,15 +58,15 @@ describe Sus::Output::Variable do
 			buffer = Sus::Output::Buffered.new
 			Sus::Output::Variable.format(buffer, {"key" => 42, :sym => "value"})
 			
-			styles = buffer.chunks.filter_map {|operation| operation[1] if operation[0] == :write && operation[1].is_a?(Symbol)}.uniq
+			styles = buffer.chunks.filter_map{|operation| operation[1] if operation[0] == :write && operation[1].is_a?(Symbol)}.uniq
 			expect(styles).to be == [:variable]
 		end
 		
 		it "highlights the ellipsis distinctly when truncating" do
 			buffer = Sus::Output::Buffered.new
-			Sus::Output::Variable.format(buffer, Array.new(100) {|i| i}, limit: 20)
+			Sus::Output::Variable.format(buffer, Array.new(100){|i| i}, limit: 20)
 			
-			styles = buffer.chunks.filter_map {|operation| operation[1] if operation[0] == :write && operation[1].is_a?(Symbol)}.uniq
+			styles = buffer.chunks.filter_map{|operation| operation[1] if operation[0] == :write && operation[1].is_a?(Symbol)}.uniq
 			expect(styles).to be(:include?, :ellipsis)
 		end
 	end
