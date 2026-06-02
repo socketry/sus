@@ -23,10 +23,10 @@ module Sus
 		module Variable
 			# The maximum length of an inspected value before it is truncated. Override
 			# it with the `SUS_OUTPUT_VARIABLE_TRUNCATION_LIMIT` environment variable; a
-			# value of `0` disables truncation entirely.
+			# value of `0` (or `nil`) disables truncation entirely.
 			TRUNCATION_LIMIT = ENV.fetch("SUS_OUTPUT_VARIABLE_TRUNCATION_LIMIT", 100).then do |value|
 				value = Integer(value)
-				value.zero? ? Float::INFINITY : value
+				value.zero? ? nil : value
 			end
 			
 			# The string appended to a truncated value.
@@ -53,12 +53,12 @@ module Sus
 				def emit(text, style = :variable)
 					truncated = false
 					
-					if text.length > @remaining
+					if @remaining && text.length > @remaining
 						text = text[0, @remaining]
 						truncated = true
 					end
 					
-					@remaining -= text.length
+					@remaining -= text.length if @remaining
 					
 					if style
 						@output.write(style, text, :reset)
@@ -75,7 +75,7 @@ module Sus
 					case value
 					when String
 						# Inspect only a prefix so we never escape a huge string:
-						slice = value.length > @remaining ? value[0, @remaining] : value
+						slice = (@remaining && value.length > @remaining) ? value[0, @remaining] : value
 						emit(slice.inspect)
 					when Array
 						format_array(value)
