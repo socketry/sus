@@ -49,10 +49,12 @@ module Sus
 			
 			output[:variable] = output.style(:blue, nil, :bold)
 			
-			# Syntax highlighting for inspected values:
-			output[:literal_string] = output.style(:green)
+			# Syntax highlighting for inspected values. We deliberately avoid the
+			# status colours (green/red/yellow) here, so data literals are never
+			# confused with pass/fail/warning semantics.
+			output[:literal_string] = output.style(:cyan)
 			output[:literal_number] = output.style(:magenta)
-			output[:literal_symbol] = output.style(:cyan)
+			output[:literal_symbol] = output.style(:magenta)
 			output[:literal_keyword] = output.style(:blue, nil, :bold)
 			
 			output[:path] = output.style(:yellow)
