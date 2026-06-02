@@ -16,15 +16,19 @@ describe Sus::Output::Variable do
 		it "matches native inspect for common values" do
 			[
 				[1, 2, 3],
-				{"a" => 1, :b => 2},
 				"hello\nworld",
 				:symbol,
 				nil, true, false, 1.5,
 				(1..5),
-				{"id" => 0, "type" => "Alarm"},
 			].each do |value|
 				expect(inspect_string(value, limit: 10_000)).to be == value.inspect
 			end
+		end
+		
+		it "formats hashes consistently" do
+			# We use a consistent format regardless of Ruby's version-specific
+			# `Hash#inspect` syntax:
+			expect(inspect_string({"a" => 1, :b => 2})).to be == "{\"a\" => 1, b: 2}"
 		end
 		
 		it "truncates large values with an ellipsis" do

@@ -122,7 +122,7 @@ module Sus
 							first = false
 							
 							if key.is_a?(Symbol)
-								# Ruby's label form for symbol keys, e.g. `key: value`:
+								# Label form for symbol keys, e.g. `key: value`:
 								emit("#{key.inspect.delete_prefix(":")}: ")
 							else
 								format(key)
