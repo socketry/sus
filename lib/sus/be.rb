@@ -148,7 +148,7 @@ module Sus
 			if arguments.any?
 				output.write(" ")
 				arguments.each do |argument|
-					Output::Inspect.format(output, argument)
+					output.variable(argument)
 				end
 			end
 		end

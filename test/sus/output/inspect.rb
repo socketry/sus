@@ -55,6 +55,15 @@ describe Sus::Output::Inspect do
 		end
 	end
 	
+	with "output#variable" do
+		it "writes a truncated representation to the output" do
+			buffer = Sus::Output::Buffered.new
+			buffer.variable("x" * 200, limit: 20)
+			expect(buffer.string).to be(:end_with?, "…")
+			expect(buffer.string.length).to be <= 21
+		end
+	end
+	
 	with ".buffer" do
 		it "captures the value at call time" do
 			array = [1, 2]

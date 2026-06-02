@@ -5,6 +5,7 @@
 
 require_relative "have/all"
 require_relative "have/any"
+require_relative "output/inspect"
 
 module Sus
 	# Represents predicates for checking collections and object attributes.
@@ -22,7 +23,9 @@ module Sus
 			# Print a representation of this predicate.
 			# @parameter output [Output] The output target.
 			def print(output)
-				output.write("key ", :variable, @name.inspect, :reset, " ", @predicate, :reset)
+				output.write("key ")
+				output.variable(@name)
+				output.write(" ", @predicate, :reset)
 			end
 			
 			# Evaluate this predicate against a subject.
@@ -89,7 +92,7 @@ module Sus
 				index = 0
 				
 				subject.each do |value|
-					assertions.nested("[#{index}] = #{value.inspect}", distinct: true) do |assertions|
+					assertions.nested("[#{index}] = #{Output::Inspect.inspect(value)}", distinct: true) do |assertions|
 						@predicate&.call(assertions, value)
 					end
 					

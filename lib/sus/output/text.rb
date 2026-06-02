@@ -139,6 +139,14 @@ module Sus
 				write(*arguments)
 				@io.puts(self.reset)
 			end
+			
+			# Write a value in the variable style: a compact, truncated representation
+			# (handling large values, recursion and styling internally).
+			# @parameter value [Object] The value to represent.
+			# @parameter limit [Integer] The maximum length of the representation.
+			def variable(value, limit: Inspect::DEFAULT_LIMIT)
+				Inspect.format(self, value, limit: limit)
+			end
 		end
 	end
 end
