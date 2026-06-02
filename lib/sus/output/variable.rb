@@ -47,10 +47,10 @@ module Sus
 					@seen = nil
 				end
 				
-				# Emit a token, truncating and aborting once the budget is exceeded.
+				# Emit a token in the variable style, truncating and aborting once the
+				# budget is exceeded.
 				# @parameter text [String] The token text to emit.
-				# @parameter style [Symbol, nil] The style symbol to wrap the token in.
-				def emit(text, style = :variable)
+				def emit(text)
 					truncated = false
 					
 					if text.length > @remaining
@@ -60,11 +60,7 @@ module Sus
 					
 					@remaining -= text.length
 					
-					if style
-						@output.write(style, text, :reset)
-					else
-						@output.write(text)
-					end
+					@output.write(:variable, text, :reset)
 					
 					raise Truncated if truncated
 				end

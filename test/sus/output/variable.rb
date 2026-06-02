@@ -44,6 +44,18 @@ describe Sus::Output::Variable do
 			expect(inspect_string(array)).to be == "[1, [...]]"
 		end
 		
+		it "truncates objects with long inspect output" do
+			object = Object.new
+			object.define_singleton_method(:inspect){"#<Big #{"x" * 200}>"}
+			expect(inspect_string(object)).to be(:end_with?, "…")
+		end
+		
+		it "falls back when an object's inspect raises" do
+			object = Object.new
+			object.define_singleton_method(:inspect){raise "boom"}
+			expect(inspect_string(object)).to be(:include?, "inspect failed")
+		end
+		
 		it "captures the value at call time" do
 			array = [1, 2]
 			buffer = Sus::Output::Variable.buffer(array)
