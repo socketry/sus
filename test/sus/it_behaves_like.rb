@@ -30,6 +30,6 @@ with "a falsey thing" do
 	
 	# Test that the nested thing overrides the one above:
 	it_behaves_like TestThing do
-		let(:thing){true}
+		let(:thing) {true}
 	end
 end

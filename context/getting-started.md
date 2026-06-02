@@ -108,7 +108,7 @@ Use `describe` to group related tests:
 ```ruby
 describe MyThing do
 	# The subject will be whatever is described:
-	let(:my_thing){subject.new}
+	let(:my_thing) {subject.new}
 end
 ```
 

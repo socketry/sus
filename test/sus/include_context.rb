@@ -4,7 +4,7 @@
 # Copyright, 2023-2026, by Samuel Williams.
 
 AContextWithArguments = Sus::Shared("a context with arguments") do |key, value: 42|
-	let(:a_thing){{key => value}}
+	let(:a_thing) {{key => value}}
 end
 
 AContextWithHooks = Sus::Shared("a context with hooks") do
