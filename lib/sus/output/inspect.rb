@@ -22,7 +22,7 @@ module Sus
 		# distinctly so it's clear where output was cut.
 		module Inspect
 			# The default maximum length of an inspected value before it is truncated.
-			DEFAULT_LIMIT = 80
+			DEFAULT_LIMIT = 100
 			
 			# The string appended to a truncated value.
 			ELLIPSIS = "…"
