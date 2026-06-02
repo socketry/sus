@@ -9,6 +9,7 @@ require_relative "output/xterm"
 
 require_relative "output/null"
 require_relative "output/progress"
+require_relative "output/summary"
 
 module Sus
 	# Represents output handlers for test results and messages.

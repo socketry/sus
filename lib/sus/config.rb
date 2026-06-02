@@ -38,7 +38,8 @@ module Sus
 			end
 			
 			options = {
-				verbose: !!arguments.delete("--verbose")
+				verbose: !!arguments.delete("--verbose"),
+				format: (arguments.delete("--json") && :json) || ENV["SUS_FORMAT"]&.to_sym,
 			}
 			
 			return derived.new(root, arguments, **options)
@@ -48,10 +49,11 @@ module Sus
 		# @parameter root [String] The root directory for the project.
 		# @parameter paths [Array] Optional paths to specific test files.
 		# @parameter verbose [Boolean] Whether to output verbose information.
-		def initialize(root, paths, verbose: false)
+		def initialize(root, paths, verbose: false, format: nil)
 			@root = root
 			@paths = paths
 			@verbose = verbose
+			@format = format
 			
 			@clock = Clock.new
 			
@@ -90,9 +92,17 @@ module Sus
 			@paths.any?
 		end
 		
+		# @attribute [Symbol, nil] The output format (e.g. `:json`), if any.
+		attr :format
+		
 		# @returns [Output] The output handler to use.
 		def output
-			@output ||= Sus::Output.default
+			@output ||= case @format
+			when :json
+				Sus::Output::Summary.new
+			else
+				Sus::Output.default
+			end
 		end
 		
 		# The default pattern for finding test files.
@@ -164,6 +174,11 @@ module Sus
 		# @parameter output [Output] The output handler.
 		# @parameter assertions [Assertions] The assertions instance.
 		def print_summary(output, assertions)
+			# Machine-readable adapters render the whole summary themselves:
+			if output.respond_to?(:summary)
+				return output.summary(assertions, clock: @clock, partial: partial?)
+			end
+			
 			assertions.print(output)
 			output.puts
 			
