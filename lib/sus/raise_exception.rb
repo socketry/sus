@@ -8,7 +8,7 @@ module Sus
 	class RaiseException
 		# Initialize a new RaiseException predicate.
 		# @parameter exception_class [Class] The exception class to expect.
-		# @parameter message [String, Regexp, Object | Nil] Optional message matcher.
+		# @parameter message [String | Regexp | Object | Nil] Optional message matcher.
 		def initialize(exception_class = Exception, message: nil)
 			@exception_class = exception_class
 			@message = message
@@ -68,7 +68,7 @@ module Sus
 	class Base
 		# Create a predicate that checks if a block raises an exception.
 		# @parameter exception_class [Class] The exception class to expect.
-		# @parameter message [String, Regexp, Object | Nil] Optional message matcher.
+		# @parameter message [String | Regexp | Object | Nil] Optional message matcher.
 		# @returns [RaiseException] A new RaiseException predicate.
 		def raise_exception(...)
 			RaiseException.new(...)
