@@ -7,11 +7,11 @@ require_relative "buffered"
 
 module Sus
 	module Output
-		# Provides a compact, syntax-highlighted representation of values for output.
+		# Provides a compact, truncated representation of values for output.
 		#
 		# Rather than building a full `inspect` string and then truncating it, we walk
-		# the value and stream styled tokens directly into an output, aborting as soon
-		# as a character budget is exhausted. This means we never materialize the full
+		# the value and stream tokens directly into an output, aborting as soon as a
+		# character budget is exhausted. This means we never materialize the full
 		# representation of a large subject (e.g. a big array or richly inspected
 		# instance).
 		#
@@ -155,12 +155,12 @@ module Sus
 				end
 			end
 			
-			# Capture a value's representation into a buffer, resolving the value (and
-			# any styling decisions) immediately, but deferring colour resolution until
-			# the buffer is replayed into a real output.
+			# Capture a value's representation into a buffer, resolving the value
+			# immediately, but deferring colour resolution until the buffer is replayed
+			# into a real output.
 			# @parameter value [Object] The value to capture.
 			# @parameter limit [Integer] The maximum length of the representation.
-			# @returns [Buffered] A buffer containing the styled token stream.
+			# @returns [Buffered] A buffer containing the captured representation.
 			def self.buffer(value, limit: DEFAULT_LIMIT)
 				buffer = Buffered.new
 				self.format(buffer, value, limit: limit)
