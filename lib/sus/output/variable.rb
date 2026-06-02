@@ -53,12 +53,12 @@ module Sus
 				def emit(text, style = :variable)
 					truncated = false
 					
-					if @remaining && text.length > @remaining
+					if text.length > @remaining
 						text = text[0, @remaining]
 						truncated = true
 					end
 					
-					@remaining -= text.length if @remaining
+					@remaining -= text.length
 					
 					if style
 						@output.write(style, text, :reset)
@@ -75,7 +75,7 @@ module Sus
 					case value
 					when String
 						# Inspect only a prefix so we never escape a huge string:
-						slice = (@remaining && value.length > @remaining) ? value[0, @remaining] : value
+						slice = value.length > @remaining ? value[0, @remaining] : value
 						emit(slice.inspect)
 					when Array
 						format_array(value)
@@ -151,6 +151,12 @@ module Sus
 			# @parameter value [Object] The value to format.
 			# @parameter limit [Integer] The maximum length of the representation.
 			def self.format(output, value, limit: TRUNCATION_LIMIT)
+				# With no limit, the formatter would produce exactly `value.inspect`, so
+				# we can skip walking the value and emit it directly:
+				unless limit
+					return output.write(:variable, value.inspect, :reset)
+				end
+				
 				formatter = Formatter.new(output, limit: limit)
 				
 				begin
