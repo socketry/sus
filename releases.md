@@ -1,5 +1,9 @@
 # Releases
 
+## Unreleased
+
+  - Long values in verbose (and failure) output are now truncated to a configurable length (default 100 characters), preventing huge objects from flooding the output. Set the `SUS_OUTPUT_VARIABLE_TRUNCATION_LIMIT` environment variable to change the limit, or `0` to disable truncation.
+
 ## v0.36.0
 
   - Hard code `XTerm` output for GitHub Actions, as it supports ANSI escape codes.
