@@ -113,8 +113,8 @@ module Sus
 			# (handling large values, recursion and styling internally).
 			# @parameter value [Object] The value to represent.
 			# @parameter limit [Integer] The maximum length of the representation.
-			def variable(value, limit: Inspect::DEFAULT_LIMIT)
-				Inspect.format(self, value, limit: limit)
+			def variable(value, limit: Variable::TRUNCATION_LIMIT)
+				Variable.format(self, value, limit: limit)
 			end
 			
 			# Record an assertion.

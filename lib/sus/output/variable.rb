@@ -20,9 +20,14 @@ module Sus
 		# exactly matches Ruby. The value itself is emitted in a single style (matching
 		# the rest of sus's output), and only the truncation ellipsis is highlighted
 		# distinctly so it's clear where output was cut.
-		module Inspect
-			# The default maximum length of an inspected value before it is truncated.
-			DEFAULT_LIMIT = 100
+		module Variable
+			# The maximum length of an inspected value before it is truncated. Override
+			# it with the `SUS_OUTPUT_VARIABLE_TRUNCATION_LIMIT` environment variable; a
+			# value of `0` disables truncation entirely.
+			TRUNCATION_LIMIT = ENV.fetch("SUS_OUTPUT_VARIABLE_TRUNCATION_LIMIT", 100).then do |value|
+				value = Integer(value)
+				value.zero? ? Float::INFINITY : value
+			end
 			
 			# The string appended to a truncated value.
 			ELLIPSIS = "…"
@@ -145,7 +150,7 @@ module Sus
 			# @parameter output [Output] The output target.
 			# @parameter value [Object] The value to format.
 			# @parameter limit [Integer] The maximum length of the representation.
-			def self.format(output, value, limit: DEFAULT_LIMIT)
+			def self.format(output, value, limit: TRUNCATION_LIMIT)
 				formatter = Formatter.new(output, limit: limit)
 				
 				begin
@@ -161,7 +166,7 @@ module Sus
 			# @parameter value [Object] The value to capture.
 			# @parameter limit [Integer] The maximum length of the representation.
 			# @returns [Buffered] A buffer containing the captured representation.
-			def self.buffer(value, limit: DEFAULT_LIMIT)
+			def self.buffer(value, limit: TRUNCATION_LIMIT)
 				buffer = Buffered.new
 				self.format(buffer, value, limit: limit)
 				return buffer

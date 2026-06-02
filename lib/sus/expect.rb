@@ -16,7 +16,7 @@ module Sus
 			@subject = subject
 			
 			# We capture this here, as changes to state may cause the inspect output to change, affecting the output produced by #print. The representation is buffered (as a stream of styled tokens) and truncated to avoid excessively noisy output for large subjects; colours are resolved later when the buffer is replayed into the output.
-			@inspect = Output::Inspect.buffer(@subject)
+			@inspect = Output::Variable.buffer(@subject)
 			
 			@inverted = inverted
 			@distinct = true

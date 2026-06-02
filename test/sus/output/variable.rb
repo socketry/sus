@@ -3,13 +3,13 @@
 # Released under the MIT License.
 # Copyright, 2026, by Samuel Williams.
 
-require "sus/output/inspect"
+require "sus/output/variable"
 require "sus/output/text"
 require "sus/output/buffered"
 
-describe Sus::Output::Inspect do
+describe Sus::Output::Variable do
 	def inspect_string(value, **options)
-		Sus::Output::Inspect.buffer(value, **options).string
+		Sus::Output::Variable.buffer(value, **options).string
 	end
 	
 	with ".buffer" do
@@ -31,7 +31,7 @@ describe Sus::Output::Inspect do
 			big = Array.new(1000) {|i| i}
 			result = inspect_string(big)
 			expect(result).to be(:end_with?, "…")
-			expect(result.length).to be <= (Sus::Output::Inspect::DEFAULT_LIMIT + 1)
+			expect(result.length).to be <= (Sus::Output::Variable::TRUNCATION_LIMIT + 1)
 		end
 		
 		it "handles recursive structures" do
@@ -42,7 +42,7 @@ describe Sus::Output::Inspect do
 		
 		it "captures the value at call time" do
 			array = [1, 2]
-			buffer = Sus::Output::Inspect.buffer(array)
+			buffer = Sus::Output::Variable.buffer(array)
 			array << 3
 			# The buffer captured the value before mutation:
 			expect(buffer.string).to be == "[1, 2]"
@@ -52,7 +52,7 @@ describe Sus::Output::Inspect do
 	with ".format" do
 		it "emits the value in a single style" do
 			buffer = Sus::Output::Buffered.new
-			Sus::Output::Inspect.format(buffer, {"key" => 42, :sym => "value"})
+			Sus::Output::Variable.format(buffer, {"key" => 42, :sym => "value"})
 			
 			styles = buffer.chunks.filter_map {|operation| operation[1] if operation[0] == :write && operation[1].is_a?(Symbol)}.uniq
 			expect(styles).to be == [:variable]
@@ -60,7 +60,7 @@ describe Sus::Output::Inspect do
 		
 		it "highlights the ellipsis distinctly when truncating" do
 			buffer = Sus::Output::Buffered.new
-			Sus::Output::Inspect.format(buffer, Array.new(100) {|i| i}, limit: 20)
+			Sus::Output::Variable.format(buffer, Array.new(100) {|i| i}, limit: 20)
 			
 			styles = buffer.chunks.filter_map {|operation| operation[1] if operation[0] == :write && operation[1].is_a?(Symbol)}.uniq
 			expect(styles).to be(:include?, :ellipsis)

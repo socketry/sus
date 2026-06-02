@@ -5,7 +5,7 @@
 
 require_relative "have/all"
 require_relative "have/any"
-require_relative "output/inspect"
+require_relative "output/variable"
 
 module Sus
 	# Represents predicates for checking collections and object attributes.

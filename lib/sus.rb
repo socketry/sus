@@ -6,7 +6,7 @@
 require_relative "sus/version"
 require_relative "sus/config"
 require_relative "sus/registry"
-require_relative "sus/output/inspect"
+require_relative "sus/output/variable"
 require_relative "sus/assertions"
 require_relative "sus/tree"
 
