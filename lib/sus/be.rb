@@ -146,7 +146,10 @@ module Sus
 			output.write("be ", :be, operation.to_s, :reset)
 			
 			if arguments.any?
-				output.write(" ", :variable, arguments.map{|argument| Output::Inspect.inspect(argument)}.join, :reset)
+				output.write(" ")
+				arguments.each do |argument|
+					Output::Inspect.format(output, argument)
+				end
 			end
 		end
 		

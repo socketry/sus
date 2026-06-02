@@ -3,17 +3,22 @@
 # Released under the MIT License.
 # Copyright, 2026, by Samuel Williams.
 
-require "pp"
+require_relative "buffered"
 
 module Sus
 	module Output
-		# Provides helpers for representing values in human readable output.
+		# Provides a compact, syntax-highlighted representation of values for output.
 		#
-		# Rather than building the full `inspect` representation of a value and then
-		# discarding most of it, we stream the pretty-printed output into a buffer
-		# that aborts as soon as it exceeds the limit. This avoids materializing huge
-		# strings for large subjects (e.g. big arrays or richly inspected instances),
-		# which is the same strategy IRB uses when truncating long results.
+		# Rather than building a full `inspect` string and then truncating it, we walk
+		# the value and stream styled tokens directly into an output, aborting as soon
+		# as a character budget is exhausted. This means we never materialize the full
+		# representation of a large subject (e.g. a big array or richly inspected
+		# instance).
+		#
+		# Containers (arrays and hashes) are formatted directly so we can recurse with
+		# the budget and emit per-token colour instructions (as style symbols, which
+		# are resolved by the output later). Leaf values delegate to native `inspect`
+		# so their formatting exactly matches Ruby.
 		module Inspect
 			# The default maximum length of an inspected value before it is truncated.
 			DEFAULT_LIMIT = 80
@@ -21,66 +26,158 @@ module Sus
 			# The string appended to a truncated value.
 			ELLIPSIS = "…"
 			
-			# An output target for {PP.singleline_pp} that stops accepting input once
-			# it has collected more than `limit` characters. Each individual write is
-			# also capped, so a single large chunk (e.g. an object with a custom
-			# `inspect`) can't force the whole string to be buffered.
-			class LimitedBuffer
-				# Raised internally to abort pretty-printing once the limit is reached.
-				class Overflow < StandardError
+			# Walks a value and emits styled tokens to an output, aborting once the
+			# character budget is exhausted.
+			class Formatter
+				# Raised internally to abort formatting once the limit is reached.
+				class Truncated < StandardError
 				end
 				
-				# @parameter limit [Integer] The maximum number of characters to collect.
-				def initialize(limit)
-					@limit = limit
-					@string = String.new
+				# @parameter output [Output] The output target to write tokens to.
+				# @parameter limit [Integer] The maximum number of characters to emit.
+				def initialize(output, limit:)
+					@output = output
+					@remaining = limit
+					@seen = nil
 				end
 				
-				# @attribute [String] The collected output so far (never longer than the limit).
-				attr :string
-				
-				# Append text, truncating and aborting once the limit is exceeded.
-				# @parameter text [String] The chunk of output to append.
-				def << (text)
-					remaining = @limit - @string.length
+				# Emit a token, truncating and aborting once the budget is exceeded.
+				# @parameter text [String] The token text to emit.
+				# @parameter style [Symbol, nil] The style symbol to wrap the token in.
+				def emit(text, style = nil)
+					truncated = false
 					
-					if text.length >= remaining
-						@string << text[0, remaining]
-						raise Overflow
-					else
-						@string << text
+					if text.length > @remaining
+						text = text[0, @remaining]
+						truncated = true
 					end
 					
-					return self
+					@remaining -= text.length
+					
+					if style
+						@output.write(style, text, :reset)
+					else
+						@output.write(text)
+					end
+					
+					raise Truncated if truncated
+				end
+				
+				# Format a value, emitting styled tokens to the output.
+				# @parameter value [Object] The value to format.
+				def format(value)
+					case value
+					when nil, true, false
+						emit(value.inspect, :literal_keyword)
+					when Integer, Float
+						emit(value.inspect, :literal_number)
+					when Symbol
+						emit(value.inspect, :literal_symbol)
+					when String
+						# Inspect only a prefix so we never escape a huge string:
+						slice = value.length > @remaining ? value[0, @remaining] : value
+						emit(slice.inspect, :literal_string)
+					when Array
+						format_array(value)
+					when Hash
+						format_hash(value)
+					else
+						format_object(value)
+					end
+				end
+				
+				private
+				
+				def format_array(array)
+					if @seen&.key?(array.object_id)
+						return emit("[...]")
+					end
+					
+					(@seen ||= {})[array.object_id] = true
+					
+					begin
+						emit("[")
+						array.each_with_index do |element, index|
+							emit(", ") if index > 0
+							format(element)
+						end
+						emit("]")
+					ensure
+						@seen.delete(array.object_id)
+					end
+				end
+				
+				def format_hash(hash)
+					if @seen&.key?(hash.object_id)
+						return emit("{...}")
+					end
+					
+					(@seen ||= {})[hash.object_id] = true
+					
+					begin
+						emit("{")
+						first = true
+						hash.each do |key, value|
+							emit(", ") unless first
+							first = false
+							
+							if key.is_a?(Symbol)
+								# Ruby's label form for symbol keys, e.g. `key: value`:
+								emit("#{key.inspect.delete_prefix(":")}: ", :literal_symbol)
+							else
+								format(key)
+								emit(" => ")
+							end
+							
+							format(value)
+						end
+						emit("}")
+					ensure
+						@seen.delete(hash.object_id)
+					end
+				end
+				
+				def format_object(value)
+					emit(value.inspect, :variable)
+				rescue Truncated
+					raise
+				rescue => error
+					emit("#<#{value.class} (inspect failed: #{error.class})>", :variable)
 				end
 			end
 			
-			# Inspect a value, truncating the result if it exceeds the given limit.
-			#
-			# @parameter value [Object] The value to inspect.
-			# @parameter limit [Integer] The maximum length of the resulting string.
-			# @returns [String] The (possibly truncated) inspect representation.
-			def self.inspect(value, limit: DEFAULT_LIMIT)
-				buffer = LimitedBuffer.new(limit)
+			# Format a value into the given output, truncating at the limit.
+			# @parameter output [Output] The output target.
+			# @parameter value [Object] The value to format.
+			# @parameter limit [Integer] The maximum length of the representation.
+			def self.format(output, value, limit: DEFAULT_LIMIT)
+				formatter = Formatter.new(output, limit: limit)
 				
 				begin
-					PP.singleline_pp(value, buffer)
-					buffer.string
-				rescue LimitedBuffer::Overflow
-					"#{buffer.string}#{ELLIPSIS}"
+					formatter.format(value)
+				rescue Formatter::Truncated
+					output.write(ELLIPSIS)
 				end
 			end
 			
-			# Truncate an already-realised string to the given limit.
-			# @parameter string [String] The string to truncate.
+			# Capture a value's representation into a buffer, resolving the value (and
+			# any styling decisions) immediately, but deferring colour resolution until
+			# the buffer is replayed into a real output.
+			# @parameter value [Object] The value to capture.
+			# @parameter limit [Integer] The maximum length of the representation.
+			# @returns [Buffered] A buffer containing the styled token stream.
+			def self.buffer(value, limit: DEFAULT_LIMIT)
+				buffer = Buffered.new
+				self.format(buffer, value, limit: limit)
+				return buffer
+			end
+			
+			# Inspect a value, returning a plain (uncoloured) truncated string.
+			# @parameter value [Object] The value to inspect.
 			# @parameter limit [Integer] The maximum length of the resulting string.
-			# @returns [String] The (possibly truncated) string.
-			def self.truncate(string, limit: DEFAULT_LIMIT)
-				if string.length > limit
-					"#{string[0, limit]}#{ELLIPSIS}"
-				else
-					string
-				end
+			# @returns [String] The (possibly truncated) representation.
+			def self.inspect(value, limit: DEFAULT_LIMIT)
+				self.buffer(value, limit: limit).string
 			end
 		end
 	end
