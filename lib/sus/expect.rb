@@ -15,8 +15,8 @@ module Sus
 			@assertions = assertions
 			@subject = subject
 			
-			# We capture this here, as changes to state may cause the inspect output to change, affecting the output produced by #print.
-			@inspect = @subject.inspect
+			# We capture this here, as changes to state may cause the inspect output to change, affecting the output produced by #print. The representation is truncated to avoid excessively noisy output for large subjects.
+			@inspect = Output::Inspect.inspect(@subject)
 			
 			@inverted = inverted
 			@distinct = true

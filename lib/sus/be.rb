@@ -146,7 +146,7 @@ module Sus
 			output.write("be ", :be, operation.to_s, :reset)
 			
 			if arguments.any?
-				output.write(" ", :variable, arguments.map(&:inspect).join, :reset)
+				output.write(" ", :variable, Output::Inspect.truncate(arguments.map(&:inspect).join), :reset)
 			end
 		end
 		
