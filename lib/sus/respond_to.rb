@@ -49,7 +49,8 @@ module Sus
 			# Print a representation of this constraint.
 			# @parameter output [Output] The output target.
 			def print(output)
-				output.write("with options ", :variable, @options.inspect)
+				output.write("with options ")
+				output.variable(@options)
 			end
 			
 			# Evaluate this constraint against method parameters.

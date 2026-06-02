@@ -49,6 +49,10 @@ module Sus
 			
 			output[:variable] = output.style(:blue, nil, :bold)
 			
+			# The ellipsis marks where an inspected value was truncated; it is shown
+			# faintly so it reads as "trailing off" without competing with the value.
+			output[:ellipsis] = output.style(nil, nil, :faint)
+			
 			output[:path] = output.style(:yellow)
 			output[:line] = output.style(:yellow)
 			output[:identity] = output.style(:yellow)

@@ -6,6 +6,8 @@
 require "io/console"
 require "stringio"
 
+require_relative "text"
+
 module Sus
 	module Output
 		# Represents a buffered output handler that stores output operations for later replay.
@@ -49,6 +51,14 @@ module Sus
 			def append(buffer)
 				@chunks.concat(buffer.chunks)
 				@tee&.append(buffer)
+			end
+			
+			# Replay this buffer into the given output. This allows a buffer (a captured
+			# stream of formatting instructions) to be used anywhere a printable target
+			# is expected, e.g. as a nested assertion label.
+			# @parameter output [Output] The output target.
+			def print(output)
+				output.append(self)
 			end
 			
 			# @returns [String] The buffered output as a string.
@@ -97,6 +107,14 @@ module Sus
 			def puts(*arguments)
 				@chunks << [:puts, *arguments]
 				@tee&.puts(*arguments)
+			end
+			
+			# Write a value in the variable style: a compact, truncated representation
+			# (handling large values, recursion and styling internally).
+			# @parameter value [Object] The value to represent.
+			# @parameter limit [Integer] The maximum length of the representation.
+			def variable(value, limit: Variable::TRUNCATION_LIMIT)
+				Variable.format(self, value, limit: limit)
 			end
 			
 			# Record an assertion.
