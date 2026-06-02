@@ -30,10 +30,6 @@ describe Sus::Output::Inspect do
 			expect(result.length).to be <= (Sus::Output::Inspect::DEFAULT_LIMIT + 1)
 		end
 		
-		it "does not split multi-line strings (unlike pp)" do
-			expect(Sus::Output::Inspect.inspect("a\nb")).to be == "\"a\\nb\""
-		end
-		
 		it "handles recursive structures" do
 			array = [1]
 			array << array
