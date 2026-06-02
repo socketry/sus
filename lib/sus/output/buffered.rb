@@ -53,6 +53,14 @@ module Sus
 				@tee&.append(buffer)
 			end
 			
+			# Replay this buffer into the given output. This allows a buffer (a captured
+			# stream of formatting instructions) to be used anywhere a printable target
+			# is expected, e.g. as a nested assertion label.
+			# @parameter output [Output] The output target.
+			def print(output)
+				output.append(self)
+			end
+			
 			# @returns [String] The buffered output as a string.
 			def string
 				io = StringIO.new

@@ -166,14 +166,6 @@ module Sus
 				self.format(buffer, value, limit: limit)
 				return buffer
 			end
-			
-			# Inspect a value, returning a plain (uncoloured) truncated string.
-			# @parameter value [Object] The value to inspect.
-			# @parameter limit [Integer] The maximum length of the resulting string.
-			# @returns [String] The (possibly truncated) representation.
-			def self.inspect(value, limit: DEFAULT_LIMIT)
-				self.buffer(value, limit: limit).string
-			end
 		end
 	end
 end

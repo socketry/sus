@@ -92,7 +92,13 @@ module Sus
 				index = 0
 				
 				subject.each do |value|
-					assertions.nested("[#{index}] = #{Output::Inspect.inspect(value)}", distinct: true) do |assertions|
+					# Capture the label (index and value) as a buffer of formatting
+					# instructions, so the value is truncated/styled consistently:
+					label = Output::Buffered.new
+					label.write("[#{index}] = ")
+					label.variable(value)
+					
+					assertions.nested(label, distinct: true) do |assertions|
 						@predicate&.call(assertions, value)
 					end
 					
