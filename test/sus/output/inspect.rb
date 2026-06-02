@@ -33,5 +33,12 @@ describe Sus::Output::Inspect do
 			expect(result).to be(:end_with?, "…")
 			expect(result.length).to be <= (Sus::Output::Inspect::DEFAULT_LIMIT + 1)
 		end
+		
+		it "does not materialize the full representation of a huge value" do
+			big = Array.new(100_000) {|i| "item-#{i}"}
+			result = Sus::Output::Inspect.inspect(big, limit: 40)
+			expect(result.length).to be <= 41
+			expect(result).to be(:end_with?, "…")
+		end
 	end
 end
