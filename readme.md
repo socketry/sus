@@ -33,6 +33,10 @@ Please see the [project documentation](https://socketry.github.io/sus/) for more
 
 Please see the [project releases](https://socketry.github.io/sus/releases/index) for all releases.
 
+### v0.37.1
+
+  - Fixed `Sus::Mock#wrap` to forward blocks to the original method, and fixed `receive(...).with_block(...)` to use the supplied predicate.
+
 ### v0.37.0
 
   - Long values in verbose (and failure) output are now truncated to a configurable length (default 100 characters), preventing huge objects from flooding the output. Set the `SUS_OUTPUT_VARIABLE_TRUNCATION_LIMIT` environment variable to change the limit, or `0` to disable truncation.
