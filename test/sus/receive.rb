@@ -19,6 +19,10 @@ class Interface
 	def implementation(*arguments, **options)
 		RealImplementation.new
 	end
+	
+	def call
+		yield
+	end
 end
 
 describe Sus::Receive do
@@ -76,6 +80,12 @@ describe Sus::Receive do
 		expect(interface).to receive(:implementation).with(x: 1, y: 2)
 		
 		interface.implementation(x: 1, y: 2)
+	end
+	
+	it "can validate a block" do
+		expect(interface).to receive(:call).with_block(be(:lambda?))
+		
+		interface.call(&->{})
 	end
 	
 	describe Sus::Receive::Times do

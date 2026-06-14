@@ -239,8 +239,7 @@ module Sus
 			# @parameter subject [Proc, nil] The block to check.
 			def call(assertions, subject)
 				assertions.nested(self) do |assertions|
-					
-					Expect.new(assertions, subject).not.to(Be == nil)
+					Expect.new(assertions, subject).to(@predicate)
 				end
 			end
 		end
