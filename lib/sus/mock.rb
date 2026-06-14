@@ -90,8 +90,8 @@ module Sus
 			
 			@interceptor.define_method(method) do |*arguments, **options, &block|
 				if execution_context == Thread.current
-					original = proc do |*arguments, **options|
-						super(*arguments, **options)
+					original = proc do |*arguments, **options, &block|
+						super(*arguments, **options, &block)
 					end
 					
 					hook.call(original, *arguments, **options, &block) 

@@ -25,6 +25,10 @@ class Interface
 	def implementation(*arguments)
 		RealImplementation.new
 	end
+	
+	def call
+		yield
+	end
 end
 
 describe Sus::Mock do
@@ -129,6 +133,16 @@ describe Sus::Mock do
 		it "can wrap a method" do
 			interface = RealImplementation.new(10)
 			expect(interface.value).to be == 20
+		end
+		
+		it "can call the original method with a block" do
+			mock(interface) do |mock|
+				mock.wrap(:call) do |original, &block|
+					original.call(&block)
+				end
+			end
+			
+			expect(interface.call{"Hello World"}).to be == "Hello World"
 		end
 	end
 end
