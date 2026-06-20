@@ -33,3 +33,28 @@ with "a falsey thing" do
 		let(:thing) {true}
 	end
 end
+
+describe Sus::ItBehavesLike do
+	it "can print itself" do
+		shared = Sus::Shared("shared"){}
+		context = subject.build(Sus.base, shared)
+		output = Sus::Output.buffered
+		
+		context.print(output)
+		
+		expect(output.string).to be(:include?, "it behaves like")
+	end
+end
+
+describe Sus::Shared do
+	it "can be prepended" do
+		shared = Sus::Shared("prepended") do
+			@prepended_value = :value
+		end
+		
+		context = Sus.base
+		context.singleton_class.prepend(shared)
+		
+		expect(context.singleton_class.instance_variable_get(:@prepended_value)).to be == :value
+	end
+end

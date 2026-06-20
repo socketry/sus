@@ -24,28 +24,6 @@ module Sus
 			base.children = Hash.new
 		end
 		
-		unless respond_to?(:set_temporary_name)
-			# Set a temporary name for this context.
-			# @parameter name [String] The temporary name.
-			def set_temporary_name(name)
-				# No-op.
-			end
-			
-			# @returns [String] A string representation of this context.
-			def to_s
-				(self.description || self.name).to_s
-			end
-			
-			# @returns [String] An inspect representation of this context.
-			def inspect
-				if description = self.description
-					"\#<#{self.name || "Context"} #{self.description}>"
-				else
-					self.name
-				end
-			end
-		end
-		
 		# Add a child context or test to this context.
 		# @parameter child [Object] The child to add.
 		def add(child)

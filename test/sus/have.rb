@@ -8,6 +8,12 @@ User = Struct.new(:name, :age)
 require "socket"
 
 describe Sus::Have do
+	def render(predicate)
+		buffer = Sus::Output::Buffered.new
+		predicate.print(buffer)
+		return buffer.string
+	end
+	
 	describe User do
 		let(:user) {subject.new("Sus", 20)}
 		
@@ -17,10 +23,18 @@ describe Sus::Have do
 				age: be >= 20
 			)
 		end
+		
+		it "can print attribute predicates" do
+			expect(render(have_attributes(name: be == "Sus"))).to be == "have {attribute name be == \"Sus\"}"
+		end
 	end
 	
 	describe Hash do
 		let(:hash) {subject[:name => "Sus", "age" => 20]}
+		
+		it "can print key predicates" do
+			expect(render(have_keys(:name, "age" => be >= 20))).to be == "have {key :name , key \"age\" be >= 20}"
+		end
 		
 		it "has keys with values" do
 			expect(hash).to have_keys(
@@ -59,6 +73,10 @@ describe Sus::Have do
 	describe Array do
 		let(:array) {[1, 2, 3]}
 		
+		it "can print value predicates" do
+			expect(render(have_value(be == 1))).to be == "have any {value be == 1}"
+		end
+		
 		it "can contain a value" do
 			expect(array).to have_value(be == 1)
 			expect(array).to have_value(be == 2)
@@ -75,6 +93,18 @@ describe Sus::Have do
 		it "doesn't contain a value" do
 			expect(array).not.to have_value(be == 4)
 			expect(array).not.to have_value(be < 1)
+		end
+		
+		it "can match all predicates" do
+			expect(array).to have(be(:include?, 1), be(:include?, 2))
+		end
+		
+		it "can match any predicate" do
+			expect(array).to have_any(be(:include?, 4), be(:include?, 2))
+		end
+		
+		it "can print any predicates" do
+			expect(render(have_any(be(:include?, 1), be(:include?, 2)))).to be == "have any {be include? 1, be include? 2}"
 		end
 	end
 	

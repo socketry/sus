@@ -43,4 +43,21 @@ describe Sus::Output::Buffered do
 			expect(assertions.output.string).to be =~ /StatefulThing initial/
 		end
 	end
+	
+	it "can inspect buffers with tee output" do
+		tee = Sus::Output.buffered
+		buffer = subject.new(tee)
+		
+		expect(buffer.inspect).to be(:include?, "->")
+	end
+	
+	it "can print itself to output" do
+		buffer = subject.new
+		buffer.write("hello")
+		
+		output = Sus::Output.buffered
+		buffer.print(output)
+		
+		expect(output.string).to be == "hello"
+	end
 end

@@ -196,13 +196,16 @@ module Sus
 		
 		# Print feedback about the test suite.
 		# @parameter output [Output] The output handler.
-		# @parameter assertions [Assertions] The assertions instance.
-		def print_test_feedback(output, assertions)
-			duration = @clock.duration
-			rate = assertions.count / duration
-			
-			total = assertions.total
-			count = assertions.count
+		# @parameter assertions [Assertions | Nil] The assertions instance.
+		# @parameter duration [Float] The total duration of the test suite.
+		# @parameter count [Integer] The number of assertions.
+		# @parameter total [Integer] The number of tests.
+		def print_test_feedback(output, assertions = nil,
+			duration: @clock.duration,
+			count: assertions.count,
+			total: assertions.total
+		)
+			rate = count / duration
 			
 			if total < 10 or count < 10
 				output.puts "😭 You should write more tests and assertions!"
@@ -212,7 +215,7 @@ module Sus
 			end
 			
 			# Check whether there is at least, on average, one assertion (or more) per test:
-			assertions_per_test = assertions.count / assertions.total
+			assertions_per_test = count / total
 			if assertions_per_test < 1.0
 				output.puts "😩 Your tests don't have enough assertions (#{assertions_per_test.round(1)} < 1.0)!"
 			end
@@ -241,6 +244,8 @@ module Sus
 				output.puts "🔥 Wow! Your test suite has outstanding performance (#{rate.round(1)} >= 10000.0)!"
 			end
 		end
+		
+		public :print_test_feedback
 		
 		# Print information about slow tests.
 		# @parameter output [Output] The output handler.

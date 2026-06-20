@@ -53,6 +53,31 @@ describe Sus::Assertions do
 				string: be =~ /Hello world/
 			)
 		end
+		
+		it "can add informational output from a block" do
+			assertions.inform do
+				"Hello block"
+			end
+			
+			expect(assertions.output).to have_attributes(
+				string: be =~ /Hello block/
+			)
+		end
+		
+		it "can add informational output from a failing block" do
+			assertions.inform do
+				raise "Boom"
+			end
+			
+			expect(assertions.output).to have_attributes(
+				string: be =~ /Boom/
+			)
+		end
+		
+		it "can report its message and emptiness" do
+			expect(assertions.empty?).to be == true
+			expect(assertions.message).to be(:include?, :text)
+		end
 	end
 	
 	# Inverted assertions mean that we are passing if at least one assertion fails!
@@ -94,6 +119,65 @@ describe Sus::Assertions do
 			expect(assertions.passed.size).to be == 4
 			expect(assertions.count).to be == 4
 		end
+	end
+	
+	with "printing" do
+		let(:output) {Sus::Output.buffered}
+		
+		it "prints verbose target output" do
+			assertions = Sus::Assertions.new(target: Nested.new("target"), output: Sus::Output.buffered, verbose: true)
+			assertions.assert(true)
+			assertions.print(output)
+			
+			expect(output.string).to be(:include?, "nested target")
+		end
+		
+		it "prints deferred, skipped and errored counts" do
+			assertions.assert(true)
+			assertions.defer{}
+			assertions.skip("skip")
+			assertions.error!(RuntimeError.new("boom"))
+			assertions.print(output)
+			
+			expect(output.string).to be(:include?, "deferred")
+			expect(output.string).to be(:include?, "skipped")
+			expect(output.string).to be(:include?, "errored")
+		end
+	end
+	
+	with "failures" do
+		it "can enumerate failed assertions" do
+			assertions.assert(false)
+			
+			failures = assertions.each_failure.to_a
+			
+			expect(failures).to have_attributes(size: be == 1)
+			expect(failures.first.message).to be(:include?, :text)
+		end
+		
+		it "can enumerate errored assertions" do
+			assertions.error!(RuntimeError.new("boom"))
+			
+			failures = assertions.each_failure.to_a
+			
+			expect(failures).to have_attributes(size: be == 1)
+			expect(failures.first.message[:text]).to be(:include?, "boom")
+		end
+		
+		it "can treat failed assertions as distinct" do
+			assertions = Sus::Assertions.new(output: Sus::Output.buffered, distinct: true)
+			assertions.assert(false)
+			
+			failures = assertions.each_failure.to_a
+			
+			expect(failures).to be == [assertions]
+		end
+	end
+	
+	it "can write directly to its output" do
+		assertions.puts("hello")
+		
+		expect(assertions.output.string).to be(:include?, "hello")
 	end
 	
 	with "deferred assertions" do

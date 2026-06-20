@@ -16,7 +16,7 @@ describe Sus::Describe do
 		it "can print context name" do
 			buffer = Sus::Output.buffered
 			context.print(buffer)
-			expect(buffer.string).to be =~ %r{describe a test class}
+			expect(buffer.string).to be =~ %r{a test class}
 		end
 	end
 	

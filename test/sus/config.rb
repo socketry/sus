@@ -68,4 +68,49 @@ describe Sus::Config do
 			end
 		end
 	end
+	
+	with "test feedback" do
+		let(:io) {StringIO.new}
+		let(:output) {Sus::Output::Text.new(io)}
+		
+		def print_test_feedback(count, total, duration)
+			config.print_test_feedback(output, count: count, total: total, duration: duration)
+			io.string
+		end
+		
+		it "reports too few assertions and slow performance" do
+			output = print_test_feedback(10, 15, 2.0)
+			
+			expect(output).to be(:include?, "don't have enough assertions")
+			expect(output).to be(:include?, "write more tests")
+			expect(output).to be(:include?, "performance is painful")
+		end
+		
+		it "reports an early test suite and poor performance" do
+			output = print_test_feedback(20, 20, 1.0)
+			
+			expect(output).to be(:include?, "starting to shape up")
+			expect(output).to be(:include?, "could be better")
+		end
+		
+		it "reports a maturing test suite and good performance" do
+			output = print_test_feedback(60, 60, 0.1)
+			
+			expect(output).to be(:include?, "maturing")
+			expect(output).to be(:include?, "good performance")
+		end
+		
+		it "reports amazing test suite and excellent performance" do
+			output = print_test_feedback(100, 100, 0.05)
+			
+			expect(output).to be(:include?, "amazing")
+			expect(output).to be(:include?, "excellent performance")
+		end
+		
+		it "reports outstanding performance" do
+			output = print_test_feedback(10_000, 10_000, 1.0)
+			
+			expect(output).to be(:include?, "outstanding performance")
+		end
+	end
 end

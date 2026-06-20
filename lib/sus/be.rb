@@ -46,7 +46,7 @@ module Sus
 			# @parameter other [Object] Another predicate to combine.
 			# @returns [Or] A new OR predicate.
 			def |(other)
-				Or.new(self, other)
+				Or.new([self, other])
 			end
 		end
 		
@@ -93,7 +93,7 @@ module Sus
 			# @parameter other [Object] Another predicate to combine.
 			# @returns [And] A new AND predicate.
 			def &(other)
-				And.new(self, other)
+				And.new([self, other])
 			end
 			
 			# Combine this predicate with another using OR logic.

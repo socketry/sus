@@ -4,6 +4,16 @@
 # Copyright, 2021-2024, by Samuel Williams.
 
 describe Sus::BeWithin do
+	def render(predicate)
+		buffer = Sus::Output::Buffered.new
+		predicate.print(buffer)
+		return buffer.string
+	end
+	
+	it "can print" do
+		expect(render(be_within(10))).to be == "be within 10"
+	end
+	
 	it "can expect number to be within a tolerance" do
 		expect(0).to be_within(10)
 		expect(5).to be_within(10)
@@ -19,6 +29,10 @@ describe Sus::BeWithin do
 	end
 	
 	with Range do
+		it "can print" do
+			expect(render(be_within(2..7))).to be == "be within 2..7"
+		end
+		
 		it "can expect number to be within a range" do
 			expect(5).to be_within(2..7)
 			expect(2).to be_within(2..7)
