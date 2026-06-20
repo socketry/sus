@@ -47,6 +47,36 @@ describe Sus::It do
 			
 			expect(assertions.output.string).to be =~ /skipped test/
 		end
+		
+		it "can skip when a method is not defined" do
+			context = Sus::It.build(self.class, "test") do
+				skip_unless_method_defined(:missing_method, String)
+			end
+			
+			context.call(assertions)
+			
+			expect(assertions.output.string).to be(:include?, "missing_method")
+		end
+		
+		it "can skip when a constant is not defined" do
+			context = Sus::It.build(self.class, "test") do
+				skip_unless_constant_defined(:MissingConstant)
+			end
+			
+			context.call(assertions)
+			
+			expect(assertions.output.string).to be(:include?, "MissingConstant")
+		end
+		
+		it "can skip when the platform is not supported" do
+			context = Sus::It.build(self.class, "test") do
+				skip_if_ruby_platform(/#{Regexp.escape(RUBY_PLATFORM)}/)
+			end
+			
+			context.call(assertions)
+			
+			expect(assertions.output.string).to be(:include?, "Ruby platform")
+		end
 	end
 	
 	with "ruby version requirements" do
@@ -62,6 +92,16 @@ describe Sus::It do
 			expect(assertions.count).to be == 1
 		end
 		
+		it "skips when the ruby version is too old" do
+			context = Sus::It.build(self.class, "test") do
+				skip_unless_minimum_ruby_version("1.2.11", "1.2.3")
+			end
+			
+			context.call(assertions)
+			
+			expect(assertions.output.string).to be(:include?, "Ruby 1.2.11 is required")
+		end
+		
 		it "compares maximum ruby versions semantically" do
 			context = Sus::It.build(self.class, "test") do
 				skip_if_maximum_ruby_version("1.2.11", "1.2.3")
@@ -73,6 +113,34 @@ describe Sus::It do
 			expect(assertions.skipped).to be(:empty?)
 			expect(assertions.count).to be == 1
 		end
+		
+		it "skips when the ruby version is too new" do
+			context = Sus::It.build(self.class, "test") do
+				skip_if_maximum_ruby_version("1.2.3", "1.2.11")
+			end
+			
+			context.call(assertions)
+			
+			expect(assertions.output.string).to be(:include?, "Ruby 1.2.3 is not supported")
+		end
+		
+		it "compares equal ruby versions" do
+			context = Sus::It.build(self.class, "test") do
+				skip_unless_minimum_ruby_version("1.2.3", "1.2.3")
+				assert(true)
+			end
+			
+			context.call(assertions)
+			
+			expect(assertions.skipped).to be(:empty?)
+			expect(assertions.count).to be == 1
+		end
+	end
+	
+	it "has a string representation" do
+		context = Sus::It.build(self.class, "test"){}
+		
+		expect(context.to_s).to be == "it test"
 	end
 	
 	with "unique:" do

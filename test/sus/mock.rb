@@ -34,6 +34,24 @@ end
 describe Sus::Mock do
 	let(:interface) {Interface.new}
 	
+	def render(target)
+		buffer = Sus::Output::Buffered.new
+		target.print(buffer)
+		return buffer.string
+	end
+	
+	it "can print" do
+		expect(render(Sus::Mock.new(interface))).to be =~ /mock #<.*Interface/
+	end
+	
+	it "rejects frozen targets" do
+		target = Object.new.freeze
+		
+		expect do
+			mock(target)
+		end.to raise_exception(StandardError, message: be =~ /Cannot mock frozen object/)
+	end
+	
 	it "can expect a method to be called" do
 		expect(interface).to receive(:implementation)
 		interface.implementation
@@ -143,6 +161,18 @@ describe Sus::Mock do
 			end
 			
 			expect(interface.call{"Hello World"}).to be == "Hello World"
+		end
+		
+		it "doesn't affect other threads" do
+			mock(RealImplementation) do |mock|
+				mock.wrap(:new) do |original, value|
+					original.call(value * 2)
+				end
+			end
+			
+			Thread.new do
+				expect(RealImplementation.new(10).value).to be == 10
+			end.join
 		end
 	end
 end

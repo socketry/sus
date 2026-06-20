@@ -30,4 +30,10 @@ describe Sus::Output::Status do
 		status.print(output)
 		expect(buffer.string).to be =~ /[◑◒◐◓] \n/
 	end
+	
+	it "can print unknown status indicator" do
+		status.update(:unknown)
+		status.print(output)
+		expect(buffer.string).to be == "  \n"
+	end
 end

@@ -21,9 +21,9 @@ module Sus
 				parameters = @parameters.dup
 				
 				assertions.nested(self) do |assertions|
-					expected_name = parameters.shift
-					
 					subject.each do |type, name|
+						expected_name = parameters.shift
+						
 						case type
 						when :req
 							assertions.assert(name == expected_name, "parameter #{expected_name} is required, but was #{name}")

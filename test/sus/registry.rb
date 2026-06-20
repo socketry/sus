@@ -23,4 +23,14 @@ describe Sus::Registry do
 		expect(found_files).to have_value(be =~ /directory_test_file\.rb/)
 		expect(found_files).to have_value(be =~ /nested_directory_test_file\.rb/)
 	end
+	
+	it "delegates children and enumeration to the base context" do
+		registry.load(__FILE__)
+		
+		children = []
+		registry.each{|child| children << child}
+		
+		expect(registry.children).not.to be(:empty?)
+		expect(children).not.to be(:empty?)
+	end
 end

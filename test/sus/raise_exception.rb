@@ -13,6 +13,22 @@ class AgeError < StandardError
 end
 
 describe Sus::RaiseException do
+	def render(predicate)
+		buffer = Sus::Output::Buffered.new
+		predicate.print(buffer)
+		return buffer.string
+	end
+	
+	it "can print with an additional predicate" do
+		expect(render(raise_exception(RuntimeError).and(have_attributes(message: be =~ /Boom/)))).to be =~ / and /
+	end
+	
+	it "can raise an exception without matching a message" do
+		expect do
+			raise "Boom"
+		end.to raise_exception(RuntimeError)
+	end
+	
 	it "can raise an exception with a matching message" do
 		expect do
 			raise "Boom"

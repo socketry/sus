@@ -15,11 +15,11 @@ group :maintenance, optional: true do
 	gem "agent-context"
 	
 	gem "utopia-project"
+	gem "decode", platforms: :mri
 end
 
 group :test do
 	gem "covered"
-	gem "decode"
 	
 	gem "rubocop"
 	gem "rubocop-md"

@@ -30,6 +30,10 @@ describe Sus::Clock do
 		expect(Sus::Clock.new(1.123).to_f).to be == 1.123
 	end
 	
+	it "can convert to milliseconds" do
+		expect(Sus::Clock.new(1.123).ms).to be == 1123.0
+	end
+	
 	it "can be compared" do
 		expect(Sus::Clock.new(1.123) <=> Sus::Clock.new(1.123)).to be == 0
 		expect(Sus::Clock.new(1.123) <=> Sus::Clock.new(1.124)).to be == -1

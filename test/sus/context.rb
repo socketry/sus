@@ -28,6 +28,23 @@ describe Sus::Describe do
 		expect(instance.full_name).to be == "describe test"
 	end
 	
+	it "can inspect and enumerate children" do
+		instance.it("leaf"){}
+		children = []
+		instance.each{|child| children << child}
+		
+		expect(instance.to_s).to be(:include?, "test")
+		expect(instance.inspect).to be(:include?, "test")
+		expect(children).to have_attributes(size: be == 1)
+	end
+	
+	it "can inspect without a description" do
+		base = Sus.base
+		
+		expect(base.to_s).to be == base.name.to_s
+		expect(base.inspect).to be == base.name
+	end
+	
 	with "before hooks" do
 		let(:events) {Array.new}
 		
@@ -58,6 +75,23 @@ describe Sus::Describe do
 		
 		it "invokes after hooks" do
 			events << :example
+		end
+		
+		it "still invokes after hooks when they raise" do
+			events << :example
+			
+			context = Sus::Describe.build(Sus.base, "raises")
+			context.after do
+				raise "after failed"
+			end
+			test = context.it("test"){}
+			instance = test.new(Sus::Assertions.new)
+			
+			begin
+				instance.after(nil)
+			rescue RuntimeError => error
+				expect(error.message).to be == "after failed"
+			end
 		end
 	end
 end

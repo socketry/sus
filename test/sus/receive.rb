@@ -28,6 +28,16 @@ end
 describe Sus::Receive do
 	let(:interface) {Interface.new}
 	
+	def render(predicate)
+		buffer = Sus::Output::Buffered.new
+		predicate.print(buffer)
+		return buffer.string
+	end
+	
+	it "can print" do
+		expect(render(receive(:implementation))).to be == "receive implementation"
+	end
+	
 	it "can validate a method call" do
 		expect(interface).to receive(:implementation)
 		expect(interface).to be(:kind_of?, Interface)
@@ -35,6 +45,12 @@ describe Sus::Receive do
 	end
 	
 	with "#and_return" do
+		it "raises an error for values and a block" do
+			expect do
+				receive(:implementation).and_return(:value){:other}
+			end.to raise_exception(ArgumentError, message: be =~ /both/)
+		end
+		
 		it "can return a specific value" do
 			expect(interface).to receive(:implementation).and_return(FakeImplementation.new)
 			
@@ -89,6 +105,10 @@ describe Sus::Receive do
 	end
 	
 	describe Sus::Receive::Times do
+		it "can print" do
+			expect(render(subject.new(be >= 1))).to be == "with call count be >= 1"
+		end
+		
 		it "expects at least one call by default" do
 			expect(interface).to receive(:implementation)
 			
@@ -100,6 +120,44 @@ describe Sus::Receive do
 			
 			interface.implementation
 			interface.implementation
+		end
+		
+		it "can expect one call" do
+			expect(interface).to receive(:implementation).once
+			
+			interface.implementation
+		end
+		
+		it "can expect two calls" do
+			expect(interface).to receive(:implementation).twice
+			
+			interface.implementation
+			interface.implementation
+		end
+		
+		it "can expect a matching call count" do
+			expect(interface).to receive(:implementation).with_call_count(be >= 2)
+			
+			interface.implementation
+			interface.implementation
+		end
+	end
+	
+	describe Sus::Receive::WithArguments do
+		it "can print" do
+			expect(render(subject.new(be == [:value]))).to be == "with arguments be == [:value]"
+		end
+	end
+	
+	describe Sus::Receive::WithOptions do
+		it "can print" do
+			expect(render(subject.new(be == {key: :value}))).to be == "with options be == {key: :value}"
+		end
+	end
+	
+	describe Sus::Receive::WithBlock do
+		it "can print" do
+			expect(render(subject.new(be(:lambda?)))).to be == "with blockbe lambda?"
 		end
 	end
 end

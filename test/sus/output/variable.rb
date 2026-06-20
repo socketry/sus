@@ -44,6 +44,12 @@ describe Sus::Output::Variable do
 			expect(inspect_string(array)).to be == "[1, [...]]"
 		end
 		
+		it "handles recursive hashes" do
+			hash = {}
+			hash[:self] = hash
+			expect(inspect_string(hash)).to be == "{self: {...}}"
+		end
+		
 		it "truncates objects with long inspect output" do
 			object = Object.new
 			object.define_singleton_method(:inspect){"#<Big #{"x" * 200}>"}
@@ -66,6 +72,13 @@ describe Sus::Output::Variable do
 	end
 	
 	with ".format" do
+		it "can disable truncation" do
+			buffer = Sus::Output::Buffered.new
+			Sus::Output::Variable.format(buffer, "x" * 200, limit: nil)
+			
+			expect(buffer.string).to be == ("x" * 200).inspect
+		end
+		
 		it "emits the value in a single style" do
 			buffer = Sus::Output::Buffered.new
 			Sus::Output::Variable.format(buffer, {"key" => 42, :sym => "value"})

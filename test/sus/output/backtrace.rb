@@ -13,6 +13,17 @@ describe Sus::Output::Backtrace do
 		expect(backtrace.stack).to have_attributes(size: be >= 1)
 	end
 	
+	it "can extract native backtrace locations" do
+		error = RuntimeError.new("boom")
+		error.set_backtrace(caller)
+		
+		begin
+			raise error
+		rescue RuntimeError => error
+			expect(subject.extract_stack(error).first).to respond_to(:path)
+		end
+	end
+	
 	with "a limit of one" do
 		it "has exactly one frame" do
 			expect(backtrace.filter(limit: 1)).to have_attributes(size: be == 1)
@@ -25,6 +36,26 @@ describe Sus::Output::Backtrace do
 			expect(stack.size).to be >= 1
 			expect(stack.last.path).to be(:start_with?, identity.path)
 		end
+	end
+	
+	it "can print multiple frames" do
+		output = Sus::Output.buffered
+		backtrace.print(output)
+		
+		expect(output.string).to be(:include?, __FILE__)
+	end
+	
+	it "can filter matching frames after the preface" do
+		stack = [
+			Sus::Output::Backtrace::Location.new("/tmp/one.rb", 1, "one"),
+			Sus::Output::Backtrace::Location.new(__FILE__, 2, "two"),
+			Sus::Output::Backtrace::Location.new(__FILE__, 3, "three"),
+			Sus::Output::Backtrace::Location.new("/tmp/four.rb", 4, "four"),
+		]
+		
+		backtrace = subject.new(stack, __dir__)
+		
+		expect(backtrace.filter.map(&:label)).to be == ["one", "two", "three"]
 	end
 	
 	with "a wonky exception" do

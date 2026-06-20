@@ -4,7 +4,17 @@
 # Copyright, 2021-2024, by Samuel Williams.
 
 describe Sus::Be do
+	def render(predicate)
+		buffer = Sus::Output::Buffered.new
+		predicate.print(buffer)
+		return buffer.string
+	end
+	
 	with "true" do
+		it "can print truthy" do
+			expect(render(be_truthy)).to be == "be truthy"
+		end
+		
 		it "can expect equality" do
 			expect(true).to be == true
 		end
@@ -23,6 +33,10 @@ describe Sus::Be do
 	end
 	
 	with "false" do
+		it "can print falsey" do
+			expect(render(be_falsey)).to be == "be falsey"
+		end
+		
 		it "can expect equality" do
 			expect(false).to be == false
 		end
@@ -93,6 +107,10 @@ describe Sus::Be do
 	end
 	
 	describe Sus::Be::And do
+		it "can print" do
+			expect(render((be > 5) & (be < 20))).to be == "be > 5 and be < 20"
+		end
+		
 		it "can combine two predicates" do
 			expect(10).to (be > 5) & (be < 20)
 		end
@@ -112,9 +130,17 @@ describe Sus::Be do
 			
 			expect(assertions).to be(:failed?)
 		end
+		
+		it "can combine with or" do
+			expect(10).to ((be > 20) & (be < 30)) | (be == 10)
+		end
 	end
 	
 	describe Sus::Be::Or do
+		it "can print" do
+			expect(render((be > 5) | (be < 20))).to be == "be > 5 or be < 20"
+		end
+		
 		it "can combine two predicates" do
 			expect(10).to (be > 5) | (be < 5)
 		end
@@ -137,6 +163,10 @@ describe Sus::Be do
 			Sus::Expect.new(assertions, 10).to (be > 10) | (be < 5) | (be == 15) | (be == 20)
 			
 			expect(assertions).to be(:failed?)
+		end
+		
+		it "can combine with and" do
+			expect(10).to ((be > 5) | (be < 5)) & (be == 10)
 		end
 	end
 end
