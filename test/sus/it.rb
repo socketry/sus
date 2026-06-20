@@ -49,6 +49,32 @@ describe Sus::It do
 		end
 	end
 	
+	with "ruby version requirements" do
+		it "compares minimum ruby versions semantically" do
+			context = Sus::It.build(self.class, "test") do
+				skip_unless_minimum_ruby_version("1.2.3", "1.2.11")
+				assert(true)
+			end
+			
+			context.call(assertions)
+			
+			expect(assertions.skipped).to be(:empty?)
+			expect(assertions.count).to be == 1
+		end
+		
+		it "compares maximum ruby versions semantically" do
+			context = Sus::It.build(self.class, "test") do
+				skip_if_maximum_ruby_version("1.2.11", "1.2.3")
+				assert(true)
+			end
+			
+			context.call(assertions)
+			
+			expect(assertions.skipped).to be(:empty?)
+			expect(assertions.count).to be == 1
+		end
+	end
+	
 	with "unique:" do
 		it "can be unique" do
 			base = Sus.base

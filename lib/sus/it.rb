@@ -107,17 +107,19 @@ module Sus
 		
 		# Skip the test unless the Ruby version meets the minimum requirement.
 		# @parameter version [String] The minimum Ruby version required.
-		def skip_unless_minimum_ruby_version(version)
-			unless RUBY_VERSION >= version
-				skip "Ruby #{version} is required, but running #{RUBY_VERSION}!"
+		# @parameter ruby_version [String] The Ruby version to check.
+		def skip_unless_minimum_ruby_version(version, ruby_version = RUBY_VERSION)
+			unless compare_ruby_version(ruby_version, version) >= 0
+				skip "Ruby #{version} is required, but running #{ruby_version}!"
 			end
 		end
 		
 		# Skip the test if the Ruby version exceeds the maximum supported version.
 		# @parameter version [String] The maximum Ruby version supported.
-		def skip_if_maximum_ruby_version(version)
-			if RUBY_VERSION >= version
-				skip "Ruby #{version} is not supported, but running #{RUBY_VERSION}!"
+		# @parameter ruby_version [String] The Ruby version to check.
+		def skip_if_maximum_ruby_version(version, ruby_version = RUBY_VERSION)
+			if compare_ruby_version(ruby_version, version) >= 0
+				skip "Ruby #{version} is not supported, but running #{ruby_version}!"
 			end
 		end
 		
@@ -127,6 +129,24 @@ module Sus
 			if match = RUBY_PLATFORM.match(pattern)
 				skip "Ruby platform #{match} is not supported!"
 			end
+		end
+		
+		private
+		
+		def compare_ruby_version(left, right)
+			left_segments = left.split(".").map(&:to_i)
+			right_segments = right.split(".").map(&:to_i)
+			length = [left_segments.size, right_segments.size].max
+			
+			length.times do |index|
+				left_segment = left_segments[index] || 0
+				right_segment = right_segments[index] || 0
+				
+				return -1 if left_segment < right_segment
+				return 1 if left_segment > right_segment
+			end
+			
+			return 0
 		end
 	end
 end
