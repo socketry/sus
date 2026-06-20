@@ -9,6 +9,9 @@ describe Sus::Output::Backtrace do
 	let(:identity) {Sus::Identity.current}
 	let(:backtrace) {subject.new(caller_locations)}
 	
+	# The root path of stack paths. This is similar to __dir__ but not exactly the same, as JRuby computes `__dir__` as an absolute path even when it doesn't make sense.
+	let(:backtrace_path_root) {File.dirname(__FILE__)}
+	
 	it "has several frames" do
 		expect(backtrace.stack).to have_attributes(size: be >= 1)
 	end
@@ -53,7 +56,7 @@ describe Sus::Output::Backtrace do
 			Sus::Output::Backtrace::Location.new("/tmp/four.rb", 4, "four"),
 		]
 		
-		backtrace = subject.new(stack, __dir__)
+		backtrace = subject.new(stack, backtrace_path_root)
 		
 		expect(backtrace.filter.map(&:label)).to be == ["one", "two", "three"]
 	end
