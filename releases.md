@@ -1,5 +1,9 @@
 # Releases
 
+## Unreleased
+
+  - Make `Sus::Fixtures::TemporaryDirectoryContext` ignore temporary directory cleanup failures.
+
 ## v0.37.1
 
   - Fixed `Sus::Mock#wrap` to forward blocks to the original method, and fixed `receive(...).with_block(...)` to use the supplied predicate.
