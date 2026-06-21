@@ -1,6 +1,6 @@
 # Releases
 
-## Unreleased
+## v0.37.2
 
   - Make `Sus::Fixtures::TemporaryDirectoryContext` ignore temporary directory cleanup failures.
 
