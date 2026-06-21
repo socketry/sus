@@ -4,6 +4,7 @@
 # Copyright, 2025-2026, by Samuel Williams.
 
 require "tmpdir"
+require "fileutils"
 
 module Sus
 	module Fixtures
@@ -12,10 +13,17 @@ module Sus
 			# Set up a temporary directory before the test and clean it up after.
 			# @yields {|&block| ...} The test block to execute.
 			def around(&block)
-				Dir.mktmpdir do |root|
+				root = Dir.mktmpdir
+				
+				begin
 					@root = root
+					
 					super(&block)
+				ensure
 					@root = nil
+					
+					# Use forced removal so cleanup tolerates paths which were already removed by the test or an external process.
+					FileUtils.remove_entry(root, true)
 				end
 			end
 			
@@ -24,4 +32,3 @@ module Sus
 		end
 	end
 end
-
