@@ -38,10 +38,38 @@ module Sus
 			end
 			
 			options = {
-				verbose: !!arguments.delete("--verbose")
+				verbose: !!arguments.delete("--verbose") || self.verbose_from_environment?
 			}
 			
 			return derived.new(root, arguments, **options)
+		end
+		
+		# Maps CI environment variables to the values they take when the CI provider is running in debug/verbose mode. When any of these match, we enable verbose output automatically.
+		#
+		# - `RUNNER_DEBUG` is set by GitHub Actions when a workflow is re-run with "Enable debug logging".
+		# - `CI_DEBUG_TRACE` is set by GitLab CI when debug logging (tracing) is enabled.
+		# - `BUILDKITE_AGENT_DEBUG` is set by Buildkite when agent debug is enabled.
+		# - `SYSTEM_DEBUG` is set by Azure Pipelines when the `system.debug` variable is enabled.
+		# - `SUS_VERBOSE` can be set explicitly to enable verbose output regardless of the CI provider.
+		DEBUG_ENVIRONMENT = {
+			"SUS_VERBOSE" => "true",
+			"RUNNER_DEBUG" => "1",
+			"CI_DEBUG_TRACE" => "true",
+			"BUILDKITE_AGENT_DEBUG" => "true",
+			"SYSTEM_DEBUG" => "true",
+		}
+		
+		# Whether verbose output should be enabled based on the environment.
+		#
+		# Detects CI environments that request debug logging, e.g. GitHub Actions
+		# sets `RUNNER_DEBUG=1` when a workflow is re-run with "Enable debug logging".
+		#
+		# @parameter env [Hash] The environment to inspect.
+		# @returns [Boolean] Whether verbose output should be enabled.
+		def self.verbose_from_environment?(env = ENV)
+			DEBUG_ENVIRONMENT.any? do |key, value|
+				env[key] == value
+			end
 		end
 		
 		# Initialize a new Config instance.

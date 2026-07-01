@@ -22,6 +22,48 @@ describe Sus::Config do
 		expect(config).not.to be(:nil?)
 	end
 	
+	with ".verbose_from_environment?" do
+		it "is enabled by GitHub Actions debug logging" do
+			expect(subject.verbose_from_environment?({"RUNNER_DEBUG" => "1"})).to be == true
+		end
+		
+		it "is enabled by GitLab CI debug tracing" do
+			expect(subject.verbose_from_environment?({"CI_DEBUG_TRACE" => "true"})).to be == true
+		end
+		
+		it "is enabled by Buildkite agent debug" do
+			expect(subject.verbose_from_environment?({"BUILDKITE_AGENT_DEBUG" => "true"})).to be == true
+		end
+		
+		it "is enabled by Azure Pipelines system debug" do
+			expect(subject.verbose_from_environment?({"SYSTEM_DEBUG" => "true"})).to be == true
+		end
+		
+		it "is enabled by the SUS_VERBOSE environment variable" do
+			expect(subject.verbose_from_environment?({"SUS_VERBOSE" => "true"})).to be == true
+		end
+		
+		it "is disabled by default" do
+			expect(subject.verbose_from_environment?({})).to be == false
+		end
+		
+		it "ignores unrelated values" do
+			expect(subject.verbose_from_environment?({"RUNNER_DEBUG" => "0"})).to be == false
+		end
+	end
+	
+	with "#verbose?" do
+		it "is enabled by the --verbose argument" do
+			config = subject.load(root: root, arguments: ["--verbose"])
+			expect(config).to be(:verbose?)
+		end
+		
+		it "is disabled by default" do
+			config = subject.load(root: root, arguments: [])
+			expect(config).not.to be(:verbose?)
+		end
+	end
+	
 	with "summary output" do
 		let(:io) {StringIO.new}
 		let(:output) {Sus::Output::Text.new(io)}
