@@ -27,8 +27,9 @@ module Sus
 		# Load configuration from the given root directory.
 		# @parameter root [String] The root directory to load configuration from.
 		# @parameter arguments [Array] Command line arguments to parse.
+		# @parameter env [Hash] The environment to inspect for debug/verbose settings.
 		# @returns [Config] A new Config instance.
-		def self.load(root: Dir.pwd, arguments: ARGV)
+		def self.load(root: Dir.pwd, arguments: ARGV, env: ENV)
 			derived = Class.new(self)
 			
 			if path = self.path(root)
@@ -38,7 +39,7 @@ module Sus
 			end
 			
 			options = {
-				verbose: !!arguments.delete("--verbose") || self.verbose_from_environment?
+				verbose: !!arguments.delete("--verbose") || self.verbose_from_environment?(env)
 			}
 			
 			return derived.new(root, arguments, **options)

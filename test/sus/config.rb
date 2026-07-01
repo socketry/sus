@@ -54,12 +54,17 @@ describe Sus::Config do
 	
 	with "#verbose?" do
 		it "is enabled by the --verbose argument" do
-			config = subject.load(root: root, arguments: ["--verbose"])
+			config = subject.load(root: root, arguments: ["--verbose"], env: {})
+			expect(config).to be(:verbose?)
+		end
+		
+		it "is enabled by the environment" do
+			config = subject.load(root: root, arguments: [], env: {"SUS_VERBOSE" => "true"})
 			expect(config).to be(:verbose?)
 		end
 		
 		it "is disabled by default" do
-			config = subject.load(root: root, arguments: [])
+			config = subject.load(root: root, arguments: [], env: {})
 			expect(config).not.to be(:verbose?)
 		end
 	end
