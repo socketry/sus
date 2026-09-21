@@ -1,6 +1,6 @@
 # Releases
 
-## Unreleased
+## v0.38.0
 
   - Add `Sus::Fixtures::IsolatedRubyContext#isolated_ruby` for evaluating Ruby in a fresh process with optional working directory and environment overrides, returning Ruby values and re-raising exceptions in the caller.
 

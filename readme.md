@@ -33,6 +33,10 @@ Please see the [project documentation](https://socketry.github.io/sus/) for more
 
 Please see the [project releases](https://socketry.github.io/sus/releases/index) for all releases.
 
+### v0.38.0
+
+  - Add `Sus::Fixtures::IsolatedRubyContext#isolated_ruby` for evaluating Ruby in a fresh process with optional working directory and environment overrides, returning Ruby values and re-raising exceptions in the caller.
+
 ### v0.37.2
 
   - Make `Sus::Fixtures::TemporaryDirectoryContext` ignore temporary directory cleanup failures.
