@@ -198,6 +198,50 @@ end
 
 Note the use of `unique: adapter.name` to ensure each test is uniquely identified, which is useful for reporting and debugging - otherwise the same test line number would be used for all iterations, which can make it hard to identify which specific test failed.
 
+## Isolated Ruby
+
+Use `Sus::Fixtures::IsolatedRubyContext` to evaluate Ruby in a fresh process and assert on its result. This is useful for code that relies on a working directory, environment variables, or constants which must be isolated from other tests.
+
+```ruby
+require "sus/fixtures/isolated_ruby_context"
+require "sus/fixtures/temporary_directory_context"
+
+describe "isolated evaluation" do
+	include Sus::Fixtures::IsolatedRubyContext
+	include Sus::Fixtures::TemporaryDirectoryContext
+	
+	it "reads files in the fixture directory" do
+		File.write(File.join(root, "value.txt"), "example")
+		result = isolated_ruby(<<~RUBY, chdir: root)
+			{value: File.read("value.txt")}
+		RUBY
+		
+		expect(result[:value]).to be == "example"
+	end
+end
+```
+
+The final expression is returned using `Marshal.dump` and `Marshal.load`, preserving Ruby types, hash keys, string encodings, and shared or cyclic references. The result must support Marshal serialization, and any custom classes it uses must also be loaded in the caller.
+
+Exceptions raised while loading requested features, evaluating source, or serializing the result are marshaled back and re-raised in the caller with their original class, message, and backtrace. Custom exception classes must also be loaded in the caller. Returning an exception object as the final expression returns it as a value.
+
+Printed output goes to the inherited stderr, keeping it separate from the result. An unsuccessful child that cannot return an exception raises `IsolatedRubyContext::Error`, which exposes its `status`; diagnostics appear directly on stderr. This includes startup failures, unsuccessful explicit exits, and exceptions that cannot be marshaled. A successful exit without a result, such as `exit(0)`, returns `nil`.
+
+The fixture uses the current Ruby interpreter and defaults to the caller's working directory. `chdir:` changes only the child's directory, so evaluations can run concurrently. The child inherits the environment, including `RUBYOPT` so coverage and other startup hooks continue to run. `env:` supplies child environment overrides; a nil value removes a variable. For a clean startup without inherited Ruby or Bundler hooks, pass `env: {"RUBYOPT" => nil, "BUNDLER_SETUP" => nil}`.
+
+Use `requires:` to load features before evaluating the source. To set up a particular bundle, use an absolute Gemfile path:
+
+```ruby
+result = isolated_ruby(
+	'require "my_gem"; {version: MyGem::VERSION}',
+	chdir: root,
+	env: {"BUNDLE_GEMFILE" => File.expand_path("gems.rb")},
+	requires: ["bundler/setup"]
+)
+```
+
+The fixture accepts source code rather than a block; parent local variables and loaded Ruby state are not transferred to the child. It works independently of `TemporaryDirectoryContext`.
+
 ## Best Practices
 
 1. **Organize by domain**: Group related shared contexts together in modules

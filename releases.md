@@ -1,5 +1,9 @@
 # Releases
 
+## Unreleased
+
+  - Add `Sus::Fixtures::IsolatedRubyContext#isolated_ruby` for evaluating Ruby in a fresh process with optional working directory and environment overrides, returning Ruby values and re-raising exceptions in the caller.
+
 ## v0.37.2
 
   - Make `Sus::Fixtures::TemporaryDirectoryContext` ignore temporary directory cleanup failures.
