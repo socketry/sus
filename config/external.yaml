@@ -1,2 +1,5 @@
+bake-gem:
+  url: https://github.com/socketry/bake-gem.git
+
 protocol-rack:
   url: https://github.com/socketry/protocol-rack.git
