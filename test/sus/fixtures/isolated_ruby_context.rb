@@ -43,7 +43,7 @@ describe Sus::Fixtures::IsolatedRubyContext do
 	it "runs in the requested directory without changing the caller's directory" do
 		previous = Dir.pwd
 		File.write(File.join(root, "value.rb"), "ISOLATED_VALUE = 42\n")
-		result = isolated_ruby('require_relative "value"; {value: ISOLATED_VALUE, directory: Dir.pwd}', chdir: root)
+		result = isolated_ruby('require "./value"; {value: ISOLATED_VALUE, directory: Dir.pwd}', chdir: root)
 		expect(result).to be == {value: 42, directory: File.realpath(root)}
 		expect(Dir.pwd).to be == previous
 		expect(Object).not.to be(:const_defined?, :ISOLATED_VALUE)
@@ -61,7 +61,6 @@ describe Sus::Fixtures::IsolatedRubyContext do
 		expect(isolated_ruby('ENV.fetch("SUS_ISOLATED_VALUE")', env: {"SUS_ISOLATED_VALUE" => "child"})).to be == "child"
 		expect(isolated_ruby('ENV["SUS_ISOLATED_VALUE"]', env: {"SUS_ISOLATED_VALUE" => nil})).to be_nil
 		expect(ENV["SUS_ISOLATED_VALUE"]).to be == previous
-		expect(isolated_ruby('ENV["RUBYOPT"]')).to be == ENV["RUBYOPT"]
 	end
 	
 	it "inherits RUBYOPT preload hooks in nested evaluations" do
